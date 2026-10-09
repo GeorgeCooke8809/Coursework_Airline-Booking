@@ -1,3 +1,4 @@
 from models.base import Base
+from models.airport_staff import AirportStaff
 
-__all__ = ["base"]
+__all__ = ["Base", "AirportStaff"]
