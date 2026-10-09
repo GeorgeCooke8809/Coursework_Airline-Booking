@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, CheckConstraint, String, ForeignKey
+from sqlalchemy import CheckConstraint, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Base
@@ -17,16 +17,17 @@ class AirportStaff(Base):
             f"staff_type IN {AIRPORT_STAFF_TYPES}",
             name="ck_airport_staff_type_correct",
         ),
+        UniqueConstraint("email"),
     )
 
-    airport_staff_id: mapped_column[int] = mapped_column(primary_key=True, autoincrement=True)
-    first_name: mapped_column[str] = mapped_column(String(34))
-    last_name: mapped_column[str] = mapped_column(String(34))
-    email: mapped_column[str] = mapped_column(String(124))
-    password: mapped_column[str]
-    staff_type: mapped_column[str]
+    airport_staff_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[str] = mapped_column(String(34))
+    last_name: Mapped[str] = mapped_column(String(34))
+    email: Mapped[str] = mapped_column(String(124))
+    password: Mapped[str]
+    staff_type: Mapped[str]
 
-    assigned_airport_icao: mapped_column[str] = mapped_column(String(3), ForeignKey("airlines.icao")) # TODO: Make relationship between assigned airport ICAO and airports
+    assigned_airport_icao: Mapped[str] = mapped_column(String(3), ForeignKey("airports.icao"))
     airport: Mapped["Airport"] = relationship(back_populates="staff")
 
     def __repr__(self) -> str:

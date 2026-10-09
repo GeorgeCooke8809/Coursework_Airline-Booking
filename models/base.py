@@ -4,7 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy import create_engine, event
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DB_PATH = REPO_ROOT / "data" / "fs_career.db"
+DB_PATH = REPO_ROOT / "data" / "data.db"
 
 engine = create_engine(f"sqlite:///{DB_PATH}")
 
