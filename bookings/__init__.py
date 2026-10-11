@@ -1,4 +1,4 @@
 from .create_unpaid_booking import create_unpaid_booking
 from .generate_boarding_pass import generate_boarding_pass
-from .get_all_user_bookings import get_all_user_bookings
+from .get_all_guest_bookings import get_all_user_bookings
 from .pay_booking import pay_booking
