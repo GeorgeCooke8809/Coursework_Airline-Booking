@@ -1,23 +1,34 @@
-def get_airport_flights():
+from models.base import with_session
+from sqlalchemy.orm import Session
+
+@with_session
+def get_airport_flights(Session: Session):
     pass
 
-def change_flight_status():
+@with_session
+def change_flight_status(Session: Session):
     pass
 
-def get_flight_details():
+@with_session
+def get_flight_details(Session: Session):
     pass
 
-def get_route_flights():
+@with_session
+def get_route_flights(Session: Session):
     pass
 
-def edit_flight_departure_time():
+@with_session
+def edit_flight_departure_time(Session: Session):
     pass
 
-def add_new_flight():
+@with_session
+def add_new_flight(Session: Session):
     pass
 
-def batch_generate_scheduled_flights():
+@with_session
+def batch_generate_scheduled_flights(Session: Session):
     pass
 
-def search_for_flight():
+@with_session
+def search_for_flight(Session: Session):
     pass

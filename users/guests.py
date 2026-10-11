@@ -1,17 +1,26 @@
-def get_all_guest_users():
+from models.base import with_session
+from sqlalchemy.orm import Session
+
+@with_session
+def get_all_guest_users(Session: Session):
     pass
 
-def get_guest_details():
+@with_session
+def get_guest_details(Session: Session):
     pass
 
-def get_guest_support_representative():
+@with_session
+def get_guest_support_representative(Session: Session):
     pass
 
-def add_guest():
+@with_session
+def add_guest(Session: Session):
     pass
 
-def edit_guest():
+@with_session
+def edit_guest(Session: Session):
     pass
 
-def delete_guest():
+@with_session
+def delete_guest(Session: Session):
     pass

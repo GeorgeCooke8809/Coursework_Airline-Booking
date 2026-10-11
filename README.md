@@ -11,14 +11,20 @@ I have started developing this project for my A-Level Computer Science coursewor
 - Python 3.14
 - UV
 
+## Installing UV (if required):
+
+``` powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
 ## Running
 
 1.
-```
+``` powershell
 uv sync
 ```
 
 2.
-```
+``` powershell
 uv run run.py
 ```

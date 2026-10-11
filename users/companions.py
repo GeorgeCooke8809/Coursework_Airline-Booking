@@ -1,14 +1,22 @@
-def get_all_guest_companions():
+from models.base import with_session
+from sqlalchemy.orm import Session
+
+@with_session
+def get_all_guest_companions(Session: Session):
     pass
 
-def add_companion():
+@with_session
+def add_companion(Session: Session):
     pass
 
-def edit_companion():
+@with_session
+def edit_companion(Session: Session):
     pass
 
-def disable_companion():
+@with_session
+def disable_companion(Session: Session):
     pass
 
-def favorite_companion():
+@with_session
+def favorite_companion(Session: Session):
     pass
