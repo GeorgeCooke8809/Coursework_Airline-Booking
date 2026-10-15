@@ -8,6 +8,23 @@ Built and tested with Python 3.14
 I have started developing this project for my A-Level Computer Science coursework under the Eduqas exam board. We are given relative free reign over what we do as long as it is a database project. I have decided to make a route management and booking system for a fictional airline (Infinity Airways).
 
 ## Requirements:
-- 
+- Python 3.14
+- UV
 
-Run by executing ./main.py
+## Installing UV (if required):
+
+``` powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+## Running
+
+1.
+``` powershell
+uv sync
+```
+
+2.
+``` powershell
+uv run run.py
+```
