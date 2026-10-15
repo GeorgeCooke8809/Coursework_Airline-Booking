@@ -40,7 +40,7 @@ def change_flight_status(Session: Session, flight_id: int, new_status: str) -> N
     """
 
 @with_session
-def get_flight_details(Session: Session, flight_no: int, airport_staff_id: int) -> dict:
+def get_flight_details(Session: Session, flight_id: int, airport_staff_id: int) -> dict:
     """Gets the flight details for the selected flight. Used by check-in and get agent portals.
 
     ## Return Format:
@@ -57,7 +57,7 @@ def get_flight_details(Session: Session, flight_no: int, airport_staff_id: int) 
 
     Args:
         Session (Session): The database session automatically provided by @with_session
-        flight_no (int): The flight number to get details for
+        flight_id (int): The flight number to get details for
         airport_staff_id (int): The airport staff ID the request is coming from to ensure they have access to that flight
     """
 
