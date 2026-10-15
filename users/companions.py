@@ -44,7 +44,7 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
 
 @with_session
 def edit_companion(Session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:
-    """Edits a companion. Raises error if guest does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. This is used in the customer support rep portal.
+    """Edits a companion. Raises exception if companion does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. This is used in the customer support rep portal.
     
     Args:
         Session (Session): The database session automatically provided by @with_session

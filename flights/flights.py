@@ -172,7 +172,7 @@ def calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
 
 @with_session
 def calculate_seat_price(Session: Session, flight_id: int, number_of_seats: int = 1) -> float:
-    """Calculates the price for a seat. Used for the search_for_flights function as well as updating price when selecting seats.
+    """Calculates the price for a seat. Used for the search_for_flight function as well as updating price when selecting seats.
 
     Args:
         Session (Session): The database session automatically provided by @with_session.
