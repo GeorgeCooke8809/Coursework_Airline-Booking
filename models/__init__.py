@@ -5,7 +5,7 @@ from models.airport import Airport
 from models.booking_seat import BookingSeat
 from models.booking import Booking
 from models.companion import Companion
-from models.flight import Flight
+from models.flight import Flight, FLIGHT_STATUS_OPTIONS
 from models.guest import Guest
 from models.route import Route
 from models.service import Service
