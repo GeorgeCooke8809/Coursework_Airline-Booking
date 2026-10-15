@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from models.route import Route
     from models.flight import Flight
 
-REPEAT_TYPES = ("daily", "weekly", "monthly")
+SERVICE_REPEAT_TYPES = ("daily", "weekly", "monthly")
 
 class Service(Base):
     __tablename__ = "services"
@@ -19,7 +19,7 @@ class Service(Base):
                 name="ck_end_date_start_date_correct",
             ),
             CheckConstraint(
-                f"repeat_type IN {REPEAT_TYPES}",
+                f"repeat_type IN {SERVICE_REPEAT_TYPES}",
                 name="ck_repeat_type_correct",
             ),
         )
