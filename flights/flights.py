@@ -110,16 +110,17 @@ def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: d
     Args:
         Session (Session): The database session automatically provided by @with_session
         service_id (int): The service ID for the flight to be attached to.
-        scheduled_departure_utc (datetime): Teh scheduled departure for the flight in UTC
+        scheduled_departure_utc (datetime): The scheduled departure for the flight in UTC
     """
 
+@with_session
 def add_one_off_flight(Session: Session, route_id: int, scheduled_departure_utc: datetime) -> None:
     """Creates a one off flight for the given route and time. Starts by creating new daily schedule with start and end date the same then creates a new flight attached to it.
 
     Args:
-        Session (Session): _description_
-        route_id (int): _description_
-        scheduled_departure_utc (datetime): _description_
+        Session (Session): The database session automatically provided by @with_session
+        route_id (int): The route ID to make a one off flight for
+        scheduled_departure_utc (datetime): Teh scheduled departure time of the flight, put into the service record
     """
 
 @with_session
@@ -176,6 +177,7 @@ def calculate_seat_price(Session: Session, flight_id: int, number_of_seats: int 
     Args:
         Session (Session): The database session automatically provided by @with_session.
         flight_id (int): The flight to calculate the price of
+        number_of_seats (int): The number of seats to calculate the price of
     """
 
     # ? Surge/dynamic pricing

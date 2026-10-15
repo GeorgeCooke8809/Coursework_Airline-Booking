@@ -5,7 +5,7 @@ from models import Booking, BookingSeat, Companion
 import reportlab
 
 @with_session
-def generate_boarding_pass(Session: Session, booking_id: int):
+def generate_boarding_pass(Session: Session, booking_id: int) -> None:
     """Generates a PDF boarding pass of name "boarding.pdf" in the root project directory for the given booking. Overwrites any existing document.
 
     Args:

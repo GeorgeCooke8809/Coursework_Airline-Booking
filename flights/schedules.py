@@ -58,7 +58,7 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
 
     Args:
         Session (Session): The database session automatically provided by @with_session
-        service_id (int): The route ID of the route to make a service for
+        service_id (int): The service ID to edit
         end_date (date): The end date of the service/schedule
         type (str): The repeat type of the service/schedule
         frequency (int): The repeat frequency of the service/schedule

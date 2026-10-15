@@ -17,7 +17,7 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
                 <companion_passport_name>: str,
                 <companion_date_of_birth>: date,
                 <companion_passport_expiry>: date,
-                <companion_favorite>: bool
+                <companion_favourite>: bool
             )
         ]
 
@@ -70,8 +70,8 @@ def disable_companion(Session: Session, companion_id: int) -> None:
     """
 
 @with_session
-def favorite_companion(Session: Session, companion_id: int) -> None:
-    """Sets the favorite status of the given companion to True and sets the favorite status of the guest's current favourite companion to False. Raises an exception if the companions expiry is before today or if the companion's status is inactive.
+def favourite_companion(Session: Session, companion_id: int) -> None:
+    """Sets the favourite status of the given companion to True and sets the favourite status of the guest's current favourite companion to False. Raises an exception if the companions expiry is before today or if the companion's status is inactive.
 
     Args:
         Session (Session): The database session automatically provided by @with_session

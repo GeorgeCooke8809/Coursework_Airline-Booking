@@ -25,7 +25,7 @@ def get_all_routes(Session: Session) -> list[tuple[int, str, str]]:
     ## Return Format:
         [
             (
-                <route_id>: str
+                <route_id>: int
                 <departure_airport_name>: str,
                 <arrival_airport_name>: str
             )

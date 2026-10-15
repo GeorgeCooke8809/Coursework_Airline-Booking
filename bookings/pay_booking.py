@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from models import Booking
 
 @with_session
-def pay_booking(Session: Session, booking_id: int):
+def pay_booking(Session: Session, booking_id: int) -> None:
     """Mark the given booking as paid for.
 
     Args:

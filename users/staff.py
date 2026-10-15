@@ -7,7 +7,7 @@ from models import AIRLINE_EMPLOYEE_TYPES, AIRPORT_STAFF_TYPES
 from datetime import datetime
 
 @with_session
-def get_all_staff_users(Session: Session) -> list[tuple[int, str, str]]:
+def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]]:
     """Gets and returns a list of all the staff users.
     
     ## Return:
@@ -78,7 +78,7 @@ def add_airport_staff(Session: Session, first_name: str, last_name: str, email: 
     """
 
 @with_session
-def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, type: str = None, assigned_airport_icao: str = ModuleNotFoundError) -> None:
+def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, type: str = None, assigned_airport_icao: str = None) -> None:
     """Edits the airport staff record with the given ID. Raises exception if email, or password are invalid format. Also raises exception if type is not in allowed airport staff types list. Also raises exception if email is in use in any other user table. Also raises exception if ICAO is not recognized.
     
         Args:
