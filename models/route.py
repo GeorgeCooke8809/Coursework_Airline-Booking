@@ -23,6 +23,8 @@ class Route(Base):
     destination_icao: Mapped[str] = mapped_column(String(3), ForeignKey("airports.icao"))
     destination: Mapped["Airport"] = relationship(back_populates="arrivals")
 
+    price: Mapped[float] = mapped_column(nullable=False)
+
     services: Mapped[list["Service"]] = relationship(back_populates="route")
 
     def __repr__(self) -> str:
