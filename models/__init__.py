@@ -4,7 +4,7 @@ from models.airport_staff import AirportStaff
 from models.airport import Airport
 from models.booking_seat import BookingSeat, VALID_SEAT_IDS
 from models.booking import Booking
-from models.companion import Companion
+from models.companion import Companion, SEX_OPTIONS
 from models.flight import Flight, FLIGHT_STATUS_OPTIONS
 from models.guest import Guest
 from models.route import Route

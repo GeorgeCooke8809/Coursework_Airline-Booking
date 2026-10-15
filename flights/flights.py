@@ -157,7 +157,7 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
 
     # ? Switch airports to IDs and make users select specific airport in UI
 
-def _calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
+def calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
     """Uses the flight ID to first get route, then coordinates of departure and arrival airports. This is used with pythagoras to get the route length in coordinate units. This is converted to miles at the equator and divided by cruise speed of aircraft to estimate flight duration.
 
     Args:
