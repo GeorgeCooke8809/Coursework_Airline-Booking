@@ -25,8 +25,8 @@ class Airport(Base):
     timezone: Mapped[str]
 
     staff: Mapped[list["AirportStaff"]] = relationship(back_populates="airport")
-    departures: Mapped[list["Route"]] = relationship(back_populates="origin")
-    arrivals: Mapped[list["Route"]] = relationship(back_populates="destination")
+    departures: Mapped[list["Route"]] = relationship(back_populates="origin", foreign_keys="Route.origin_icao")
+    arrivals: Mapped[list["Route"]] = relationship(back_populates="destination", foreign_keys="Route.destination_icao")
 
 
     def __repr__(self):
