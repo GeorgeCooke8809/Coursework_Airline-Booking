@@ -2,10 +2,13 @@ import pytest
 from pytest import raises
 from flights import create_route
 from sqlalchemy.orm import Session
+import logging
 
 from models import Route, Airport
 
 from utils.exceptions import InvalidAirportException
+
+LOGGER = logging.getLogger(__name__)
 
 def test_add_valid_route_valid_price(session: Session):
     create_route(session, "EGLL", "KJFK", 10_000)
@@ -23,17 +26,31 @@ def test_add_valid_route_valid_price(session: Session):
     assert route.services == []
 
 def test_invalid_departure_airport_valid_arrival_airport_valid_price(session: Session):
+    LOGGER.critical("Expecting exception.")
+
     with raises(InvalidAirportException):
         create_route(session, "EGLLL", "KJFK", 10_000)
 
 def test_valid_departure_airport_invalid_arrival_airport_valid_price(session: Session):
+    LOGGER.critical("Expecting exception.")
+
     with raises(InvalidAirportException):
         create_route(session, "EGLL", "KJFKK", 10_000)
 
 def test_valid_departure_airport_valid_arrival_airport_invalid_price_type(session: Session):
+    LOGGER.critical("Expecting exception.")
+
     with raises(Exception):
         create_route(session, "EGLL", "KJFK", "£10,000")
 
 def test_valid_departure_airport_valid_arrival_airport_invalid_price_magnitude(session: Session):
+    LOGGER.critical("Expecting exception.")
+
     with raises(Exception):
         create_route(session, "EGLL", "KJFK", -5)
+
+def test_same_airports_valid_price(session: Session):
+    LOGGER.critical("Expecting exception.")
+    
+    with raises(InvalidAirportException):
+            create_route(session, "EGLL", "EGLL", 10_000)
