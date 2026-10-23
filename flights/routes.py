@@ -26,6 +26,10 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
 
     # * Backend Validation (and setting departure / arrival airports in ORM):
 
+    if departure_airport_icao == arrival_airport_icao:
+        logging.exception("Departure and arrival airports are the same")
+        raise InvalidAirportException(arrival_airport_icao)
+
     departure_airport: Airport = (
         Session.query(Airport)
         .filter(Airport.icao == departure_airport_icao)
@@ -33,7 +37,7 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     )
 
     if departure_airport == None:
-        LOGGER.error("Invalid departure airport given.")
+        LOGGER.exception("Invalid departure airport given.")
         raise InvalidAirportException(departure_airport_icao)
 
     arrival_airport: Airport = (
@@ -43,14 +47,14 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     )
 
     if arrival_airport == None:
-        LOGGER.error("Invalid arrival airport given.")
+        LOGGER.exception("Invalid arrival airport given.")
         raise InvalidAirportException(arrival_airport_icao)
 
     if type(price) != float and type(price) != int:
-        LOGGER.error("Invalid price data type given.")
+        LOGGER.exception("Invalid price data type given.")
         raise Exception("Invalid price data type entered when creating route")
     if price < 0:
-        LOGGER.error("Invalid price data type given.")
+        LOGGER.exception("Invalid price data type given.")
         raise Exception("Invalid price data type entered when creating route")
 
 
