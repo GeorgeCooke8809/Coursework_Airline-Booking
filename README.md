@@ -19,12 +19,20 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ## Running
 
-1.
+### 1. Install all dependencies
+
 ``` powershell
 uv sync
 ```
+To install all dependencies including dev dependencies (e.g.: pytest).
 
-2.
+##### Alternatively:
+``` POWERSHELL
+uv sync --no-dev
+```
+To install without dev dependencies.
+
+### 2. Run the app
 ``` powershell
 uv run run.py
 ```

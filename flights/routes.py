@@ -17,7 +17,6 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
         price (float): The price for one seat on flights for the given route
     """
     # ? Switch airports to IDs and get users to select for searchable dropdown
-    # TODO: Create tests
 
     # * Backend Validation (and setting departure / arrival airports in ORM):
 
@@ -39,7 +38,7 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     if arrival_airport == None:
         raise InvalidAirportException(arrival_airport_icao)
 
-    if type(price) != float:
+    if type(price) != float and type(price) != int:
         raise Exception("Invalid price data type entered when creating route")
     if price < 0:
         raise Exception("Invalid price data type entered when creating route")
