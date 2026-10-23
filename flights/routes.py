@@ -66,6 +66,20 @@ def get_all_routes(Session: Session) -> list[tuple[int, str, str]]:
         Session (Session): The database session automatically provided by @with_session
     """
 
+    # ? Make get_all_routes order by by most popular / most services - might make it easier for operations managers to find the correct routes faster (on average).
+
+    routes: list[Route] = (
+        Session.query(Route)
+        .order_by(Route.route_id)
+    )
+
+    to_return = []
+
+    for route in routes:
+        to_return.append((route.route_id, route.origin.name, route.destination.name))
+
+    return to_return
+
 @with_session
 def generate_route_statistics(Session: Session, route_id: int, timeframe: timedelta) -> dict:
     """Gets statistics for teh given route.
