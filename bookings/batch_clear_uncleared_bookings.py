@@ -9,4 +9,4 @@ def batch_clear_unpaid_bookings(Session: Session) -> None:
     Args:
         Session (Session): The database session provided automatically with @with_session
     """
-    # ?: Could add first run prompt user to continue booking
+    # ? Could add first run prompt user to continue booking

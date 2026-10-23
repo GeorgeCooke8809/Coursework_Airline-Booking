@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from models.booking import Booking
     from models.companion import Companion
 
-VALID_SEAT_IDS = [
+VALID_SEAT_IDS = (
     "1A", "1B", "1C",
     "2A", "2B", "2C",
     "3A", "3B", "3C",
@@ -19,9 +19,9 @@ VALID_SEAT_IDS = [
     "8A", "8B", "8C",
     "9A", "9B", "9C",
     "10A", "10B", "10C"
-]
+)
 
-VALID_PASSENGER_STATUS = ["not arrived", "checked", "boarded"]
+VALID_PASSENGER_STATUS = ("not arrived", "checked", "boarded")
 
 class BookingSeat(Base):
     __tablename__ = "booking_seats"

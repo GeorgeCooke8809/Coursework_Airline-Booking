@@ -1,7 +1,8 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
 
-from models import Route, Flight
+from models import Route, Flight, Airport
+from utils import InvalidAirportException
 
 from datetime import datetime, timedelta
 
@@ -15,8 +16,38 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
         arrival_airport_icao (str): The ICAO code for the arrival airport
         price (float): The price for one seat on flights for the given route
     """
-
     # ? Switch airports to IDs and get users to select for searchable dropdown
+
+    # * Backend Validation (and setting departure / arrival airports in ORM):
+
+    departure_airport: Airport = (
+        Session.query(Airport)
+        .filter(Airport.icao == departure_airport_icao)
+        .first()
+    )
+
+    if departure_airport == None:
+        raise InvalidAirportException(departure_airport_icao)
+
+    arrival_airport: Airport = (
+        Session.query(Airport)
+        .filter(Airport.icao == arrival_airport_icao)
+        .first()
+    )
+
+    if arrival_airport == None:
+        raise InvalidAirportException(arrival_airport_icao)
+
+    if type(price) != float and type(price) != int:
+        raise Exception("Invalid price data type entered when creating route")
+    if price < 0:
+        raise Exception("Invalid price data type entered when creating route")
+
+
+    # * Adding Record To Database:
+
+    new_route = Route(origin=departure_airport, destination=arrival_airport, price=price)
+    Session.add(new_route)
 
 @with_session
 def get_all_routes(Session: Session) -> list[tuple[int, str, str]]:

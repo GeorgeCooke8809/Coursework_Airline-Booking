@@ -27,7 +27,7 @@ class AirportStaff(Base):
     password: Mapped[str]
     staff_type: Mapped[str]
 
-    assigned_airport_icao: Mapped[str] = mapped_column(String(3), ForeignKey("airports.icao"))
+    assigned_airport_icao: Mapped[str] = mapped_column(String(4), ForeignKey("airports.icao"))
     airport: Mapped["Airport"] = relationship(back_populates="staff")
 
     def __repr__(self) -> str:

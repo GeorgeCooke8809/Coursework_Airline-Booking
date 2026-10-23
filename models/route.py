@@ -17,11 +17,11 @@ class Route(Base):
 
     route_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    origin_icao: Mapped[str] = mapped_column(String(3), ForeignKey("airports.icao"))
-    origin: Mapped["Airport"] = relationship(back_populates="departures")
+    origin_icao: Mapped[str] = mapped_column(String(4), ForeignKey("airports.icao"))
+    origin: Mapped["Airport"] = relationship(back_populates="departures", foreign_keys=[origin_icao])
 
-    destination_icao: Mapped[str] = mapped_column(String(3), ForeignKey("airports.icao"))
-    destination: Mapped["Airport"] = relationship(back_populates="arrivals")
+    destination_icao: Mapped[str] = mapped_column(String(4), ForeignKey("airports.icao"))
+    destination: Mapped["Airport"] = relationship(back_populates="arrivals", foreign_keys=[destination_icao])
 
     price: Mapped[float] = mapped_column(nullable=False)
 
