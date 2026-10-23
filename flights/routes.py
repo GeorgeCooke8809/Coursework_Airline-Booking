@@ -5,6 +5,9 @@ from models import Route, Flight, Airport
 from utils import InvalidAirportException
 
 from datetime import datetime, timedelta
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def create_route(Session: Session, departure_airport_icao: str, arrival_airport_icao: str, price: float) -> None:
@@ -18,6 +21,9 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     """
     # ? Switch airports to IDs and get users to select for searchable dropdown
 
+    LOGGER.info("Creating new route...")
+    LOGGER.debug(f"{departure_airport_icao = }, {arrival_airport_icao = }, {price = }")
+
     # * Backend Validation (and setting departure / arrival airports in ORM):
 
     departure_airport: Airport = (
@@ -27,6 +33,7 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     )
 
     if departure_airport == None:
+        LOGGER.error("Invalid departure airport given.")
         raise InvalidAirportException(departure_airport_icao)
 
     arrival_airport: Airport = (
@@ -36,11 +43,14 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     )
 
     if arrival_airport == None:
+        LOGGER.error("Invalid arrival airport given.")
         raise InvalidAirportException(arrival_airport_icao)
 
     if type(price) != float and type(price) != int:
+        LOGGER.error("Invalid price data type given.")
         raise Exception("Invalid price data type entered when creating route")
     if price < 0:
+        LOGGER.error("Invalid price data type given.")
         raise Exception("Invalid price data type entered when creating route")
 
 
@@ -48,6 +58,8 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
 
     new_route = Route(origin=departure_airport, destination=arrival_airport, price=price)
     Session.add(new_route)
+
+    LOGGER.info("Successfully created new route")
 
 @with_session
 def get_all_routes(Session: Session) -> list[tuple[int, str, str]]:
@@ -65,13 +77,13 @@ def get_all_routes(Session: Session) -> list[tuple[int, str, str]]:
     Args:
         Session (Session): The database session automatically provided by @with_session
     """
+    LOGGER.info("Getting all routes...")
 
     # ? Make get_all_routes order by by most popular / most services - might make it easier for operations managers to find the correct routes faster (on average).
 
-    routes: list[Route] = (
-        Session.query(Route)
-        .order_by(Route.route_id)
-    )
+    routes: list[Route] = Session.query(Route).all()
+
+    LOGGER.debug(f"{routes = }")
 
     to_return = []
 
