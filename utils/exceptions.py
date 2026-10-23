@@ -8,3 +8,23 @@ class InvalidAirportException(Exception):
 
     def __str__(self):
         return f"{self.message} - {self.icao}"
+
+class RepeatException(Exception):
+    """Exception raised when the repeat type of a service/schedule is incorrect"""
+
+    def __init__(self):
+        self.message = "An invalid repeat type was given."
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+class InvalidDateException(Exception):
+    """Exception raised when a date given is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid date was given."
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
