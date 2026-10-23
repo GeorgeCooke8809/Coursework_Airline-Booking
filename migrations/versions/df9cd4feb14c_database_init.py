@@ -102,7 +102,7 @@ def upgrade() -> None:
     sa.Column('start_date', sa.Date(), nullable=False),
     sa.Column('end_date', sa.Date(), nullable=False),
     sa.Column('repeat_type', sa.String(), nullable=False),
-    sa.Column('repeats_on', sa.Integer(), nullable=False),
+    sa.Column('repeats_on', sa.Integer(), nullable=True),
     sa.Column('repeat_time_utc', sa.Time(), nullable=False),
     sa.Column('repeat_frequency', sa.Integer(), nullable=False),
     sa.Column('shown_in_list', sa.Boolean(), nullable=False),
