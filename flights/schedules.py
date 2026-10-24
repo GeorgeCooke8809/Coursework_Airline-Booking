@@ -59,7 +59,6 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
     LOGGER.debug(f"{route_id = }, {start_date = }, {end_date = }, {repeat_type = }, {frequency = }, {repeat_time = }, {repeats_on = }")
 
     # * Validation Checks:
-    # TODO: Split add_schedule validation into separate helper function - add_schedule validation will (mostly) be replicated in edit schedule so common checks can be repeated
     route = (
         Session.query(Route)
         .filter(Route.route_id == route_id)
@@ -124,9 +123,24 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
 
 @with_session
 def delete_schedule(Session: Session, service_id: int) -> None:
-    """Deletes the given service. Does not delete any flights already created for it.
+    """Deletes the given service. Does not delete any flights already created for it. Raises exception if does not exist.
 
     Args:
         Session (Session): The database session automatically provided by @with_session
         service_id (int): The ID of the service to be deleted
     """
+    LOGGER.info("Deleting schedule/service")
+    LOGGER.debug(f"{service_id = }")
+
+    schedule = (
+         Session.query(Service)
+         .filter(Service.service_id == service_id)
+    ).first()
+
+    if schedule == None: # Also covers if service_id is of invalid type as it will still return None
+        LOGGER.error("Schedule does not exist to delete.")
+        raise ExistenceException
+
+    Session.query(Service).filter(Service.service_id == service_id).delete()
+
+    LOGGER.info("Successfully deleted service.")
