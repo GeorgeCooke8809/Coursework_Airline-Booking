@@ -50,53 +50,50 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         route_id (int): The route ID of the route to make a service for
         start_date (date): The start date of the service/schedule
         end_date (date): The end date of the service/schedule
-        type (str): The repeat type of the service/schedule
+        repeat_type (str): The repeat type of the service/schedule
         frequency (int): The repeat frequency of the service/schedule
         repeats_on (int): The day of the week/month that the service repeats on
-        time (time): The time of flight departures for this service/schedule
+        repeat_time (time): The time of flight departures for this service/schedule
     """
     LOGGER.info("Adding schedule...")
-    LOGGER.debug(f"{route_id = }, {start_date = }, {end_date = }, {repeat_type = }, {frequency = }, {time = }, {repeats_on = }")
+    LOGGER.debug(f"{route_id = }, {start_date = }, {end_date = }, {repeat_type = }, {frequency = }, {repeat_time = }, {repeats_on = }")
 
     # * Validation Checks:
+    # TODO: Split add_schedule validation into separate helper function - add_schedule validation will (mostly) be replicated in edit schedule so common checks can be repeated
     route = (
         Session.query(Route)
         .filter(Route.route_id == route_id)
     ).first()
 
     if route == None:
-        LOGGER.exception("Route does not exist.")
+        LOGGER.error("Route does not exist.")
         raise ExistenceException
 
     if repeat_type not in SERVICE_REPEAT_TYPES:
-        LOGGER.exception("repeat_type given was invalid")
+        LOGGER.error("repeat_type given was invalid")
         raise RepeatException
 
     if type(start_date) != date or type(end_date) != date:
-         LOGGER.exception("An invalid date data type was given")
+         LOGGER.error("An invalid date data type was given")
          raise InvalidDateException
 
-    if end_date < date.today():
-        LOGGER.exception("end_date was in the past")
-        raise InvalidDateException
-
     if start_date < date.today():
-        LOGGER.exception("start_date was in the past")
+        LOGGER.error("start_date was in the past")
         raise InvalidDateException
 
     if end_date < start_date:
-            LOGGER.exception("end_date is before start_date")
+            LOGGER.error("end_date is before start_date")
             raise InvalidDateException
 
     if (
-        (repeat_type == "monthly" and (repeats_on > 31 or repeats_on < 1))
-        or (repeat_type == "weekly" and (repeats_on > 7 or repeats_on < 1))
+        (repeat_type == "monthly" and repeats_on not in range(1, 32))
+        or (repeat_type == "weekly" and repeats_on not in range(1, 8))
     ):
-         LOGGER.exception("Invalid repeat_type and repeats_on combination")
+         LOGGER.error("Invalid repeat_type and repeats_on combination")
          raise RepeatException
 
     if not isinstance(repeat_time, time):
-         LOGGER.exception("Invalid repeat_time was given")
+         LOGGER.error("Invalid repeat_time was given")
          raise InvalidTimeException
 
     # * Processing:
