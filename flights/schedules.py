@@ -138,7 +138,7 @@ def delete_schedule(Session: Session, service_id: int) -> None:
     ).first()
 
     if schedule == None: # Also covers if service_id is of invalid type as it will still return None
-        LOGGER.error("Schedule does not exit to delete.")
+        LOGGER.error("Schedule does not exist to delete.")
         raise ExistenceException
 
     Session.query(Service).filter(Service.service_id == service_id).delete()
