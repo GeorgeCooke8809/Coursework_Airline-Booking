@@ -1,5 +1,7 @@
 from .exceptions import (
     InvalidAirportException,
     RepeatException,
-    InvalidDateException
+    InvalidDateException,
+    ExistenceException,
+    InvalidTimeException
 )
