@@ -32,7 +32,7 @@ class Service(Base):
     start_date: Mapped[date]
     end_date: Mapped[date]
     repeat_type: Mapped[str]
-    repeats_on: Mapped[int]
+    repeats_on: Mapped[int] = mapped_column(nullable=True)
     repeat_time_utc: Mapped[time]
     repeat_frequency: Mapped[int]
     shown_in_list: Mapped[bool]
