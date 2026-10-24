@@ -8,7 +8,7 @@ uv run pytest -vv
 
 To get more detailed logging statements:
 ``` POWERSHELL
-uv run pytest --log-cli-level=DEBUG  
+uv run pytest --log-cli-level=DEBUG
 ```
 
 
