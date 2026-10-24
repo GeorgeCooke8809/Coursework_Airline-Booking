@@ -123,7 +123,7 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
 
 @with_session
 def delete_schedule(Session: Session, service_id: int) -> None:
-    """Deletes the given service. Does not delete any flights already created for it.
+    """Deletes the given service. Does not delete any flights already created for it. Raises exception if does not exist.
 
     Args:
         Session (Session): The database session automatically provided by @with_session
