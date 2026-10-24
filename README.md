@@ -55,14 +55,8 @@ uv run run.py
 
 ## Troubleshooting:
 ### 1 - Unit Test Troubleshooting:
-#### 1.1 - test_create_route
-##### 1.1.1 - InvalidAirportException
-This indicates that the EGLL (Heathrow) and KJFK (JFK) airports are not present in the database. This would be symptomatic of none of the airports being present to populate the airports table please run:
-``` POWERSHELL
-uv run "/.devtools/add-airports/add_airports.py"
-```
-
-##### 1.1.2 - OperationalError
+#### 1.1 - Most Common Issues:
+##### 1.1.1 - OperationalError with "no such table: ..."
 The error report may say:
 ```FAILED tests/test_create_route.py::test_add_valid_route_valid_price - sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: airports``` (or a variation of it with another function).
 
@@ -73,3 +67,18 @@ If this error occurs for many functions being tested, indicates that the test da
 uv run alembic upgrade head
 ```
 to create ```data.db```. Please then duplicate this file and rename it to ```test_data.db```.
+
+#### 1.2 - test_create_route
+##### 1.2.1 - InvalidAirportException
+This indicates that the EGLL (Heathrow) and KJFK (JFK) airports are not present in the database. This would be symptomatic of none of the airports being present to populate the airports table please run:
+``` POWERSHELL
+uv run "/.devtools/add-airports/add_airports.py"
+```
+
+#### 1.3 - test_get_all_routes
+##### 1.3.1 - InvalidAirportException
+This happens as routes have to be created before routes can be retrieved, one would expect it to appear in other functions too. Please see 1.2.1.
+
+#### 1.4 - test_add_schedule
+##### 1.4.1 - InvalidAirportException
+This happens as a route has to be created before schedules can be created, one would expect it to appear in other functions too. Please see 1.2.1.
