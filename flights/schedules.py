@@ -43,6 +43,8 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     LOGGER.info("Getting route schedules...")
     LOGGER.debug(f"{route_id = }")
 
+    # * Validation
+
     route = (
          Session.query(Route)
          .filter(Route.route_id == route_id)
@@ -51,6 +53,8 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     if route == None:
         LOGGER.error("Route does not exist.")
         raise ExistenceException
+
+    # * Selecting functionality
 
     past_schedules = (
          Session.query(Service)
