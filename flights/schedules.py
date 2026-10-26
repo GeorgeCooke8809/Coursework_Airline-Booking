@@ -5,14 +5,14 @@ from models import Service, Route
 from models import SERVICE_REPEAT_TYPES
 from utils import RepeatException, InvalidDateException, ExistenceException, InvalidTimeException
 
-from datetime import datetime, time, date
+from datetime import time, date
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_route_schedules(Session: Session, route_id: int) -> dict:
-    """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now()
+    """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now(). Past schedules are ordered by end date and present schedules are ordered by start date.
 
     ## Return Format;
         {
@@ -40,6 +40,52 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID of the route to get schedules for
     """
+    LOGGER.info("Getting route schedules...")
+    LOGGER.debug(f"{route_id = }")
+
+    # * Validation
+
+    route = (
+         Session.query(Route)
+         .filter(Route.route_id == route_id)
+    ).first()
+
+    if route == None:
+        LOGGER.error("Route does not exist.")
+        raise ExistenceException
+
+    # * Selecting functionality
+
+    past_schedules = (
+         Session.query(Service)
+         .filter(Service.route_id == route_id)
+         .filter(Service.end_date < date.today())
+         .order_by(Service.end_date)
+    ).all()
+
+    past_schedules_array = []
+    for schedule in past_schedules: past_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
+
+
+    present_schedules = (
+         Session.query(Service)
+         .filter(Service.route_id == route_id)
+         .filter(Service.end_date >= date.today())
+         .order_by(Service.start_date)
+    ).all()
+
+    present_schedules_array = []
+    for schedule in present_schedules: present_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
+
+    return_dict = {
+         "past": past_schedules_array,
+         "present": present_schedules_array
+    }
+
+    LOGGER.debug(f"{return_dict = }")
+
+    return return_dict
+
 
 @with_session
 def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> None:
@@ -107,6 +153,7 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
     LOGGER.info("Successfully created new schedule.")
 
+
 @with_session
 def edit_schedule(Session: Session, service_id: int, end_date: date = None, type: str = None, frequency: int = None, repeats_on: int = None, time: time = None) -> None:
     """Edits the given service with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES or if repeats_on does not match repeat type
@@ -120,6 +167,7 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
         repeats_on (int): The day of the week/month that the service repeats on
         time (time): The time of flight departures for this service/schedule
     """
+
 
 @with_session
 def delete_schedule(Session: Session, service_id: int) -> None:
