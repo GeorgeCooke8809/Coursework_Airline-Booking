@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_route_schedules(Session: Session, route_id: int) -> dict:
-    """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now()
+    """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now(). Past schedules are ordered by end date and present schedules are ordered by start date.
 
     ## Return Format;
         {
@@ -56,6 +56,7 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
          Session.query(Service)
          .filter(Service.route_id == route_id)
          .filter(Service.end_date < date.today())
+         .order_by(Service.end_date)
     ).all()
 
     past_schedules_array = []
@@ -66,6 +67,7 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
          Session.query(Service)
          .filter(Service.route_id == route_id)
          .filter(Service.end_date >= date.today())
+         .order_by(Service.start_date)
     ).all()
 
     present_schedules_array = []
