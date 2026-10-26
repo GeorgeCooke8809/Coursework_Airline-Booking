@@ -43,6 +43,15 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     LOGGER.info("Getting route schedules...")
     LOGGER.debug(f"{route_id = }")
 
+    route = (
+         Session.query(Route)
+         .filter(Route.route_id == route_id)
+    ).first()
+
+    if route == None:
+        LOGGER.error("Route does not exist.")
+        raise ExistenceException
+
     past_schedules = (
          Session.query(Service)
          .filter(Service.route_id == route_id)
@@ -70,6 +79,7 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     LOGGER.debug(f"{return_dict = }")
 
     return return_dict
+
 
 @with_session
 def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> None:
@@ -137,6 +147,7 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
     LOGGER.info("Successfully created new schedule.")
 
+
 @with_session
 def edit_schedule(Session: Session, service_id: int, end_date: date = None, type: str = None, frequency: int = None, repeats_on: int = None, time: time = None) -> None:
     """Edits the given service with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES or if repeats_on does not match repeat type
@@ -150,6 +161,7 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
         repeats_on (int): The day of the week/month that the service repeats on
         time (time): The time of flight departures for this service/schedule
     """
+
 
 @with_session
 def delete_schedule(Session: Session, service_id: int) -> None:
