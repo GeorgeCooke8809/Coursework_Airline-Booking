@@ -5,7 +5,7 @@ from models import Service, Route
 from models import SERVICE_REPEAT_TYPES
 from utils import RepeatException, InvalidDateException, ExistenceException, InvalidTimeException
 
-from datetime import datetime, time, date
+from datetime import time, date
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -40,6 +40,36 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID of the route to get schedules for
     """
+    LOGGER.info("Getting route schedules...")
+    LOGGER.debug(f"{route_id = }")
+
+    past_schedules = (
+         Session.query(Service)
+         .filter(Service.route_id == route_id)
+         .filter(Service.end_date < date.today())
+    ).all()
+
+    past_schedules_array = []
+    for schedule in past_schedules: past_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
+
+
+    present_schedules = (
+         Session.query(Service)
+         .filter(Service.route_id == route_id)
+         .filter(Service.end_date >= date.today())
+    ).all()
+
+    present_schedules_array = []
+    for schedule in present_schedules: present_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
+
+    return_dict = {
+         "past": past_schedules_array,
+         "present": present_schedules_array
+    }
+
+    LOGGER.debug(f"{return_dict = }")
+
+    return return_dict
 
 @with_session
 def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> None:
