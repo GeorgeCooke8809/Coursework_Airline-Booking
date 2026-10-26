@@ -206,7 +206,7 @@ def test_add_service_invalid_occurs_on_for_monthly_thirty_two(session: Session):
     with raises(RepeatException):
         add_schedule(session, 1, start_date, end_date, "monthly", 5, service_time, 32)
 
-def test_add_service_invalid_occurs_on_for_weekly_zero(session: Session):
+def test_add_service_invalid_occurs_on_for_monthly_zero(session: Session):
     LOGGER.critical("Expecting exception.")
     create_route(session, "EGLL", "KJFK", 10_000)
 
