@@ -155,7 +155,7 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
 
 @with_session
-def edit_schedule(Session: Session, service_id: int, end_date: date = None, repeat_type: str = None, frequency: int = None, repeats_on: int = None, scheduled_time: time = None) -> None:
+def edit_schedule(Session: Session, service_id: int, end_date: date = None, repeat_type: str = None, frequency: int = None, scheduled_time: time = None, repeats_on: int = None) -> None:
     """Edits the given service with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES or if repeats_on does not match repeat type
 
     Args:
@@ -195,7 +195,7 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, repe
     if type(repeats_on) != int and repeats_on != None:
         LOGGER.error("Invalid repeats_on datatype.")
         raise RepeatException
-    else:
+    elif repeats_on != None:
         if repeat_type == None:
             repeat_type = service.repeat_type
 
@@ -209,12 +209,13 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, repe
             LOGGER.error("Repeats_on outside of monthly range")
             raise RepeatException
         
-        if not isinstance(scheduled_time, time):
-            LOGGER.error("Invalid repeat_time was given")
-            raise InvalidTimeException
+    if not isinstance(scheduled_time, time) and scheduled_time != None:
+        LOGGER.error("Invalid repeat_time was given")
+        raise InvalidTimeException
 
     # * Processing
-    service.repeat_type = repeat_type
+    if repeat_type != None:
+        service.repeat_type = repeat_type
 
     if end_date != None:
         service.end_date = end_date
