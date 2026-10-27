@@ -1,9 +1,11 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
 
-from models import Flight, Airport, Service
+from models import Flight, Airport, Service, Route
 from models import FLIGHT_STATUS_OPTIONS
 from utils.exceptions import InvalidDateException, ExistenceException
+
+from .schedules import add_schedule
 
 from datetime import datetime, timedelta, date, UTC
 import logging
@@ -148,6 +150,9 @@ def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: d
 
     Session.add(new_flight)
 
+    LOGGER.info("Finished adding new flight.")
+
+
 @with_session
 def add_one_off_flight(Session: Session, route_id: int, scheduled_departure_utc: datetime) -> None:
     """Creates a one off flight for the given route and time. Starts by creating new daily schedule with start and end date the same then creates a new flight attached to it.
@@ -155,8 +160,34 @@ def add_one_off_flight(Session: Session, route_id: int, scheduled_departure_utc:
     Args:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID to make a one off flight for
-        scheduled_departure_utc (datetime): Teh scheduled departure time of the flight, put into the service record
+        scheduled_departure_utc (datetime): Teh scheduled departure time of the flight, put into the service record. **Must have tzinfo = UTC**
     """
+    LOGGER.info("Creating one-off flight...")
+    LOGGER.debug(f"{route_id = }, {scheduled_departure_utc = }")
+
+    # * Validation:
+    route = (
+        Session.query(Route)
+        .filter(Route.route_id == route_id)
+    ).first()
+
+    if route == None:
+        LOGGER.error("Route does not exist")
+        raise ExistenceException
+
+    if not isinstance(scheduled_departure_utc, datetime) or scheduled_departure_utc < datetime.now(tz=UTC):
+        LOGGER.error("Scheduled departure is before now or of an invalid type, cannot create.")
+        raise InvalidDateException
+
+    # * Processing
+    service_id = add_schedule(Session, route_id, scheduled_departure_utc.date(), scheduled_departure_utc.date(), "daily", 1, scheduled_departure_utc.time(), shown_in_list = False)
+
+    LOGGER.debug("Successfully created new service/schedule")
+
+    add_new_flight(Session, service_id, scheduled_departure_utc)
+
+    LOGGER.info("Successfully added one-off flight")
+
 
 @with_session
 def batch_generate_scheduled_flights(Session: Session):

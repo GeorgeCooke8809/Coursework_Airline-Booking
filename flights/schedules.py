@@ -88,8 +88,10 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
 
 
 @with_session
-def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> None:
+def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None, shown_in_list: bool = True) -> int:
     """Creates a new schedule for the given route with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES, if end date is before datetime.now(), if start_date is before datetime.now(), or if repeats_on does not match repeat type
+
+    Returns ID of new schedule as an int
 
     Args:
         Session (Session): The database session automatically provided by @with_session
@@ -141,6 +143,10 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         LOGGER.error("Invalid repeat_time was given")
         raise InvalidTimeException
 
+    if type(shown_in_list) != bool:
+        LOGGER.error("Shown in list is of invalid type")
+        raise Exception
+
     # * Processing:
 
     if repeat_type == "daily":
@@ -148,10 +154,13 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
             LOGGER.warning(f"Repeat type is daily but repeats_on was given as {repeats_on}. Resetting to None.")
         repeats_on = None
 
-    new_schedule = Service(route_id = route_id, start_date = start_date, end_date = end_date, repeat_type = repeat_type, repeat_frequency = frequency, repeats_on = repeats_on, repeat_time_utc = repeat_time, shown_in_list = True)
+    new_schedule = Service(route_id = route_id, start_date = start_date, end_date = end_date, repeat_type = repeat_type, repeat_frequency = frequency, repeats_on = repeats_on, repeat_time_utc = repeat_time, shown_in_list = shown_in_list)
     Session.add(new_schedule)
+    Session.flush()
 
     LOGGER.info("Successfully created new schedule.")
+
+    return new_schedule.service_id
 
 
 @with_session

@@ -22,6 +22,14 @@ def test_add_new_flight_all_valid(session: Session):
 
     add_new_flight(session, 1, datetime.combine(start_date, service_time, tzinfo=UTC))
 
+    flight = (
+        session.query(Flight)
+        .filter(Flight.flight_id == 1)
+    ).first()
+
+    assert flight.service_id == 1
+    assert flight.scheduled_departure_datetime_utc == datetime.combine(start_date, service_time)
+
 def test_add_new_flight_invalid_service(session: Session):
     LOGGER.critical("Expecting exception...")
 
