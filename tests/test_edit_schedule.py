@@ -147,7 +147,7 @@ def test_edit_schedule_repeat_type_only(session: Session):
 
     assert service.repeat_type == "weekly"
 
-def test_edit_schedule_frequency_only_only(session: Session):
+def test_edit_schedule_frequency_only(session: Session):
     create_route(session, "EGLL", "KJFK", 10_000)
             
     start_date = date.today() + timedelta(days = 5)
@@ -165,7 +165,7 @@ def test_edit_schedule_frequency_only_only(session: Session):
 
     assert service.repeat_frequency == 5
 
-def test_edit_schedule_time_only_only(session: Session):
+def test_edit_schedule_time_only(session: Session):
     create_route(session, "EGLL", "KJFK", 10_000)
             
     start_date = date.today() + timedelta(days = 5)
@@ -183,7 +183,7 @@ def test_edit_schedule_time_only_only(session: Session):
 
     assert service.repeat_time_utc == time(12, 30, 0)
 
-def test_edit_schedule_time_only_only(session: Session):
+def test_edit_schedule_repeats_on_only(session: Session):
     create_route(session, "EGLL", "KJFK", 10_000)
             
     start_date = date.today() + timedelta(days = 5)

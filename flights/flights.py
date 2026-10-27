@@ -180,7 +180,7 @@ def add_one_off_flight(Session: Session, route_id: int, scheduled_departure_utc:
         raise InvalidDateException
 
     # * Processing
-    service_id = add_schedule(Session, route_id, scheduled_departure_utc.date(), scheduled_departure_utc.date(), "daily", 1, scheduled_departure_utc.time())
+    service_id = add_schedule(Session, route_id, scheduled_departure_utc.date(), scheduled_departure_utc.date(), "daily", 1, scheduled_departure_utc.time(), shown_in_list = False)
 
     LOGGER.debug("Successfully created new service/schedule")
 
