@@ -88,8 +88,10 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
 
 
 @with_session
-def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> None:
+def add_schedule(Session: Session, route_id: int, start_date: date, end_date: date, repeat_type: str, frequency: int, repeat_time: time, repeats_on: int = None) -> int:
     """Creates a new schedule for the given route with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES, if end date is before datetime.now(), if start_date is before datetime.now(), or if repeats_on does not match repeat type
+
+    Returns ID of new schedule as an int
 
     Args:
         Session (Session): The database session automatically provided by @with_session
@@ -150,8 +152,11 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
     new_schedule = Service(route_id = route_id, start_date = start_date, end_date = end_date, repeat_type = repeat_type, repeat_frequency = frequency, repeats_on = repeats_on, repeat_time_utc = repeat_time, shown_in_list = True)
     Session.add(new_schedule)
+    Session.flush()
 
     LOGGER.info("Successfully created new schedule.")
+
+    return new_schedule.service_id
 
 
 @with_session

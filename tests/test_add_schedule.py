@@ -18,7 +18,9 @@ def test_add_service_all_valid_daily(session: Session):
     end_date = date.today() + timedelta(days=5)
     service_time = time(11, 30, 0)
 
-    add_schedule(session, 1, start_date, end_date, "daily", 5, service_time)
+    schedule_id = add_schedule(session, 1, start_date, end_date, "daily", 5, service_time)
+
+    assert schedule_id == 1
 
     service = (
         session.query(Service)
