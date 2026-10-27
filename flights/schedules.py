@@ -46,8 +46,8 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     # * Validation
 
     route = (
-         Session.query(Route)
-         .filter(Route.route_id == route_id)
+        Session.query(Route)
+        .filter(Route.route_id == route_id)
     ).first()
 
     if route == None:
@@ -57,10 +57,10 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
     # * Selecting functionality
 
     past_schedules = (
-         Session.query(Service)
-         .filter(Service.route_id == route_id)
-         .filter(Service.end_date < date.today())
-         .order_by(Service.end_date)
+        Session.query(Service)
+        .filter(Service.route_id == route_id)
+        .filter(Service.end_date < date.today())
+        .order_by(Service.end_date)
     ).all()
 
     past_schedules_array = []
@@ -68,18 +68,18 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
 
 
     present_schedules = (
-         Session.query(Service)
-         .filter(Service.route_id == route_id)
-         .filter(Service.end_date >= date.today())
-         .order_by(Service.start_date)
+        Session.query(Service)
+        .filter(Service.route_id == route_id)
+        .filter(Service.end_date >= date.today())
+        .order_by(Service.start_date)
     ).all()
 
     present_schedules_array = []
     for schedule in present_schedules: present_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
 
     return_dict = {
-         "past": past_schedules_array,
-         "present": present_schedules_array
+        "past": past_schedules_array,
+        "present": present_schedules_array
     }
 
     LOGGER.debug(f"{return_dict = }")
@@ -106,8 +106,8 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
     # * Validation Checks:
     route = (
-        Session.query(Route)
-        .filter(Route.route_id == route_id)
+    Session.query(Route)
+    .filter(Route.route_id == route_id)
     ).first()
 
     if route == None:
@@ -119,8 +119,8 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         raise RepeatException
 
     if type(start_date) != date or type(end_date) != date:
-         LOGGER.error("An invalid date data type was given")
-         raise InvalidDateException
+        LOGGER.error("An invalid date data type was given")
+        raise InvalidDateException
 
     if start_date < date.today():
         LOGGER.error("start_date was in the past")
@@ -134,19 +134,19 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         (repeat_type == "monthly" and repeats_on not in range(1, 32))
         or (repeat_type == "weekly" and repeats_on not in range(1, 8))
     ):
-         LOGGER.error("Invalid repeat_type and repeats_on combination")
-         raise RepeatException
+        LOGGER.error("Invalid repeat_type and repeats_on combination")
+        raise RepeatException
 
     if not isinstance(repeat_time, time):
-         LOGGER.error("Invalid repeat_time was given")
-         raise InvalidTimeException
+        LOGGER.error("Invalid repeat_time was given")
+        raise InvalidTimeException
 
     # * Processing:
 
     if repeat_type == "daily":
-         if repeats_on != None:
-              LOGGER.warning(f"Repeat type is daily but repeats_on was given as {repeats_on}. Resetting to None.")
-         repeats_on = None
+        if repeats_on != None:
+            LOGGER.warning(f"Repeat type is daily but repeats_on was given as {repeats_on}. Resetting to None.")
+        repeats_on = None
 
     new_schedule = Service(route_id = route_id, start_date = start_date, end_date = end_date, repeat_type = repeat_type, repeat_frequency = frequency, repeats_on = repeats_on, repeat_time_utc = repeat_time, shown_in_list = True)
     Session.add(new_schedule)
@@ -155,7 +155,7 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
 
 @with_session
-def edit_schedule(Session: Session, service_id: int, end_date: date = None, type: str = None, frequency: int = None, repeats_on: int = None, time: time = None) -> None:
+def edit_schedule(Session: Session, service_id: int, end_date: date = None, repeat_type: str = None, frequency: int = None, repeats_on: int = None, scheduled_time: time = None) -> None:
     """Edits the given service with the given details. Raises an exception if the repeat type is not allowed from SERVICE_REPEAT_TYPES or if repeats_on does not match repeat type
 
     Args:
@@ -167,7 +167,66 @@ def edit_schedule(Session: Session, service_id: int, end_date: date = None, type
         repeats_on (int): The day of the week/month that the service repeats on
         time (time): The time of flight departures for this service/schedule
     """
+    LOGGER.info("Updating schedule...")
+    LOGGER.debug(f"{service_id = }, {end_date = }, {repeat_type = }, {frequency = }, {repeats_on = }, {scheduled_time = }")
 
+    # * Validation
+    service: Service = (
+        Session.query(Service)
+        .filter(Service.service_id == service_id)
+    ).first()
+
+    if service == None:
+        LOGGER.error("Service does not exist to update.")
+        raise ExistenceException
+
+    if (repeat_type not in SERVICE_REPEAT_TYPES) and repeat_type != None:
+        LOGGER.error("Invalid service repeat type.")
+        raise RepeatException
+
+    if type(end_date) != date and end_date != None:
+        LOGGER.error("An invalid date data type was given")
+        raise InvalidDateException
+    
+    if frequency != None and (type(frequency) != int or frequency < 1):
+        LOGGER.error("An invalid frequency was given")
+        raise RepeatException
+    
+    if type(repeats_on) != int and repeats_on != None:
+        LOGGER.error("Invalid repeats_on datatype.")
+        raise RepeatException
+    else:
+        if repeat_type == None:
+            repeat_type = service.repeat_type
+
+        if repeat_type == "daily" and  repeats_on != None:
+            LOGGER.error("Repeats_on was given when repeat_type is daily")
+            raise RepeatException
+        elif repeat_type == "weekly" and repeats_on not in range(1, 8):
+            LOGGER.error("Repeats_on outside of weekly range")
+            raise RepeatException
+        elif repeat_type == "monthly" and repeats_on not in range(1, 32):
+            LOGGER.error("Repeats_on outside of monthly range")
+            raise RepeatException
+        
+        if not isinstance(scheduled_time, time):
+            LOGGER.error("Invalid repeat_time was given")
+            raise InvalidTimeException
+
+    # * Processing
+    service.repeat_type = repeat_type
+
+    if end_date != None:
+        service.end_date = end_date
+
+    if frequency != None:
+        service.repeat_frequency = frequency
+
+    if repeats_on != None:
+        service.repeats_on = repeats_on
+
+    if scheduled_time != None:
+        service.repeat_time_utc = scheduled_time
 
 @with_session
 def delete_schedule(Session: Session, service_id: int) -> None:
@@ -181,8 +240,8 @@ def delete_schedule(Session: Session, service_id: int) -> None:
     LOGGER.debug(f"{service_id = }")
 
     schedule = (
-         Session.query(Service)
-         .filter(Service.service_id == service_id)
+        Session.query(Service)
+        .filter(Service.service_id == service_id)
     ).first()
 
     if schedule == None: # Also covers if service_id is of invalid type as it will still return None
