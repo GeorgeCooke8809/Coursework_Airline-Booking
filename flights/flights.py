@@ -116,7 +116,7 @@ def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: d
     Args:
         Session (Session): The database session automatically provided by @with_session
         service_id (int): The service ID for the flight to be attached to.
-        scheduled_departure_utc (datetime): The scheduled departure for the flight in UTC
+        scheduled_departure_utc (datetime): The scheduled departure for the flight in UTC. **Must have tzinfo = UTC**
     """
     LOGGER.info("Creating new flight...")
     LOGGER.debug(f"{service_id = }, {scheduled_departure_utc = }")
@@ -132,8 +132,8 @@ def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: d
         LOGGER.error("Service does not exist")
         raise ExistenceException
 
-    if not isinstance(scheduled_departure_utc, datetime) or scheduled_departure_utc > datetime.now(tz=UTC):
-        LOGGER.error("Scheduled departure is after now, cannot create.")
+    if not isinstance(scheduled_departure_utc, datetime) or scheduled_departure_utc < datetime.now(tz=UTC):
+        LOGGER.error("Scheduled departure is before now or of an invalid type, cannot create.")
         raise InvalidDateException
 
     # ? Match time of departure to service time?
