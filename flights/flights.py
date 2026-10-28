@@ -146,9 +146,9 @@ def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_d
 
     if flight.status != "scheduled":
         LOGGER.error(f"This operation cannot be performed on this flight. It's status is {flight.status}")
-        raise Exception
+        raise FlightStatusException
 
-    if not isinstance(new_departure_datetime, datetime) or new_departure_datetime < datetime.now():
+    if not isinstance(new_departure_datetime, datetime) or new_departure_datetime < datetime.now(tz=UTC):
         LOGGER.error("New departure time is invalid")
         raise InvalidDateException
 
