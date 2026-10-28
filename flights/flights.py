@@ -47,24 +47,35 @@ def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, 
 
     if airport == None:
         LOGGER.error("Airport does not exist")
-        raise InvalidAirportException
+        raise InvalidAirportException(airport_icao)
 
     # * Processing
-    routes = airport.departures
+    routes = [route.route_id for route in airport.departures]
+
+    LOGGER.debug(f"{routes = }")
+
+    today = date.today()
 
     active_services = (
         Session.query(Service)
-        .filter(Service.route in routes)
-        .filter(Service.start_date <= date.today() <= Service.end_date)
+        .filter(Service.route_id.in_(routes))
+        .filter(Service.start_date <= today)
+        .filter(Service.end_date >= today)
     ).all()
+
+    LOGGER.debug(f"{active_services = }")
+
+    service_ids = [service.service_id for service in active_services]
 
     departures = (
         Session.query(Flight)
-        .filter(Flight.service in active_services)
-        .filter(Flight.scheduled_departure_datetime_utc <= datetime.now() + timedelta(days=1))
+        .filter(Flight.service_id.in_(service_ids))
+        .filter(Flight.scheduled_departure_datetime_utc <= datetime.now(tz=UTC) + timedelta(days=1))
         .filter(Flight.status == "scheduled")
         .order_by(Flight.scheduled_departure_datetime_utc)
     ).all()
+
+    LOGGER.debug(f"{departures = }")
 
     return_array = []
 
