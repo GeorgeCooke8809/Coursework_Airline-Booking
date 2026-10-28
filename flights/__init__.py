@@ -7,7 +7,9 @@ from .flights import (
             add_new_flight,
             batch_generate_scheduled_flights,
             search_for_flight,
-            add_one_off_flight
+            add_one_off_flight,
+            calculate_seat_price,
+            calculate_flight_duration
         )
 from .routes import create_route, get_all_routes, generate_route_statistics
 from .schedules import get_route_schedules, add_schedule, edit_schedule, delete_schedule
