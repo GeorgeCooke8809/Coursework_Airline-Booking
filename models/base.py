@@ -20,8 +20,6 @@ def with_session(func: function):
         func (function): The function for the session to be passed into
     """
 
-    # TODO: Allow for passing session in manually and not creating a new session when done. Optional
-
     def wrap(*args, **kwargs):
         session = SessionLocal()
 

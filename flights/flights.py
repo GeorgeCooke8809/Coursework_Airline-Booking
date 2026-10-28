@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from models import Flight, Airport, Service, Route
 from models import FLIGHT_STATUS_OPTIONS
-from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException
+from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException, InvalidAirportException
 
 from .schedules import add_schedule
 
@@ -35,6 +35,57 @@ def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, 
         Session (Session): The database session object automatically provided by @with_session
         airport_icao (str): The airport ICAO to get flights from
     """
+    LOGGER.info("Getting airport flights")
+    LOGGER.debug(f"{airport_icao = }")
+
+    # * Validation
+
+    airport = (
+        Session.query(Airport)
+        .filter(Airport.icao == airport_icao)
+    ).first()
+
+    if airport == None:
+        LOGGER.error("Airport does not exist")
+        raise InvalidAirportException
+
+    # * Processing
+    routes = airport.departures
+
+    active_services = (
+        Session.query(Service)
+        .filter(Service.route in routes)
+        .filter(Service.start_date <= date.today() <= Service.end_date)
+    ).all()
+
+    departures = (
+        Session.query(Flight)
+        .filter(Flight.service in active_services)
+        .filter(Flight.scheduled_departure_datetime_utc <= datetime.now() + timedelta(days=1))
+        .filter(Flight.status == "scheduled")
+        .order_by(Flight.scheduled_departure_datetime_utc)
+    ).all()
+
+    return_array = []
+
+    for flight in departures:
+        destination = flight.service.route.destination
+
+        departure_time = flight.scheduled_departure_datetime_utc.strftime("%H:%M")
+        check_in_close_time = flight.scheduled_departure_datetime_utc - timedelta(minutes=30) # ? Different check in close time for different flights
+        gate_close_time = flight.scheduled_departure_datetime_utc - timedelta(minutes=90) # ? Different gate close time for different flights
+
+        return_array.append((
+            flight.flight_number,
+            destination.icao,
+            destination.name,
+            departure_time,
+            check_in_close_time,
+            gate_close_time
+        ))
+
+    return return_array
+
 
 @with_session
 def change_flight_status(Session: Session, flight_id: int, new_status: str) -> None:
@@ -88,6 +139,8 @@ def get_flight_details(Session: Session, flight_id: int, airport_staff_id: int) 
         airport_staff_id (int): The airport staff ID the request is coming from to ensure they have access to that flight
     """
 
+    # TODO: Write get_get_flight_details - waiting on booking seats
+
 @with_session
 def get_route_flights(Session: Session, route_id: int) -> dict:
     """Returns a list of past and future flights for the given route_id. Used in the flight operations manager portal
@@ -119,6 +172,7 @@ def get_route_flights(Session: Session, route_id: int) -> dict:
         route_id (int): The route ID to search for flights for
     """
     # Will have to join tables?
+    # TODO: Write get_route_flights - waiting on booking seats
     # ? Split into past and present if flight quantities get too high for quick retrieval. Only pull past (with pagination) on button press
 
 @with_session
