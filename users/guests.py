@@ -91,5 +91,4 @@ def delete_guest(Session: Session, guest_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to delete
     """
-
     # ? Nullify guest ID from companions
