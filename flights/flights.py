@@ -290,9 +290,33 @@ def calculate_seat_price(Session: Session, flight_id: int, number_of_seats: int 
         flight_id (int): The flight to calculate the price of
         number_of_seats (int): The number of seats to calculate the price of
     """
-
     # ? Surge/dynamic pricing
     # ? Different flights on a route can have different prices
+
+    LOGGER.info("Getting seat price...")
+    LOGGER.debug(f"{flight_id = }, {number_of_seats = }")
+
+    # * Validation
+
+    flight = (
+        Session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight == None:
+        LOGGER.error("Flight does not exist")
+        raise ExistenceException
+
+    if type(number_of_seats) != int or number_of_seats <= 0:
+        LOGGER.error("Invalid number of seats given")
+        raise Exception
+
+    # * Processing
+    route = flight.service.route
+
+    LOGGER.info(f"Seat Price = {route.price}")
+
+    return float(route.price * number_of_seats)
 
 # ? Similar flights search
 # ? Layover flights search
