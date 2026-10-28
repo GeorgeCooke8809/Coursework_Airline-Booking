@@ -10,10 +10,12 @@ from .schedules import add_schedule
 from datetime import datetime, timedelta, date, UTC
 import logging
 from random import randint
+from math import radians, cos, sqrt
 
 LOGGER = logging.getLogger(__name__)
 
 BATCH_GENERATE_LOOK_AHEAD = 90 # The number of days ahead of datetime.today() the batch generate flights will look ahead to create
+AIRCRAFT_AVG_SPEED_MPH = 520 # ? Different planes have different speeds
 
 @with_session
 def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, str, str, str, datetime, datetime]]:
@@ -331,7 +333,6 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
         arrival_airport (str): The search term for the name of the arrival airport
         date (date): The date that flights should be on
     """
-
     # ? Switch airports to IDs and make users select specific airport in UI
 
 def calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
@@ -341,10 +342,52 @@ def calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
         Session (Session): The database session. Must be provided by the calling function.
         flight_id (int): Teh flight ID to calculate the duration of.
     """
-
-    # ? Coordinates to miles conversion done at equator means average will be correct but specific flights may vary.
     # ? Different weather conditions will impact ground speed
     # ? Different aircraft will have different cruise speeds
+
+    # One longitude degree at equator = 69.172 miles
+    # Longitude degree = cos(latitude (radians)) * longitude at equator
+
+    # Latitude degree = 69 miles
+
+    LOGGER.info("Getting flight duration")
+    LOGGER.debug(f"{flight_id = }")
+
+    # * Validation:
+    flight = (
+        Session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight == None:
+        LOGGER.error("Flight does not exist")
+        raise ExistenceException
+
+    # * Processing
+    route = flight.service.route
+
+    origin = route.origin
+    origin_lat = origin.latitude
+    origin_lon = origin.longitude
+
+    destination = route.destination
+    destination_lat = destination.latitude
+    destination_lon = destination.longitude
+
+    lat_delta = origin_lat - destination_lat
+    lat_delta_miles = lat_delta * 69
+
+    average_latitude = radians((origin_lat + destination_lat) / 2)
+
+    lon_delta = origin_lon - destination_lon
+    lon_delta_miles = cos(average_latitude) * 69.172 * lon_delta
+
+    hypotenuse = sqrt(lon_delta_miles ** 2 + lat_delta_miles ** 2)
+
+    hours = hypotenuse / AIRCRAFT_AVG_SPEED_MPH
+
+    return timedelta(hours=hours)
+
 
 @with_session
 def calculate_seat_price(Session: Session, flight_id: int, number_of_seats: int = 1) -> float:
