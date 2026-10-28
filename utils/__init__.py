@@ -3,5 +3,6 @@ from .exceptions import (
     RepeatException,
     InvalidDateException,
     ExistenceException,
-    InvalidTimeException
+    InvalidTimeException,
+    FlightStatusException
 )

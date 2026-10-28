@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from models import Flight, Airport, Service, Route
 from models import FLIGHT_STATUS_OPTIONS
-from utils.exceptions import InvalidDateException, ExistenceException
+from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException
 
 from .schedules import add_schedule
 
@@ -45,6 +45,26 @@ def change_flight_status(Session: Session, flight_id: int, new_status: str) -> N
         flight_id (int): The flight_id of the flight to be updated
         new_status (str): The new status of the flight. Returns error if not in ("scheduled", "departed", "cancelled")
     """
+    LOGGER.info("Changing flight status...")
+    LOGGER.debug(f"{flight_id = }, {new_status = }")
+
+    # * Validation
+
+    flight = (
+        Session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight == None:
+        LOGGER.error("Flight does not exist")
+        raise ExistenceException
+
+    if new_status not in FLIGHT_STATUS_OPTIONS:
+        LOGGER.error("Invalid flight status given")
+        raise FlightStatusException
+
+    # * Processing
+    flight.status = new_status
 
 @with_session
 def get_flight_details(Session: Session, flight_id: int, airport_staff_id: int) -> dict:
@@ -109,6 +129,7 @@ def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_t
         flight_id (int): The flight ID of the flight to be edited
         new_departure_time (datetime): The new departure datetime for the flight
     """
+
 
 @with_session
 def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: datetime) -> None:

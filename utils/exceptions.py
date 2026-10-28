@@ -48,3 +48,13 @@ class ExistenceException(Exception):
 
     def __str__(self):
         return f"{self.message}"
+
+class FlightStatusException(Exception):
+    """Exception raised when the status of a flight is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid flight status is present or has been given"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
