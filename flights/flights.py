@@ -118,10 +118,11 @@ def get_route_flights(Session: Session, route_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID to search for flights for
     """
+    # Will have to join tables?
     # ? Split into past and present if flight quantities get too high for quick retrieval. Only pull past (with pagination) on button press
 
 @with_session
-def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_time: datetime) -> None:
+def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_datetime: datetime) -> None:
     """Edit the departure time of the given flight_id. Raises exception if flight is already departed or new departure time is in the past.
 
     Args:
@@ -129,7 +130,30 @@ def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_t
         flight_id (int): The flight ID of the flight to be edited
         new_departure_time (datetime): The new departure datetime for the flight
     """
+    LOGGER.info("Changing flight departure time...")
+    LOGGER.debug(f"{flight_id = }, {new_departure_datetime = }")
 
+    # * Validation
+
+    flight = (
+        Session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight == None:
+        LOGGER.error("Flight does not exist")
+        raise ExistenceException
+
+    if flight.status != "scheduled":
+        LOGGER.error(f"This operation cannot be performed on this flight. It's status is {flight.status}")
+        raise FlightStatusException
+
+    if not isinstance(new_departure_datetime, datetime) or new_departure_datetime < datetime.now(tz=UTC):
+        LOGGER.error("New departure time is invalid")
+        raise InvalidDateException
+
+    # * Processing
+    flight.scheduled_departure_datetime_utc = new_departure_datetime
 
 @with_session
 def add_new_flight(Session: Session, service_id: int, scheduled_departure_utc: datetime) -> None:
