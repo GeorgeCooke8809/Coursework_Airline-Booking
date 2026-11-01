@@ -9,7 +9,7 @@ from utils.exceptions import InvalidDateException, ExistenceException, FlightSta
 from .schedules import add_schedule
 
 from datetime import datetime, timedelta, date, UTC, time
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 import logging
 from random import randint
 from math import radians, cos, sqrt
@@ -332,8 +332,10 @@ def batch_generate_scheduled_flights(Session: Session) -> None:
         if most_recent is None: # First time generating flights for the service
             if service.repeat_type == "daily":
                 next_date = service.start_date
+
             elif service.repeat_type == "weekly":
                 next_date = service.start_date + relativedelta(weekday=service.repeats_on)
+
             elif service.repeat_type == "monthly":
                 next_date = None
                 month_adder = 0
@@ -360,10 +362,10 @@ def batch_generate_scheduled_flights(Session: Session) -> None:
 
         while next_date <= batch_lookahead_end_date and next_date <= service.end_date:
             add_new_flight(Session, service.service_id, datetime.combine(next_date, service.repeat_time_utc, tzinfo=UTC))
-            next_date += _next_occurrence(service, next_date)
+            next_date = _next_occurrence(service, next_date)
 
 def _next_occurrence(service: Service, current: date) -> date:
-    """Returns the next flight date after the given current date for the service's schedule. Months that don't have the desired day of the month are skipped"""
+    """Returns the next flight date after the given current date for the service's schedule. Months that don't have the desired day of the month are skipped. Used in the batch_generate_scheduled_flights function"""
     if service.repeat_type == "daily":
         return current + timedelta(days=service.repeat_frequency)
     
