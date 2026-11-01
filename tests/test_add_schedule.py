@@ -195,7 +195,7 @@ def test_add_service_invalid_occurs_on_for_weekly_zero(session: Session):
     service_time = time(11, 30, 0)
 
     with raises(RepeatException):
-        add_schedule(session, 1, start_date, end_date, "weekly", 5, service_time, 0)
+        add_schedule(session, 1, start_date, end_date, "weekly", 5, service_time, -1)
 
 def test_add_service_invalid_occurs_on_for_monthly_thirty_two(session: Session):
     LOGGER.critical("Expecting exception.")

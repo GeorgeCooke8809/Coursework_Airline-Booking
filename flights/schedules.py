@@ -134,7 +134,7 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
 
     if (
         (repeat_type == "monthly" and repeats_on not in range(1, 32))
-        or (repeat_type == "weekly" and repeats_on not in range(1, 8))
+        or (repeat_type == "weekly" and repeats_on not in range(0, 7))
     ):
         LOGGER.error("Invalid repeat_type and repeats_on combination")
         raise RepeatException

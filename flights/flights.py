@@ -4,11 +4,12 @@ from sqlalchemy import or_, case, func
 
 from models import Flight, Airport, Service, Route
 from models import FLIGHT_STATUS_OPTIONS
-from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException, InvalidAirportException
+from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException, InvalidAirportException, RepeatException
 
 from .schedules import add_schedule
 
 from datetime import datetime, timedelta, date, UTC, time
+from dateutil.relativedelta import relativedelta
 import logging
 from random import randint
 from math import radians, cos, sqrt
@@ -303,12 +304,82 @@ def add_one_off_flight(Session: Session, route_id: int, scheduled_departure_utc:
 
 
 @with_session
-def batch_generate_scheduled_flights(Session: Session):
+def batch_generate_scheduled_flights(Session: Session) -> None:
     """Batch generates flights that haven't already been created for schedules. Uses BATCH_GENERATE_LOOK_AHEAD constant for how far ahead to look.
 
     Args:
         Session (Session): The database session automatically provided by @with_session
     """
+    # ? Run for on service only when creating a new service
+
+    LOGGER.info("Batch generating scheduled flights from services...")
+
+    batch_lookahead_end_date = date.today() + timedelta(days=BATCH_GENERATE_LOOK_AHEAD)
+
+    active_services = (
+        Session.query(Service)
+        .filter(Service.start_date <= batch_lookahead_end_date)
+        .filter(Service.end_date >= datetime.today())
+    ).all()
+
+    for service in active_services:
+        most_recent = (
+            Session.query(Flight)
+            .filter(Flight.service == service)
+            .order_by(Flight.scheduled_departure_datetime_utc.desc())
+        ).first()
+
+        if most_recent is None: # First time generating flights for the service
+            if service.repeat_type == "daily":
+                next_date = service.start_date
+
+            elif service.repeat_type == "weekly":
+                next_date = service.start_date + relativedelta(weekday=service.repeats_on)
+
+            elif service.repeat_type == "monthly":
+                next_date = None
+                month_adder = 0
+
+                while next_date == None:
+                    if service.start_date.day <= service.repeats_on:
+                        month=service.start_date.month
+                        year=service.start_date.year
+                    else:
+                        if service.start_date.month == 12:
+                            month = 1
+                            year = service.start_date.year + 1
+                        else:
+                            month = service.start_date.month + 1
+                            year = service.start_date.year
+
+                    try:
+                        next_date = date(day=service.repeats_on, month=month + month_adder, year=year)
+                    except ValueError:
+                        LOGGER.info("Could not create next date. It is likely that the day was greater than the number of days in the given month. Skipping. This is an expected behavior.")
+                        month_adder += 1
+        else:
+            next_date = _next_occurrence(service, most_recent.scheduled_departure_datetime_utc)
+
+        while next_date <= batch_lookahead_end_date and next_date <= service.end_date:
+            add_new_flight(Session, service.service_id, datetime.combine(next_date, service.repeat_time_utc, tzinfo=UTC))
+            next_date = _next_occurrence(service, next_date)
+
+def _next_occurrence(service: Service, current: date) -> date:
+    """Returns the next flight date after the given current date for the service's schedule. Months that don't have the desired day of the month are skipped. Used in the batch_generate_scheduled_flights function"""
+    if service.repeat_type == "daily":
+        return current + timedelta(days=service.repeat_frequency)
+    
+    if service.repeat_type == "weekly":
+        return current + timedelta(weeks=service.repeat_frequency)
+    
+    if service.repeat_type == "monthly":
+        months = service.repeat_frequency
+        
+        while True: # Skip months without the repeat day
+            try:
+                return (current + relativedelta(months=months, day=1)).replace(day=service.repeats_on)
+            except ValueError:
+                months += service.repeat_frequency
 
 @with_session
 def search_for_flight(Session: Session, departure_airport: str, arrival_airport: str, departure_date: date) -> list[tuple[int, str, str, datetime, timedelta, str, str, datetime, float]]:
