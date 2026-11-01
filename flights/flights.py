@@ -1,5 +1,6 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, case, func
 
 from models import Flight, Airport, Service, Route
 from models import FLIGHT_STATUS_OPTIONS
@@ -7,7 +8,7 @@ from utils.exceptions import InvalidDateException, ExistenceException, FlightSta
 
 from .schedules import add_schedule
 
-from datetime import datetime, timedelta, date, UTC
+from datetime import datetime, timedelta, date, UTC, time
 import logging
 from random import randint
 from math import radians, cos, sqrt
@@ -310,12 +311,13 @@ def batch_generate_scheduled_flights(Session: Session):
     """
 
 @with_session
-def search_for_flight(Session: Session, departure_airport: str, arrival_airport: str, date: date) -> list:
+def search_for_flight(Session: Session, departure_airport: str, arrival_airport: str, departure_date: date) -> list[tuple[int, str, str, datetime, timedelta, str, str, datetime, float]]:
     """Searches for a flight that matches the given criteria. Uses like to get close matches for airport name.
 
     ## Return Format:
         [
             (
+                <flight_id>: int,
                 <departure_airport_name>: str,
                 <departure_airport_iata>: str,
                 <departure_datetime>: datetime,
@@ -334,6 +336,95 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
         date (date): The date that flights should be on
     """
     # ? Switch airports to IDs and make users select specific airport in UI
+    # ? Order by in here or in browser? - Currently just orders by departure time
+    # ? Use similar flights and layover flights in here?
+    # ? Switch flight search times to local instead of UTC
+    LOGGER.info("Searching for flight...")
+    LOGGER.debug(f"{departure_airport = }, {arrival_airport = }, {departure_date = }")
+
+    # * Validation
+
+    if not isinstance(departure_date, date) or departure_date < date.today():
+        LOGGER.error("Departure date is invalid")
+        raise InvalidDateException
+
+    # * Processing
+
+    term = departure_airport.strip()
+
+    airport_rank = case(
+        (func.upper(Airport.iata) == term.upper(), 0),
+        (func.lower(Airport.name) == term.lower(), 1),
+        (Airport.name.ilike(f"%{term}%"), 2),
+        (Airport.iata.ilike(f"%{term}%"), 3),
+        else_=4,
+    )
+
+    origin = (
+        Session.query(Airport)
+        .filter(or_(
+            Airport.name.like(f"%{term}%"),
+            Airport.iata.like(f"%{term}%")
+        ))
+        .order_by(airport_rank)
+    ).first()
+
+    term = arrival_airport.strip()
+    
+    airport_rank = case(
+        (func.upper(Airport.iata) == term.upper(), 0),
+        (func.lower(Airport.name) == term.lower(), 1),
+        (Airport.name.ilike(f"{term}%"), 2),
+        (Airport.iata.ilike(f"{term}%"), 3),
+        else_=4,
+    )
+
+    destination = (
+        Session.query(Airport)
+        .filter(or_(
+            Airport.name.like(f"%{term}%"),
+            Airport.iata.like(f"%{term}%")
+        ))
+        .order_by(airport_rank)
+    ).first()
+
+    route = (
+        Session.query(Route)
+        .filter(Route.origin == origin)
+        .filter(Route.destination == destination)
+    ).first()
+
+    if route == None: return [] # No route exists so no point continuing, also creates issues with the next line (AttributeError: 'NoneType' object has no attribute 'services')
+
+    service_ids = [service.service_id for service in route.services]
+
+    flights = (
+        Session.query(Flight)
+        .filter(Flight.service_id.in_(service_ids))
+        .filter(Flight.scheduled_departure_datetime_utc >= datetime.combine(departure_date, time(0, 0))) # Done because you cannot compare date and datetime
+        .filter(Flight.scheduled_departure_datetime_utc <= datetime.combine(departure_date, time(23, 59, 59, 999)))
+        .order_by(Flight.scheduled_departure_datetime_utc)
+    ).all()
+
+    to_return = []
+
+    for flight in flights:
+        duration = calculate_flight_duration(Session, flight.flight_id)
+
+        to_return.append((
+            flight.flight_id,
+            origin.name,
+            origin.iata,
+            flight.scheduled_departure_datetime_utc,
+            duration,
+            destination.name,
+            destination.iata,
+            flight.scheduled_departure_datetime_utc + duration,
+            calculate_seat_price(Session, flight.flight_id)
+        ))
+
+    return to_return
+
 
 def calculate_flight_duration(Session: Session, flight_id: int) -> timedelta:
     """Uses the flight ID to first get route, then coordinates of departure and arrival airports. This is used with pythagoras to get the route length in coordinate units. This is converted to miles at the equator and divided by cruise speed of aircraft to estimate flight duration.

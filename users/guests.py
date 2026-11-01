@@ -45,6 +45,7 @@ def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
 
     ## Return Format:
         {
+            "id": <airline_employee_id>: int,
             "firstName": <first_name>: str,
             "lastName": <last_name>: str,
             "phoneNo": <phone_number>: str
@@ -91,5 +92,4 @@ def delete_guest(Session: Session, guest_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to delete
     """
-
     # ? Nullify guest ID from companions
