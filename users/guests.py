@@ -45,6 +45,7 @@ def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
 
     ## Return Format:
         {
+            "id": <airline_employee_id>: int,
             "firstName": <first_name>: str,
             "lastName": <last_name>: str,
             "phoneNo": <phone_number>: str

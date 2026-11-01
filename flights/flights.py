@@ -311,12 +311,13 @@ def batch_generate_scheduled_flights(Session: Session):
     """
 
 @with_session
-def search_for_flight(Session: Session, departure_airport: str, arrival_airport: str, departure_date: date) -> list:
+def search_for_flight(Session: Session, departure_airport: str, arrival_airport: str, departure_date: date) -> list[tuple[int, str, str, datetime, timedelta, str, str, datetime, float]]:
     """Searches for a flight that matches the given criteria. Uses like to get close matches for airport name.
 
     ## Return Format:
         [
             (
+                <flight_id>: int,
                 <departure_airport_name>: str,
                 <departure_airport_iata>: str,
                 <departure_datetime>: datetime,
@@ -338,14 +339,24 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
     # ? Order by in here or in browser? - Currently just orders by departure time
     # ? Use similar flights and layover flights in here?
     # ? Switch flight search times to local instead of UTC
+    LOGGER.info("Searching for flight...")
+    LOGGER.debug(f"{departure_airport = }, {arrival_airport = }, {departure_date = }")
+
+    # * Validation
+
+    if not isinstance(departure_date, date) or departure_date < date.today():
+        LOGGER.error("Departure date is invalid")
+        raise InvalidDateException
+
+    # * Processing
 
     term = departure_airport.strip()
 
     airport_rank = case(
         (func.upper(Airport.iata) == term.upper(), 0),
         (func.lower(Airport.name) == term.lower(), 1),
-        (Airport.name.ilike(f"{term}%"), 2),
-        (Airport.iata.ilike(f"{term}%"), 3),
+        (Airport.name.ilike(f"%{term}%"), 2),
+        (Airport.iata.ilike(f"%{term}%"), 3),
         else_=4,
     )
 
@@ -383,12 +394,14 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
         .filter(Route.destination == destination)
     ).first()
 
+    if route == None: return [] # No route exists so no point continuing, also creates issues with the next line (AttributeError: 'NoneType' object has no attribute 'services')
+
     service_ids = [service.service_id for service in route.services]
 
     flights = (
         Session.query(Flight)
         .filter(Flight.service_id.in_(service_ids))
-        .filter(Flight.scheduled_departure_datetime_utc >= datetime.combine(departure_date, time(0, 0)))
+        .filter(Flight.scheduled_departure_datetime_utc >= datetime.combine(departure_date, time(0, 0))) # Done because you cannot compare date and datetime
         .filter(Flight.scheduled_departure_datetime_utc <= datetime.combine(departure_date, time(23, 59, 59, 999)))
         .order_by(Flight.scheduled_departure_datetime_utc)
     ).all()
@@ -399,6 +412,7 @@ def search_for_flight(Session: Session, departure_airport: str, arrival_airport:
         duration = calculate_flight_duration(Session, flight.flight_id)
 
         to_return.append((
+            flight.flight_id,
             origin.name,
             origin.iata,
             flight.scheduled_departure_datetime_utc,
