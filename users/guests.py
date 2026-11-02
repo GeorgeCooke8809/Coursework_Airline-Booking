@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from models import Guest, AirlineEmployee, AirportStaff
-from utils.exceptions import InvalidNameException, InvalidPhoneException, InvalidEmailException, InvalidPasswordException
+from utils.exceptions import InvalidNameException, InvalidPhoneException, InvalidEmailException, InvalidPasswordException, ExistenceException
 
 import logging
 import re
@@ -80,6 +80,8 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
 
     # * Validation
 
+    phone = phone.replace(" ", "") # Remove any spaces added to phone number
+
     if (
         type(first_name) != str
         or (type(last_name) != str and last_name is not None)
@@ -113,6 +115,10 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
         .filter(AirlineEmployee.employee_type == "support")
         .order_by(func.count(AirlineEmployee.guests), AirlineEmployee.airline_employee_id)
     ).first()
+
+    if airline_employee is None:
+        LOGGER.error("There are no active customer support representatives, cannot assign one to guest. Failing.")
+        raise ExistenceException
 
     new_guest = Guest(customer_support_rep=airline_employee, first_name=first_name, last_name=last_name, email=email, phone=phone, password=password)
 
