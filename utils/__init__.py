@@ -8,5 +8,6 @@ from .exceptions import (
     InvalidNameException,
     InvalidPhoneException,
     InvalidEmailException,
-    InvalidPasswordException
+    InvalidPasswordException,
+    EmployeeException
 )
