@@ -4,7 +4,14 @@ from sqlalchemy.orm import Session
 from models import AirportStaff, AirlineEmployee, Guest, Booking, Flight
 from models import AIRLINE_EMPLOYEE_TYPES, AIRPORT_STAFF_TYPES
 
-from utils.exceptions import InvalidNameException, InvalidPhoneException, InvalidEmailException, InvalidPasswordException, EmployeeException
+from utils import (
+    check_email_already_in_use,
+    InvalidNameException,
+    InvalidPhoneException,
+    InvalidEmailException,
+    InvalidPasswordException,
+    EmployeeException
+)
 
 from datetime import datetime
 import logging
@@ -44,12 +51,10 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
         password (str): The password of the new airline employee
         type (str): The employee type of the new airline employee
     """
-    LOGGER.info("Adding new guest...")
+    LOGGER.info("Adding new airline employee...")
     LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {phone = }")
 
     # * Validation
-
-    
 
     if (
         type(first_name) != str
@@ -77,6 +82,10 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
     pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") # Only checks correct format, does not confirm has not been misstyped of lied about
     if pattern.match(email) == None or len(email) > 124:
         LOGGER.error("Email is invalid format")
+        raise InvalidEmailException
+
+    if check_email_already_in_use(Session, email):
+        LOGGER.error("The email is already in use")
         raise InvalidEmailException
 
     if type(password) != str:

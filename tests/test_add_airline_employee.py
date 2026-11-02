@@ -94,3 +94,18 @@ def test_add_airline_employee_invalid_employee_type(session: Session):
     LOGGER.critical("Expecting error")
     with raises(EmployeeException):
         add_airline_employee(session, "Akil", "Rameez", "25arameez110@collyers.ac.uk", "07801 447084", "Password123*", "supportt")
+
+def test_add_airline_employee_email_already_in_use_same_table(session: Session):
+    LOGGER.critical("Expecting error")
+    add_airline_employee(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07801 447084", "Password123*", "support")
+    
+    with raises(InvalidEmailException):
+        add_airline_employee(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07801 447084", "Password123*", "support")
+
+def test_add_airline_employee_email_already_in_use_different_table(session: Session):
+    LOGGER.critical("Expecting error")
+    add_airline_employee(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07801 447084", "Password123*", "support")
+    add_guest(session, "Akil", "Rameez", "25arameez110@collyers.ac.uk", "07801 447084", "Password123*")
+    
+    with raises(InvalidEmailException):
+        add_airline_employee(session, "Akil", "Rameez", "25arameez110@collyers.ac.uk", "07801 447084", "Password123*", "support")

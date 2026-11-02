@@ -3,7 +3,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from models import Guest, AirlineEmployee, AirportStaff
-from utils.exceptions import InvalidNameException, InvalidPhoneException, InvalidEmailException, InvalidPasswordException, ExistenceException
+
+from utils import (
+    check_email_already_in_use,
+    InvalidNameException,
+    InvalidPhoneException,
+    InvalidEmailException,
+    InvalidPasswordException,
+    ExistenceException
+)
 
 import logging
 import re
@@ -80,8 +88,6 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
 
     # * Validation
 
-    phone = phone.replace(" ", "") # Remove any spaces added to phone number
-
     if (
         type(first_name) != str
         or (type(last_name) != str and last_name is not None)
@@ -90,6 +96,12 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
     ):
         LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
         raise InvalidNameException
+    
+    if type(phone) != str:
+        LOGGER.error("Phone number is of the wrong data type")
+        raise InvalidPhoneException
+    
+    phone = phone.replace(" ", "") # Remove any spaces added to phone number
 
     if not phone.isnumeric():
         LOGGER.error("A non-numeric phone number was given")
@@ -99,9 +111,13 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
         LOGGER.error("The phone number given was too long")
         raise InvalidPhoneException
 
-    pattern = re.compile("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
-    if pattern.match(email) == None:
+    pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+    if pattern.match(email) == None or len(email) > 124:
         LOGGER.error("Email is invalid format")
+        raise InvalidEmailException
+
+    if check_email_already_in_use(Session, email):
+        LOGGER.error("The email is already in use")
         raise InvalidEmailException
 
     if (password == None or type(password) != str):
@@ -112,8 +128,10 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
 
     airline_employee = (
         Session.query(AirlineEmployee)
+        .outerjoin(AirlineEmployee.guests)
         .filter(AirlineEmployee.employee_type == "support")
-        .order_by(func.count(AirlineEmployee.guests), AirlineEmployee.airline_employee_id)
+        .group_by(AirlineEmployee.airline_employee_id)
+        .order_by(func.count(Guest.guest_id))
     ).first()
 
     if airline_employee is None:

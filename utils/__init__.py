@@ -11,3 +11,7 @@ from .exceptions import (
     InvalidPasswordException,
     EmployeeException
 )
+
+from .validation import (
+    check_email_already_in_use
+)
