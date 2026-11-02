@@ -4,5 +4,9 @@ from .exceptions import (
     InvalidDateException,
     ExistenceException,
     InvalidTimeException,
-    FlightStatusException
+    FlightStatusException,
+    InvalidNameException,
+    InvalidPhoneException,
+    InvalidEmailException,
+    InvalidPasswordException
 )

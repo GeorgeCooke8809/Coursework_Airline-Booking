@@ -1,7 +1,14 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from models import Guest, AirlineEmployee, AirportStaff
+from utils.exceptions import InvalidNameException, InvalidPhoneException, InvalidEmailException, InvalidPasswordException
+
+import logging
+import re
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_all_guest_users(Session: Session) -> list[tuple[int, str, str]]:
@@ -68,6 +75,51 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
         phone (str): The phone number of the new guest.
         password (str): The password of the new guest.
     """
+    LOGGER.info("Adding new guest...")
+    LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {phone = }")
+
+    # * Validation
+
+    if (
+        type(first_name) != str
+        or (type(last_name) != str and last_name is not None)
+        or len(first_name) > 34
+        or len(last_name) > 34
+    ):
+        LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
+        raise InvalidNameException
+
+    if not phone.isnumeric():
+        LOGGER.error("A non-numeric phone number was given")
+        raise InvalidPhoneException
+
+    if len(phone) > 14:
+        LOGGER.error("The phone number given was too long")
+        raise InvalidPhoneException
+
+    pattern = re.compile("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+    if pattern.match(email) == None:
+        LOGGER.error("Email is invalid format")
+        raise InvalidEmailException
+
+    if (password == None or type(password) != str):
+        LOGGER.error("Invalid password was given")
+        raise InvalidPasswordException
+
+    # * Processing
+
+    airline_employee = (
+        Session.query(AirlineEmployee)
+        .filter(AirlineEmployee.employee_type == "support")
+        .order_by(func.count(AirlineEmployee.guests), AirlineEmployee.airline_employee_id)
+    ).first()
+
+    new_guest = Guest(customer_support_rep=airline_employee, first_name=first_name, last_name=last_name, email=email, phone=phone, password=password)
+
+    Session.add(new_guest)
+
+    LOGGER.info("Successfully added new guest")
+    
 
 @with_session
 def edit_guest(Session: Session, guest_id: int, airline_employee_id: int = None, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None) -> None:
