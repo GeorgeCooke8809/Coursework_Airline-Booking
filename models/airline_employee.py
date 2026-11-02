@@ -25,6 +25,7 @@ class AirlineEmployee(Base):
     email: Mapped[str] = mapped_column(String(124))
     phone: Mapped[str] = mapped_column(String(14))
     employee_type: Mapped[str]
+    password: Mapped[str]
 
     guests: Mapped[list["Guest"]] = relationship(back_populates="customer_support_rep")
 

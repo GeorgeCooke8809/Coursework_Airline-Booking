@@ -4,7 +4,20 @@ from sqlalchemy.orm import Session
 from models import AirportStaff, AirlineEmployee, Guest, Booking, Flight
 from models import AIRLINE_EMPLOYEE_TYPES, AIRPORT_STAFF_TYPES
 
+from utils import (
+    check_email_already_in_use,
+    InvalidNameException,
+    InvalidPhoneException,
+    InvalidEmailException,
+    InvalidPasswordException,
+    EmployeeException
+)
+
 from datetime import datetime
+import logging
+import re
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]]:
@@ -26,7 +39,7 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
     """
 
 @with_session
-def add_airline_employee(Session: Session, first_name: str, last_name: str, email: str, phone: str, password: str, type: str) -> None:
+def add_airline_employee(Session: Session, first_name: str, last_name: str, email: str, phone: str, password: str, employee_type: str) -> None:
     """Adds a new airline employee with the given details. Raises exception if email, phone, or password are invalid format. Also raises exception if type is not in allowed airline employee types list. Also raises exception if email is in use in any other user table.
 
     Args:
@@ -38,6 +51,55 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
         password (str): The password of the new airline employee
         type (str): The employee type of the new airline employee
     """
+    LOGGER.info("Adding new airline employee...")
+    LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {phone = }")
+
+    # * Validation
+
+    if (
+        type(first_name) != str
+        or (type(last_name) != str and last_name is not None)
+        or len(first_name) > 34
+        or len(last_name) > 34
+    ):
+        LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
+        raise InvalidNameException
+
+    if type(phone) != str:
+        LOGGER.error("Phone number is of the wrong data type")
+        raise InvalidPhoneException
+
+    phone = phone.replace(" ", "") # Remove any spaces added to phone number
+
+    if not phone.isnumeric():
+        LOGGER.error("A non-numeric phone number was given")
+        raise InvalidPhoneException
+
+    if len(phone) > 14:
+        LOGGER.error("The phone number given was too long")
+        raise InvalidPhoneException
+
+    pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") # Only checks correct format, does not confirm has not been misstyped of lied about
+    if pattern.match(email) == None or len(email) > 124:
+        LOGGER.error("Email is invalid format")
+        raise InvalidEmailException
+
+    if check_email_already_in_use(Session, email):
+        LOGGER.error("The email is already in use")
+        raise InvalidEmailException
+
+    if type(password) != str:
+        LOGGER.error("Invalid password was given")
+        raise InvalidPasswordException
+
+    if employee_type not in AIRLINE_EMPLOYEE_TYPES:
+        LOGGER.error("Invalid employee_type given.")
+        raise EmployeeException(f"The given employee type is invalid.\n{employee_type = } is not in {AIRLINE_EMPLOYEE_TYPES = }")
+
+    # * Processing
+    new_employee = AirlineEmployee(first_name=first_name, last_name=last_name, email=email, phone=phone, employee_type=employee_type, password=password)
+    Session.add(new_employee)
+
 
 @with_session
 def edit_airline_employee(Session: Session, airline_employee_id: int, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None, type: str = None) -> None:

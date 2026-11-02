@@ -58,3 +58,53 @@ class FlightStatusException(Exception):
 
     def __str__(self):
         return f"{self.message}"
+
+class InvalidNameException(Exception):
+    """Exception raised when a first or last name given is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid name has been given"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+class InvalidPhoneException(Exception):
+    """Exception raised when a phone number given is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid phone number has been given"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+class InvalidEmailException(Exception):
+    """Exception raised when a email address given is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid email address has been given"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+class InvalidPasswordException(Exception):
+    """Exception raised when a password given is invalid"""
+
+    def __init__(self):
+        self.message = "An invalid password has been given when creating or editing a user"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
+
+class EmployeeException(Exception):
+    """Exception raised when there is something wrong with an airline employee"""
+
+    def __init__(self, message = ""):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
