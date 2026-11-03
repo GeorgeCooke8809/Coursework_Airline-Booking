@@ -30,7 +30,7 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
         [
             (
                 <staff_type>: str,
-                <staff_table>: str,
+                <staff_table>: str : "employee" | "staff",
                 <staff_id>: int,
                 <staff_first_name>: str,
                 <staff_last_name>: str
@@ -40,6 +40,38 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
     ## Arguments:
         Session (Session): The database session automatically provided by @with_session
     """
+    LOGGER.info("Getting all staff users")
+
+    airline_employees = Session.query(AirlineEmployee).all()
+    airport_staff = Session.query(AirportStaff).all()
+
+    to_return = []
+
+    for employee in airline_employees:
+        to_return.append(
+            (
+                employee.employee_type,
+                "employee",
+                employee.airline_employee_id,
+                employee.first_name,
+                employee.last_name
+            )
+        )
+
+    for staff in airport_staff:
+        to_return.append(
+            (
+                staff.staff_type,
+                "staff",
+                staff.airport_staff_id,
+                staff.first_name,
+                staff.last_name
+            )
+        )
+
+    to_return.sort(key=lambda item: f"{item[4]} {item[3]}")
+
+    return to_return
 
 @with_session
 def add_airline_employee(Session: Session, first_name: str, last_name: str, email: str, phone: str, password: str, employee_type: str) -> None:
@@ -219,6 +251,7 @@ def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_nam
             assigned_airport_icao (str): The new assigned airport ICAO of the member of airport staff
         """
 
+
 @with_session
 def delete_airport_staff(Session: Session, airport_staff_id: int) -> None:
     """Deletes the given member of airport staff.
@@ -240,6 +273,7 @@ def delete_airport_staff(Session: Session, airport_staff_id: int) -> None:
         raise ExistenceException
 
     Session.delete(employee)
+
 
 @with_session
 def get_representative_assigned_guests(Session: Session, representative_id: int) -> list[tuple[int, str, str, datetime]]:
