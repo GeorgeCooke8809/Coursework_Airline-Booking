@@ -16,7 +16,7 @@ from utils import (
     ExistenceException
 )
 
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
 import re
 
@@ -272,14 +272,20 @@ def get_representative_assigned_guests(Session: Session, representative_id: int)
         LOGGER.error("Representative does not exist or is of the wrong type")
         raise ExistenceException
 
+    representative_guests = (
+        Session.query(Guest)
+        .filter(Guest.airline_employee_id == representative.airline_employee_id)
+        .order_by(Guest.last_name, Guest.first_name)
+    ).all()
+
     to_return = []
 
-    for guest in representative.guests:
+    for guest in representative_guests:
         next_booking = (
             Session.query(Booking)
             .join(Flight, Booking.flight_id == Flight.flight_id)
-            .filter(Booking.guest.is_(guest))
-            .filter(Flight.scheduled_departure_datetime_utc >= datetime.now())
+            .filter(Booking.guest_id == guest.guest_id)
+            .filter(Flight.scheduled_departure_datetime_utc >= datetime.now(tz=UTC))
             .order_by(Flight.scheduled_departure_datetime_utc)
         ).first()
 
@@ -296,3 +302,5 @@ def get_representative_assigned_guests(Session: Session, representative_id: int)
                 next_flight_date
             )
         )
+
+    return to_return
