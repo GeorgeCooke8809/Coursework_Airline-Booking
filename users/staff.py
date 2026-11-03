@@ -12,7 +12,8 @@ from utils import (
     InvalidPasswordException,
     EmployeeException,
     InvalidAirportException,
-    StaffException
+    StaffException,
+    ExistenceException
 )
 
 from datetime import datetime
@@ -129,6 +130,7 @@ def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
         airline_employee_id (int): The ID of the airline employee to be deleted.
     """
 
+
 @with_session
 def add_airport_staff(Session: Session, first_name: str, last_name: str, email: str, password: str, staff_type: str, assigned_airport_icao: str) -> None:
     """Adds a new airport staff record. Raises exception if email, or password are invalid format. Also raises exception if type is not in allowed airport staff types list. Also raises exception if email is in use in any other user table. Also raises exception if ICAO is not recognized.
@@ -188,6 +190,7 @@ def add_airport_staff(Session: Session, first_name: str, last_name: str, email: 
     new_staff_member = AirportStaff(first_name=first_name, last_name=last_name, email=email, password=password, staff_type=staff_type, assigned_airport_icao=assigned_airport_icao)
     Session.add(new_staff_member)
 
+
 @with_session
 def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, type: str = None, assigned_airport_icao: str = None) -> None:
     """Edits the airport staff record with the given ID. Raises exception if email, or password are invalid format. Also raises exception if type is not in allowed airport staff types list. Also raises exception if email is in use in any other user table. Also raises exception if ICAO is not recognized.
@@ -211,6 +214,19 @@ def delete_airport_staff(Session: Session, airport_staff_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         airport_staff_id (int): The ID of the airport staff member to be deleted
     """
+    LOGGER.info("Deleting airport staff member")
+    LOGGER.debug(f"{airport_staff_id = }")
+
+    employee = (
+        Session.query(AirportStaff)
+        .filter(AirportStaff.airport_staff_id == airport_staff_id)
+    ).first()
+
+    if employee == None:
+        LOGGER.error("Airport staff member does not exist")
+        raise ExistenceException
+
+    Session.delete(employee)
 
 @with_session
 def get_representative_assigned_guests(Session: Session, representative_id: int) -> list[tuple[int, str, str, datetime]]:
