@@ -92,6 +92,7 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
         type(first_name) != str
         or (type(last_name) != str and last_name is not None)
         or len(first_name) > 34
+        or len(first_name) < 1
         or len(last_name) > 34
     ):
         LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
