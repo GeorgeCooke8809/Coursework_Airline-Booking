@@ -129,6 +129,19 @@ def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         airline_employee_id (int): The ID of the airline employee to be deleted.
     """
+    LOGGER.info("Deleting airline employee member")
+    LOGGER.debug(f"{airline_employee_id = }")
+
+    employee = (
+        Session.query(AirlineEmployee)
+        .filter(AirlineEmployee.airline_employee_id == airline_employee_id)
+    ).first()
+
+    if employee == None:
+        LOGGER.error("Airline employee does not exist")
+        raise ExistenceException
+
+    Session.delete(employee)
 
 
 @with_session
