@@ -62,6 +62,7 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
         type(first_name) != str
         or (type(last_name) != str and last_name is not None)
         or len(first_name) > 34
+        or len(first_name) < 1
         or len(last_name) > 34
     ):
         LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
@@ -150,6 +151,7 @@ def add_airport_staff(Session: Session, first_name: str, last_name: str, email: 
         type(first_name) != str
         or (type(last_name) != str and last_name is not None)
         or len(first_name) > 34
+        or len(first_name) < 1
         or len(last_name) > 34
     ):
         LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
