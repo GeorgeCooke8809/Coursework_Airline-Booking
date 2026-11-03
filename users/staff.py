@@ -1,7 +1,7 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
 
-from models import AirportStaff, AirlineEmployee, Guest, Booking, Flight
+from models import AirportStaff, AirlineEmployee, Guest, Booking, Flight, Airport
 from models import AIRLINE_EMPLOYEE_TYPES, AIRPORT_STAFF_TYPES
 
 from utils import (
@@ -10,7 +10,9 @@ from utils import (
     InvalidPhoneException,
     InvalidEmailException,
     InvalidPasswordException,
-    EmployeeException
+    EmployeeException,
+    InvalidAirportException,
+    StaffException
 )
 
 from datetime import datetime
@@ -52,7 +54,7 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
         type (str): The employee type of the new airline employee
     """
     LOGGER.info("Adding new airline employee...")
-    LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {phone = }")
+    LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {phone = }, {employee_type = }")
 
     # * Validation
 
@@ -97,6 +99,7 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
         raise EmployeeException(f"The given employee type is invalid.\n{employee_type = } is not in {AIRLINE_EMPLOYEE_TYPES = }")
 
     # * Processing
+
     new_employee = AirlineEmployee(first_name=first_name, last_name=last_name, email=email, phone=phone, employee_type=employee_type, password=password)
     Session.add(new_employee)
 
@@ -126,7 +129,7 @@ def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
     """
 
 @with_session
-def add_airport_staff(Session: Session, first_name: str, last_name: str, email: str, password: str, type: str, assigned_airport_icao: str) -> None:
+def add_airport_staff(Session: Session, first_name: str, last_name: str, email: str, password: str, staff_type: str, assigned_airport_icao: str) -> None:
     """Adds a new airport staff record. Raises exception if email, or password are invalid format. Also raises exception if type is not in allowed airport staff types list. Also raises exception if email is in use in any other user table. Also raises exception if ICAO is not recognized.
 
     Args:
@@ -138,6 +141,50 @@ def add_airport_staff(Session: Session, first_name: str, last_name: str, email: 
         type (str): The type for the new member of airport staff
         assigned_airport_icao (str): The assigned airport ICAO of the new member of airport staff
     """
+    LOGGER.info("Adding new airport staff member...")
+    LOGGER.debug(f"{first_name = }, {last_name = }, {email = }, {assigned_airport_icao = }")
+
+    # * Validation
+
+    if (
+        type(first_name) != str
+        or (type(last_name) != str and last_name is not None)
+        or len(first_name) > 34
+        or len(last_name) > 34
+    ):
+        LOGGER.error(f"An invalid name has been inputted {first_name = }, {last_name = }")
+        raise InvalidNameException
+
+    airport = (
+        Session.query(Airport)
+        .filter(Airport.icao == assigned_airport_icao)
+    ).first()
+
+    if airport == None:
+        LOGGER.error("Invalid airport ICAO given.")
+        raise InvalidAirportException(assigned_airport_icao)
+
+    pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)") # Only checks correct format, does not confirm has not been misstyped of lied about
+    if pattern.match(email) == None or len(email) > 124:
+        LOGGER.error("Email is invalid format")
+        raise InvalidEmailException
+
+    if check_email_already_in_use(Session, email):
+        LOGGER.error("The email is already in use")
+        raise InvalidEmailException
+
+    if type(password) != str:
+        LOGGER.error("Invalid password was given")
+        raise InvalidPasswordException
+
+    if staff_type not in AIRPORT_STAFF_TYPES:
+        LOGGER.error("Invalid airport staff type given")
+        raise StaffException
+
+    # * Processing
+
+    new_staff_member = AirportStaff(first_name=first_name, last_name=last_name, email=email, password=password, staff_type=staff_type, assigned_airport_icao=assigned_airport_icao)
+    Session.add(new_staff_member)
 
 @with_session
 def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, type: str = None, assigned_airport_icao: str = None) -> None:
