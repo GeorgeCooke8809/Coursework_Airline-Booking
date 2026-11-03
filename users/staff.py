@@ -259,3 +259,40 @@ def get_representative_assigned_guests(Session: Session, representative_id: int)
         Session (Session): The database session automatically provided by @with_session
         representative_id (int): The ID of the representative to retrieve the guest of
     """
+    LOGGER.info("Getting representative assigned guests...")
+    LOGGER.debug(f"{representative_id = }")
+
+    representative = (
+        Session.query(AirlineEmployee)
+        .filter(AirlineEmployee.employee_type == "support")
+        .filter(AirlineEmployee.airline_employee_id == representative_id)
+    ).first()
+
+    if representative == None:
+        LOGGER.error("Representative does not exist or is of the wrong type")
+        raise ExistenceException
+
+    to_return = []
+
+    for guest in representative.guests:
+        next_booking = (
+            Session.query(Booking)
+            .join(Flight, Booking.flight_id == Flight.flight_id)
+            .filter(Booking.guest.is_(guest))
+            .filter(Flight.scheduled_departure_datetime_utc >= datetime.now())
+            .order_by(Flight.scheduled_departure_datetime_utc)
+        ).first()
+
+        if next_booking == None:
+            next_flight_date = None
+        else:
+            next_flight_date = next_booking.flight.scheduled_departure_datetime_utc.date()
+
+        to_return.append(
+            (
+                guest.guest_id,
+                guest.first_name,
+                guest.last_name,
+                next_flight_date
+            )
+        )
