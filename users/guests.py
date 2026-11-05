@@ -70,6 +70,7 @@ def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to get the customer support rep of
     """
+    # TODO: Will not work if the customer support rep has been deleted - Will need to add something in the delete airline employee function to reassign
     LOGGER.info("Getting guest customer support representative")
     LOGGER.debug(f"{guest_id = }")
 
