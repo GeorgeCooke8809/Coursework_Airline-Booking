@@ -112,6 +112,19 @@ def disable_companion(Session: Session, companion_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         companion_id (int): The ID of the companion to set as inactive
     """
+    LOGGER.info("Disabling companion")
+    LOGGER.debug(f"{companion_id = }")
+
+    companion = (
+        Session.query(Companion)
+        .filter(Companion.companion_id == companion_id)
+    ).first()
+
+    if companion is None:
+        LOGGER.error("Companion does not exist")
+        raise ExistenceException
+
+    companion.status = "inactive"
 
 @with_session
 def favourite_companion(Session: Session, companion_id: int) -> None:
