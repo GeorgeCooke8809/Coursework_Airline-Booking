@@ -70,13 +70,17 @@ def get_guest_details(Session: Session, guest_id: int, caller_type: str) -> dict
     LOGGER.info("Getting guest details...")
     LOGGER.debug(f"{guest_id = }, {caller_type = }")
 
+    if caller_type not in ["admin", "guest", "support"]:
+        LOGGER.error("Caller type is invalid")
+        raise Exception
+
     guest = (
         Session.query(Guest)
         .filter(Guest.guest_id == guest_id)
     ).first()
 
     if guest is None:
-        LOGGER.info("Guest does not exist")
+        LOGGER.error("Guest does not exist")
         raise ExistenceException
 
     to_return = {
