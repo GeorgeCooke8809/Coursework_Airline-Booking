@@ -70,6 +70,29 @@ def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to get the customer support rep of
     """
+    LOGGER.info("Getting guest customer support representative")
+    LOGGER.debug(f"{guest_id = }")
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.error("Guest does not exit")
+        raise ExistenceException
+
+    representative = (
+        Session.query(AirlineEmployee)
+        .filter(AirlineEmployee.airline_employee_id == guest.airline_employee_id)
+    ).first()
+
+    return {
+        "id": representative.airline_employee_id,
+        "firstName": representative.first_name,
+        "lastName": representative.last_name,
+        "phoneNo": representative.phone
+    }
 
 @with_session
 def add_guest(Session: Session, first_name: str, last_name: str, email: str, phone: str, password: str) -> None:
