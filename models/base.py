@@ -2,6 +2,9 @@ from pathlib import Path
 
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 from sqlalchemy import create_engine, event
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "data" / "data.db"
@@ -33,6 +36,7 @@ def with_session(func: function):
                 return result
             except:
                 session.rollback()
+                LOGGER.critical("Rolling back...")
                 raise
             finally:
                 session.close()

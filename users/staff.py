@@ -1,5 +1,6 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from models import AirportStaff, AirlineEmployee, Guest, Booking, Flight, Airport
 from models import AIRLINE_EMPLOYEE_TYPES, AIRPORT_STAFF_TYPES
@@ -172,6 +173,24 @@ def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
     if employee == None:
         LOGGER.error("Airline employee does not exist")
         raise ExistenceException
+
+    employee_guests = employee.guests
+
+    for guest in employee_guests:
+        new_rep = (
+            Session.query(AirlineEmployee)
+            .outerjoin(AirlineEmployee.guests)
+            .filter(AirlineEmployee.employee_type == "support")
+            .filter(AirlineEmployee.airline_employee_id != airline_employee_id)
+            .group_by(AirlineEmployee.airline_employee_id)
+            .order_by(func.count(Guest.guest_id))
+        ).first()
+    
+        if new_rep is None:
+            LOGGER.critical("There are no active customer support representatives, cannot assign one to guest. Failing.")
+            raise ExistenceException
+
+        guest.customer_support_rep = new_rep
 
     Session.delete(employee)
 
