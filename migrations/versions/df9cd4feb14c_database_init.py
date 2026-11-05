@@ -81,7 +81,7 @@ def upgrade() -> None:
     )
     op.create_table('companions',
     sa.Column('companion_id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('guest_id', sa.Integer(), nullable=False),
+    sa.Column('guest_id', sa.Integer(), nullable=True),
     sa.Column('passport_name', sa.String(length=38), nullable=False),
     sa.Column('passport_number', sa.String(length=9), nullable=False),
     sa.Column('passport_expiry', sa.Date(), nullable=False),
