@@ -27,7 +27,7 @@ class Companion(Base):
 
     companion_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    guest_id: Mapped[int] = mapped_column(ForeignKey("guests.guest_id"))
+    guest_id: Mapped[int] = mapped_column(ForeignKey("guests.guest_id"), nullable=True)
     guest: Mapped["Guest"] = relationship(back_populates="companions")
 
     passport_name: Mapped[str] = mapped_column(String(38))
