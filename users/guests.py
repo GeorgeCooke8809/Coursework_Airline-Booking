@@ -59,14 +59,37 @@ def get_guest_details(Session: Session, guest_id: int, caller_type: str) -> dict
             "lastName": <last_name>: str,
             "email": <email>: str,
             "phone": <phone_number>: str,
-            "password" <password>: str - only sent if user type is admin or customer support rep
+            "password" <password>: str - only sent if caller type is admin or customer support rep
         }
 
     ## Args:
         Session (Session): The database session automatically provided by @with_session
-        guest_id (int): The ID of the guest tpo retrieve the details from
+        guest_id (int): The ID of the guest to retrieve the details from
         caller_type (str): The user type requesting the details.
     """
+    LOGGER.info("Getting guest details...")
+    LOGGER.debug(f"{guest_id = }, {caller_type = }")
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.info("Guest does not exist")
+        raise ExistenceException
+
+    to_return = {
+        "firstName": guest.first_name,
+        "lastName": guest.last_name,
+        "email": guest.email,
+        "phone": guest.phone,    
+    }
+
+    if caller_type in ["admin", "support"]:
+        to_return.update({"password": guest.password})
+    
+    return to_return
 
 @with_session
 def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
