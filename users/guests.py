@@ -227,10 +227,27 @@ def edit_guest(Session: Session, guest_id: int, airline_employee_id: int = None,
 
 @with_session
 def delete_guest(Session: Session, guest_id: int) -> None:
-    """Deletes the given guest from the database
+    """Deletes the given guest from the database and nullifies the guest_id of any companions assigned to them
 
     Args:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to delete
     """
-    # ? Nullify guest ID from companions
+
+    LOGGER.info("Deleting guest...")
+    LOGGER.debug(f"{guest_id = }")
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.error("Guest does not exist")
+        raise ExistenceException
+
+    companions = guest.companions
+    
+    for companion in companions: companion.guest = None
+
+    Session.delete(guest)
