@@ -139,3 +139,27 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         companion_id (int): The companion ID to mark as favourited.
     """
+    LOGGER.info("Setting companion to favourite")
+    LOGGER.debug(f"{companion_id = }")
+
+    companion = (
+        Session.query(Companion)
+        .filter(Companion.companion_id == companion_id)
+    ).first()
+
+    if companion is None:
+        LOGGER.error("Companion does not exist")
+        raise ExistenceException
+
+    guest = companion.guest
+
+    current_favourite = (
+        Session.query(Companion)
+        .filter(Companion.guest_id == guest.guest_id)
+        .filter(Companion.favorite == True)
+    ).first()
+
+    if current_favourite is not None:
+        current_favourite.favorite == False
+
+    companion.favorite == True
