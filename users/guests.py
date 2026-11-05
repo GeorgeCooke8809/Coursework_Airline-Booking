@@ -20,7 +20,7 @@ LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_all_guest_users(Session: Session) -> list[tuple[int, str, str]]:
-    """Gets and returns a list of all the guest users.
+    """Gets and returns a list of all the guest users. Ordered by surname, first name, id
 
     ## Return:
         [
@@ -34,6 +34,20 @@ def get_all_guest_users(Session: Session) -> list[tuple[int, str, str]]:
     ## Arguments:
         Session (Session): The database session automatically provided by @with_session
     """
+    LOGGER.info("Getting all guest users...")
+
+    guests = Session.query(Guest).order_by(Guest.last_name, Guest.first_name, Guest.guest_id).all()
+
+    to_return = []
+
+    for guest in guests:
+        to_return.append((
+            guest.guest_id,
+            guest.first_name,
+            guest.last_name
+        ))
+
+    return to_return
 
 @with_session
 def get_guest_details(Session: Session, guest_id: int, caller_type: str) -> dict:
@@ -70,7 +84,6 @@ def get_guest_support_representative(Session: Session, guest_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to get the customer support rep of
     """
-    # TODO: Will not work if the customer support rep has been deleted - Will need to add something in the delete airline employee function to reassign
     LOGGER.info("Getting guest customer support representative")
     LOGGER.debug(f"{guest_id = }")
 
