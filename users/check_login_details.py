@@ -22,25 +22,27 @@ def check_login_details(Session: Session, email: str, password: str) -> dict | N
         email (str): The email of the user to check against
         password (str): The password to check against
     """
+    # ? Switch to including admin, gate, check-in, ... ?
+
     LOGGER.info("Checking login details...")
     LOGGER.debug(f"{email = }")
 
     models = (
-        (Guest, "guest"),
-        (AirlineEmployee, "airline"),
-        (AirportStaff, "airport")
+        (Guest, Guest.guest_id, "guest"),
+        (AirlineEmployee, AirlineEmployee.airline_employee_id,"airline"),
+        (AirportStaff, AirportStaff.airport_staff_id,"airport")
     )
 
-    for table, table_name in models:
+    for table, primary, table_name in models:
         user = (
-            Session.query(table)
+            Session.query(primary)
             .filter(table.email == email)
             .filter(table.password == password)
         ).first()
 
         if user is not None:
             return {
-                "id": user.guest_id,
+                "id": user[0],
                 "type": table_name
             }
 
