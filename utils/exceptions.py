@@ -118,3 +118,13 @@ class StaffException(Exception):
 
     def __str__(self):
         return f"{self.message}"
+
+class PassportException(Exception):
+    """Exception raised when there is something wrong with the passport details given for a companion"""
+
+    def __init__(self, message = ""):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"

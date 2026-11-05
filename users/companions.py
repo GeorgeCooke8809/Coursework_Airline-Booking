@@ -1,10 +1,15 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
 
-from models import Companion
+from models import Companion, Guest
 from models import SEX_OPTIONS
 
+from utils import ExistenceException, PassportException
+
 from datetime import date
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int, str, date, date, bool]]:
@@ -41,6 +46,45 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
         passport_sex (str): The sex of the new companion.
         passport_authority (str): The passport authority for the new companion.
     """
+    LOGGER.info("Adding new companion...")
+    LOGGER.debug(f"{guest_id = }, {passport_name = }, {passport_expiry = }, {passport_number = }, {date_of_birth = }, {nationality = }, {passport_sex = }, {passport_authority = }")
+
+    # * Validation:
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest == None:
+        LOGGER.error("Guest does not exist")
+        raise ExistenceException
+
+    if (
+        type(passport_name) != str
+        or len(passport_name) > 38
+        or passport_name == ""
+        or type(passport_expiry) != date
+        or passport_expiry < date.today()
+        or type(passport_number) != str
+        or len(passport_number) > 9
+        or passport_number == ""
+        or type(date_of_birth) != date
+        or date_of_birth > date.today()
+        or type(nationality) != str
+        or nationality == ""
+        or passport_sex not in SEX_OPTIONS
+        or type(passport_authority) != str
+        or passport_authority == ""
+    ): # ? Split passport validation into multiple validation statements and exceptions
+        LOGGER.error("There is something wrong with the passport details given")
+        raise PassportException
+
+    # * Processing
+
+    new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=False) # TODO: Fix favourite UK spelling
+
+    Session.add(new_companion)
 
 @with_session
 def edit_companion(Session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:

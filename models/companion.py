@@ -38,7 +38,7 @@ class Companion(Base):
     date_of_birth: Mapped[date]
     sex: Mapped[str] = mapped_column(String(0))
     status: Mapped[str]
-    favorite: Mapped[bool]
+    favorite: Mapped[bool] # TODO: Fix favourite UK spelling
 
     seats: Mapped[list["BookingSeat"]] = relationship(back_populates="companion")
 

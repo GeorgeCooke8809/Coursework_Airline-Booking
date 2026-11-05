@@ -10,7 +10,8 @@ from .exceptions import (
     InvalidEmailException,
     InvalidPasswordException,
     EmployeeException,
-    StaffException
+    StaffException,
+    PassportException
 )
 
 from .validation import (
