@@ -82,7 +82,12 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
 
     # * Processing
 
-    new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=False) # TODO: Fix favourite UK spelling
+    companion_favourite = False
+
+    if len(guest.companions) == 0:
+        companion_favourite = True
+
+    new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=companion_favourite) # TODO: Fix favourite UK spelling
 
     Session.add(new_companion)
 
@@ -102,7 +107,7 @@ def edit_companion(Session: Session, companion_id: int, passport_name: str = Non
         passport_authority (str): The new passport authority for the companion.
     """
 
-    # ? Make fail if the companion has already taken a flight - could be used nefariously to change passenger records.
+    # ? Make fail if the companion has already taken a flight - could be used nefariously to change passenger records if not done
 
 @with_session
 def disable_companion(Session: Session, companion_id: int) -> None:

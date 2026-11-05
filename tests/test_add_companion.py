@@ -12,6 +12,7 @@ from utils.exceptions import ExistenceException, PassportException
 LOGGER = logging.getLogger(__name__)
 
 def test_add_companion_all_valid(session: Session):
+    # TODO: Add asserts to test_add_companion_all_valid
     add_airline_employee(session, "Akil", "Rameez", "25arameez110@collyers.ac.uk", "07801 447084", "Password123*", "support")
     add_guest(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07802 447086", "password123*")
 
