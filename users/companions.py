@@ -63,22 +63,26 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
     if (
         type(passport_name) != str
         or len(passport_name) > 38
+        or passport_name == ""
         or type(passport_expiry) != date
         or passport_expiry < date.today()
         or type(passport_number) != str
         or len(passport_number) > 9
+        or passport_number == ""
         or type(date_of_birth) != date
         or date_of_birth > date.today()
         or type(nationality) != str
+        or nationality == ""
         or passport_sex not in SEX_OPTIONS
         or type(passport_authority) != str
+        or passport_authority == ""
     ): # ? Split passport validation into multiple validation statements and exceptions
         LOGGER.error("There is something wrong with the passport details given")
         raise PassportException
 
     # * Processing
 
-    new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favourite=False)
+    new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=False) # TODO: Fix favourite UK spelling
 
     Session.add(new_companion)
 
