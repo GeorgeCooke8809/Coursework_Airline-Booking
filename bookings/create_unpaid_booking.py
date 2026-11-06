@@ -41,7 +41,9 @@ def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> No
         LOGGER.error("Flight does not exist to make booking for")
         raise ExistenceException
 
-    if flight.scheduled_departure_datetime_utc < datetime.now(tz=UTC):
+    flight_departure_time = flight.scheduled_departure_datetime_utc.replace(tzinfo=UTC)
+
+    if flight_departure_time < datetime.now(tz=UTC):
         LOGGER.error("Flight has already departed, cannot make new booking")
         raise InvalidDateException
 
