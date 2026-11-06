@@ -9,7 +9,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 @with_session
-def get_flight_passengers(session: Session, flight_id: int, airport_staff_id: int) -> list[tuple[int, str, str]]:
+def get_flight_passengers(Session: Session, flight_id: int, airport_staff_id: int) -> list[tuple[int, str, str]]:
     """Gets and returns a list of all the passengers booked on to a flight. Used in the gate and check in agent portals.
 
     ## Return Format:
