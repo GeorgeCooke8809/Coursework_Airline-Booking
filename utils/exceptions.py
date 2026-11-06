@@ -148,3 +148,13 @@ class SeatException(Exception):
 
     def __str__(self):
         return f"{self.message}"
+
+class AuthorisationException(Exception):
+    """Exception raised when someone attempts to access something they dont have access to"""
+
+    def __init__(self, message = ""):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"
