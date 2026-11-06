@@ -22,6 +22,7 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
                 <companion_passport_name>: str,
                 <companion_date_of_birth>: date,
                 <companion_passport_expiry>: date,
+                <companion_status>: str : "inactive" | "active",
                 <companion_favourite>: bool
             )
         ]
@@ -30,6 +31,32 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
         Session (Session): The database session automatically provided by @with_session
         guest_id (int): The ID of the guest to retrieve the companions of
     """
+
+    LOGGER.info("Getting list of all guest companions...")
+    LOGGER.debug(f"{guest_id = }")
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.error("Guest does not exist")
+        raise ExistenceException
+
+    to_return = []
+
+    for companion in guest.companions:
+        to_return.append((
+            companion.companion_id,
+            companion.passport_name,
+            companion.date_of_birth,
+            companion.passport_expiry,
+            companion.status,
+            companion.favorite
+        ))
+
+    return to_return
 
 @with_session
 def add_companion(Session: Session, guest_id: int, passport_name: str, passport_expiry: date, passport_number: str, date_of_birth: date, nationality: str, passport_sex: str, passport_authority: str) -> None:
@@ -139,7 +166,6 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         companion_id (int): The companion ID to mark as favourited.
     """
-    # TODO: Add favourite_companion checks in docstring
     LOGGER.info("Setting companion to favourite")
     LOGGER.debug(f"{companion_id = }")
 
