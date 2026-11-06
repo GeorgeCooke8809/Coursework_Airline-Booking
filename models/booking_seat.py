@@ -21,7 +21,7 @@ VALID_SEAT_IDS = (
     "10A", "10B", "10C"
 )
 
-VALID_PASSENGER_STATUS = ("not arrived", "checked", "boarded")
+VALID_PASSENGER_STATUS = ("not-arrived", "checked", "boarded")
 
 class BookingSeat(Base):
     __tablename__ = "booking_seats"
