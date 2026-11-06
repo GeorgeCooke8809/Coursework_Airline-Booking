@@ -12,7 +12,7 @@ LOGGER = logging.getLogger(__name__)
 
 @with_session
 def add_booking_seat(Session: Session, booking_id: int, companion_id: int, seat_id: str) -> None:
-    """Creates a new booking seat entry with the given details. Raises an exception if companion and booking ownership mismatch, seat is already taken for flight, or if seat_id is invalid. Status is defaulted as not arrived.
+    """Creates a new booking seat entry with the given details. Raises an exception if companion and booking ownership mismatch, seat is already taken for flight, or if seat_id is invalid. Status is defaulted as not arrived. Companions can have multiple seats on the same flight (could be used if overweight and regulations force to book two).
 
     Args:
         Session (Session): The database session automatically provided by @with_session
@@ -20,6 +20,8 @@ def add_booking_seat(Session: Session, booking_id: int, companion_id: int, seat_
         companion_id (int): The companion to attach the record to
         seat_id (str): The seat that the companion will be taking
     """
+    LOGGER.info("Adding booking seat...")
+    LOGGER.debug(f"{booking_id = }, {companion_id = }, {seat_id = }")
 
     booking = (
         Session.query(Booking)

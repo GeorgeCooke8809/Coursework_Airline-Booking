@@ -29,7 +29,7 @@ def get_available_seats(Session: Session, flight_id: int) -> list:
 
     booked_seats = (
         Session.query(BookingSeat)
-        .filter(BookingSeat.booking.in_(booking_ids))
+        .filter(BookingSeat.booking_id.in_(booking_ids))
     ).all()
 
     booked_seats = [booking_seat.seat_id for booking_seat in booked_seats]
