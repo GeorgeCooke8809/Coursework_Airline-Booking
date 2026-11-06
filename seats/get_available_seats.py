@@ -2,6 +2,7 @@ from models.base import with_session
 from sqlalchemy.orm import Session
 
 from models import BookingSeat, Flight, VALID_SEAT_IDS
+from utils import ExistenceException
 
 from datetime import datetime
 import logging
@@ -24,6 +25,7 @@ def get_available_seats(Session: Session, flight_id: int) -> list:
 
     if flight is None:
         LOGGER.error("Flight does not exist or has already departed")
+        raise ExistenceException
 
     booking_ids = [booking.booking_id for booking in flight.bookings]
 
