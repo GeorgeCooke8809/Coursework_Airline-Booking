@@ -22,6 +22,7 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
                 <companion_passport_name>: str,
                 <companion_date_of_birth>: date,
                 <companion_passport_expiry>: date,
+                <companion_status>: str : "inactive" | "active",
                 <companion_favourite>: bool
             )
         ]
@@ -51,6 +52,7 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
             companion.passport_name,
             companion.date_of_birth,
             companion.passport_expiry,
+            companion.status,
             companion.favorite
         ))
 
