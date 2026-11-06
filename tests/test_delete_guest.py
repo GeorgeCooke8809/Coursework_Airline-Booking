@@ -22,7 +22,7 @@ def test_delete_guest_valid_no_companions(session: Session):
     assert count == 0
 
 def test_delete_guest_valid_with_companions(session: Session):
-    LOGGER.critical("Return when companions are added") # TODO: Can't test delete user with companions until companions are added
+    LOGGER.critical("Return when companions are added")
 
     add_airline_employee(session, "Akil", "Rameez", "25arameez110@collyers.ac.uk", "07801 447084", "Password123*", "support")
     add_guest(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07802 447086", "password123*")
