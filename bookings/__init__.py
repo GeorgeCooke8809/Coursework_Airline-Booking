@@ -4,3 +4,4 @@ from .get_all_guest_bookings import get_all_guest_bookings
 from .pay_booking import pay_booking
 from .get_booking_details import get_booking_details
 from .batch_clear_unpaid_bookings import batch_clear_unpaid_bookings
+from .delete_booking import delete_booking
