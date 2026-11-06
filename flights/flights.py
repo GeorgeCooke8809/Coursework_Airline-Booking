@@ -2,9 +2,9 @@ from models.base import with_session
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, case, func
 
-from models import Flight, Airport, Service, Route
+from models import Flight, Airport, Service, Route, AirportStaff, BookingSeat
 from models import FLIGHT_STATUS_OPTIONS
-from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException, InvalidAirportException, RepeatException
+from utils.exceptions import InvalidDateException, ExistenceException, FlightStatusException, InvalidAirportException, AuthorisationException
 
 from .schedules import add_schedule
 
@@ -133,7 +133,7 @@ def change_flight_status(Session: Session, flight_id: int, new_status: str) -> N
     flight.status = new_status
 
 @with_session
-def get_flight_details(Session: Session, flight_id: int, airport_staff_id: int) -> dict:
+def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) -> dict:
     """Gets the flight details for the selected flight. Used by check-in and get agent portals.
 
     ## Return Format:
@@ -153,8 +153,58 @@ def get_flight_details(Session: Session, flight_id: int, airport_staff_id: int) 
         flight_id (int): The flight number to get details for
         airport_staff_id (int): The airport staff ID the request is coming from to ensure they have access to that flight
     """
+    LOGGER.info("Getting flight details...")
+    LOGGER.debug(f"{flight_id = }, {airport_staff_id = }")
 
-    # TODO: Write get_get_flight_details - waiting on booking seats
+    # * Validation
+
+    flight = (
+        session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight is None:
+        LOGGER.error("Flight does not exist")
+        raise ExistenceException
+
+    airport_staff = (
+        session.query(AirportStaff)
+        .filter(AirportStaff.airport_staff_id == airport_staff_id)
+    ).first()
+
+    if airport_staff is None:
+        LOGGER.error("Airport staff member does not exist")
+        raise ExistenceException
+
+    if airport_staff.assigned_airport_icao != flight.service.route.origin_icao:
+        LOGGER.error("The airport staff member does not have permission to view the given flight")
+        raise AuthorisationException
+
+    # * Processing
+
+    checked = (
+        session.query(BookingSeat)
+        .filter(BookingSeat.booking_id.in_([booking.booking_id for booking in flight.bookings]))
+        .filter(BookingSeat.status == "checked")
+    ).count()
+
+    boarded = (
+            session.query(BookingSeat)
+            .filter(BookingSeat.booking_id.in_([booking.booking_id for booking in flight.bookings]))
+            .filter(BookingSeat.status == "boarded")
+        ).count()
+
+    return {
+        "flightNo": flight.flight_number,
+        "totalPassengers": 30,
+        "checked": checked,
+        "boarded": boarded,
+        "status": flight.status,
+        "departureTime": flight.scheduled_departure_datetime_utc,
+        "checkInCloseTime": flight.scheduled_departure_datetime_utc - timedelta(minutes=45),
+        "gateCloseTime": flight.scheduled_departure_datetime_utc - timedelta(minutes=15)
+    }
+
 
 @with_session
 def get_route_flights(Session: Session, route_id: int) -> dict:

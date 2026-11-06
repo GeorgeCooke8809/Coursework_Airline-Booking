@@ -13,7 +13,8 @@ from .exceptions import (
     StaffException,
     PassportException,
     CompanionException,
-    SeatException
+    SeatException,
+    AuthorisationException
 )
 
 from .validation import (
