@@ -1,5 +1,6 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, and_
 
 from models import Guest, Booking, BookingSeat, Guest, Flight
 from utils import ExistenceException
@@ -7,6 +8,7 @@ from utils import ExistenceException
 from flights import calculate_flight_duration
 
 from datetime import datetime, timedelta, UTC
+from pytz import timezone
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -17,17 +19,20 @@ def _bookings_list_to_tuples(session: Session, bookings_list: list[Booking]):
     for booking in bookings_list:
         flight_duration = calculate_flight_duration(session, booking.flight_id)
         departure_time_utc = booking.flight.scheduled_departure_datetime_utc.replace(tzinfo=UTC)
+
         to_return.append((
             booking.booking_id,
             booking.flight.service.route.origin.name,
             booking.flight.service.route.origin.iata,
-            departure_time_utc.astimezone(booking.flight.service.route.origin.timezone),
+            departure_time_utc.astimezone(timezone(booking.flight.service.route.origin.timezone)),
             booking.flight.service.route.destination.name,
             booking.flight.service.route.destination.iata,
             flight_duration,
-            departure_time_utc.astimezone(booking.flight.service.route.destination.timezone) + flight_duration,
+            departure_time_utc.astimezone(timezone(booking.flight.service.route.destination.timezone)) + flight_duration,
             len(booking.seats)
         ))
+
+    return to_return
 
 @with_session
 def get_all_guest_bookings(session: Session, user_id: int) -> dict:
@@ -72,7 +77,7 @@ def get_all_guest_bookings(session: Session, user_id: int) -> dict:
 
     user = (
         session.query(Guest)
-        .filter(Guest.user_id == user_id)
+        .filter(Guest.guest_id == user_id)
     ).first()
 
     if user is None:
@@ -83,15 +88,19 @@ def get_all_guest_bookings(session: Session, user_id: int) -> dict:
         session.query(Booking)
         .join(Flight, Booking.flight_id == Flight.flight_id)
         .filter(Booking.guest_id == user_id)
-        .filter(Flight.status == "departed" or (Flight.status == "cancelled" and Flight.scheduled_departure_datetime_utc < datetime.now()))
+        .filter(or_(Flight.status == "departed", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc < datetime.now())))
     ).all()
+
+    LOGGER.debug(f"{past_bookings = }")
 
     future_bookings = (
             session.query(Booking)
             .join(Flight, Booking.flight_id == Flight.flight_id)
             .filter(Booking.guest_id == user_id)
-            .filter(Flight.status == "scheduled" or (Flight.status == "cancelled" and Flight.scheduled_departure_datetime_utc >= datetime.now()))
+            .filter(or_(Flight.status == "scheduled", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc >= datetime.now())))
         ).all()
+
+    LOGGER.debug(f"{past_bookings = }")
 
     return {
         "past": _bookings_list_to_tuples(session, past_bookings),
