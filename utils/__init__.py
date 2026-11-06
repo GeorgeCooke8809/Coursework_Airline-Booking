@@ -11,7 +11,8 @@ from .exceptions import (
     InvalidPasswordException,
     EmployeeException,
     StaffException,
-    PassportException
+    PassportException,
+    CompanionException
 )
 
 from .validation import (

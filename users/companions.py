@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from models import Companion, Guest
 from models import SEX_OPTIONS
 
-from utils import ExistenceException, PassportException
+from utils import ExistenceException, PassportException, CompanionException
 
 from datetime import date
 import logging
@@ -151,6 +151,14 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
     if companion is None:
         LOGGER.error("Companion does not exist")
         raise ExistenceException
+
+    if companion.passport_expiry < date.today():
+        LOGGER.error("The companions passport is expired so they cannot be added as favourite")
+        raise CompanionException
+
+    if companion.status != "active":
+        LOGGER.error("The companion is inactive and so cannot be marked as favourite")
+        raise CompanionException
 
     guest = companion.guest
 
