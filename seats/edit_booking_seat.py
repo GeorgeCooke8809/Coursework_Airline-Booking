@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from models import BookingSeat, Companion, Booking, VALID_SEAT_IDS
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 @with_session
 def edit_booking_seat(Session: Session, booking_seat_id: int, new_seat: str = None, new_companion_id: int = None) -> None:
     """Edits the given booking seat record with the new details. Raises exception if new companion and booking ownership mismatch or if seat is invalid

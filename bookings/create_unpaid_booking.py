@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from models import Guest, Flight, Booking
 
 from datetime import datetime
-import pytz
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> None:
@@ -16,3 +18,6 @@ def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> No
         guest_id (int): The guest ID that the booking should be created for.
         flight_id (int): The flight ID that the booking should be linked to.
     """
+
+    LOGGER.info("Creating new booking...")
+    LOGGER.debug(f"{guest_id = }, {flight_id = }")

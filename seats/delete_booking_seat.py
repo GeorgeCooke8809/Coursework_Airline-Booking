@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from models import BookingSeat
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 @with_session
 def delete_booking_seat(Session: Session, booking_seat_id: int) -> None:
     """Deletes the given BookingSeat record
