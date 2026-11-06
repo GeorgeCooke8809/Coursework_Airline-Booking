@@ -2,8 +2,9 @@ from models.base import with_session
 from sqlalchemy.orm import Session
 
 from models import Guest, Flight, Booking
+from utils import ExistenceException, InvalidDateException
 
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -21,3 +22,29 @@ def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> No
 
     LOGGER.info("Creating new booking...")
     LOGGER.debug(f"{guest_id = }, {flight_id = }")
+
+    guest = (
+        Session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.error("Guest does not exist to create booking for")
+        raise ExistenceException
+
+    flight = (
+        Session.query(Flight)
+        .filter(Flight.flight_id == flight_id)
+    ).first()
+
+    if flight is None:
+        LOGGER.error("Flight does not exist to make booking for")
+        raise ExistenceException
+
+    if flight.scheduled_departure_datetime_utc < datetime.now(tz=UTC):
+        LOGGER.error("Flight has already departed, cannot make new booking")
+        raise InvalidDateException
+
+    new_booking = Booking(guest_id = guest_id, flight_id=flight_id, datetime_booked=datetime.now(tz=UTC), payment_cleared=False)
+
+    Session.add(new_booking)
