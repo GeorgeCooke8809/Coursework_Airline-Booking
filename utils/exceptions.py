@@ -138,3 +138,13 @@ class CompanionException(Exception):
 
     def __str__(self):
         return f"{self.message}"
+
+class SeatException(Exception):
+    """Exception raised when there is something wrong with the details given for a BookingSeat record"""
+
+    def __init__(self, message = ""):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}"

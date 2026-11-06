@@ -2,7 +2,7 @@ Make sure you have already synced your uv virtual environment with developer dep
 
 To run basic unit tests:
 ``` POWERSHELL
-uv run pytest -vv
+uv run pytest -o log_cli=false -vv
 ```
 
 
