@@ -174,6 +174,7 @@ def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) 
 
     if airport_staff is None:
         LOGGER.error("Airport staff member does not exist")
+        raise ExistenceException
 
     if airport_staff.assigned_airport_icao != flight.service.route.origin_icao:
         LOGGER.error("The airport staff member does not have permission to view the given flight")
@@ -204,7 +205,6 @@ def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) 
         "gateCloseTime": flight.scheduled_departure_datetime_utc - timedelta(minutes=15)
     }
 
-    # TODO: Write get_get_flight_details - waiting on booking seats
 
 @with_session
 def get_route_flights(Session: Session, route_id: int) -> dict:

@@ -32,3 +32,5 @@ def change_booking_seat_status(session: Session, booking_Seat_id: int, new_statu
     if new_status not in VALID_PASSENGER_STATUS:
         LOGGER.error(f"New status is not in valid options {VALID_PASSENGER_STATUS = }")
         raise CompanionException
+
+    booking_seat.status = new_status
