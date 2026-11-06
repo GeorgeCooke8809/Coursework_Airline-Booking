@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from models import BookingSeat, Flight, VALID_SEAT_IDS
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 @with_session
 def get_available_seats(Session: Session, flight_id: int) -> list:
     """gets and returns a list of all the seat IDs that are still available on the given flight.

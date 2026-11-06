@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from models import Booking
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 @with_session
 def pay_booking(Session: Session, booking_id: int) -> None:
     """Mark the given booking as paid for.

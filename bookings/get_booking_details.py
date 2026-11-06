@@ -4,6 +4,9 @@ from sqlalchemy.orm import Session
 from models import Booking, Companion, Flight, BookingSeat
 
 from datetime import datetime, timedelta, date
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def get_booking_details(Session: Session, booking_id: int) -> dict:

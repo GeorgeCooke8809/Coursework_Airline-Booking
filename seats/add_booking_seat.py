@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from models import Booking, Companion, BookingSeat, Flight, VALID_SEAT_IDS
 
+import logging
+
+LOGGER = logging.getLogger(__name__)
+
 @with_session
 def add_booking_seat(Session: Session, booking_id: int, companion_id: int, seat_id: str) -> None:
     """Creates a new booking seat entry with the given details. Raises an exception if companion and booking ownership mismatch, seat is already taken for flight, or if seat_id is invalid. Status is defaulted as not arrived.

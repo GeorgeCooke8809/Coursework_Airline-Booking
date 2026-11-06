@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from models import Booking, BookingSeat, Companion
 
 import reportlab
+import logging
+
+LOGGER = logging.getLogger(__name__)
 
 @with_session
 def generate_boarding_pass(Session: Session, booking_id: int) -> None:
