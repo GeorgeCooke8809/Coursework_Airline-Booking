@@ -18,6 +18,7 @@ def get_booking_details(session: Session, booking_id: int) -> dict:
         {
             "departureDatetime": <flight_departure_time>: datetime,
             "flightDuration": <flight_duration>: timedelta,
+            "paymentStatus": <payment_status_cleared>: bool
             "companions": [
                 (
                     <companion_passport_name>: str,
@@ -56,7 +57,8 @@ def get_booking_details(session: Session, booking_id: int) -> dict:
         ))
 
     return {
-        "departureDateTime": booking.flight.scheduled_departure_datetime_utc,
+        "departureDatetime": booking.flight.scheduled_departure_datetime_utc,
         "flightDuration": calculate_flight_duration(session, booking.flight.flight_id),
+        "paymentStatus": booking.payment_cleared,
         "companions": companions
     }
