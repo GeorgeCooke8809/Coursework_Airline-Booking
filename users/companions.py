@@ -139,6 +139,7 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
         Session (Session): The database session automatically provided by @with_session
         companion_id (int): The companion ID to mark as favourited.
     """
+    # TODO: Add favourite_companion checks in docstring
     LOGGER.info("Setting companion to favourite")
     LOGGER.debug(f"{companion_id = }")
 
@@ -160,6 +161,6 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
     ).first()
 
     if current_favourite is not None:
-        current_favourite.favorite == False
+        current_favourite.favorite = False
 
-    companion.favorite == True
+    companion.favorite = True
