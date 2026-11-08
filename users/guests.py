@@ -185,7 +185,7 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
         LOGGER.error("The email is already in use")
         raise InvalidEmailException
 
-    if (password == None or type(password) != str):
+    if password == None or type(password) != str or password == "":
         LOGGER.error("Invalid password was given")
         raise InvalidPasswordException
 
@@ -211,7 +211,7 @@ def add_guest(Session: Session, first_name: str, last_name: str, email: str, pho
     
 
 @with_session
-def edit_guest(Session: Session, guest_id: int, airline_employee_id: int = None, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None) -> None:
+def edit_guest(session: Session, guest_id: int, airline_employee_id: int = None, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None) -> None:
     """Edits the details of the given guest. Raises an exception if the email is already used in guest, airline employees, or airport staff tables. Also raises exception if email or password is invalid format or if airline employee does not exist.
 
     Args:
@@ -224,6 +224,84 @@ def edit_guest(Session: Session, guest_id: int, airline_employee_id: int = None,
         phone (str, optional): The new phone number of the guest. Defaults to None.
         password (str, optional): The new password of the guest. Defaults to None.
     """
+    LOGGER.info("Editing guest...")
+    LOGGER.debug(f"{guest_id = }, {airline_employee_id = }, {first_name = }, {last_name = }, {email = }, {phone = }, {password = }")
+
+    guest = (
+        session.query(Guest)
+        .filter(Guest.guest_id == guest_id)
+    ).first()
+
+    if guest is None:
+        LOGGER.error("Guest does not exist to edit")
+        raise ExistenceException
+
+    if airline_employee_id is not None:
+        airline_employee = (
+            session.query(AirlineEmployee)
+            .filter(AirlineEmployee.employee_type == "support")
+            .filter(AirlineEmployee.airline_employee_id == airline_employee_id)
+        ).first()
+
+        if airline_employee is None:
+            LOGGER.error("Airline employee does not exist or is of the wrong type")
+            raise ExistenceException
+
+        guest.customer_support_rep = airline_employee
+
+    if first_name is not None:
+        if type(first_name) != str or len(first_name) > 34 or first_name == "":
+            LOGGER.error("First name given is invalid")
+            raise InvalidNameException
+
+        guest.first_name = first_name
+
+    if last_name is not None:
+        if type(last_name) != str or len(last_name) > 34:
+            LOGGER.error("Last name given is invalid")
+            raise InvalidNameException
+
+        guest.last_name = last_name
+
+    if email is not None:
+        if type(email) != str:
+            LOGGER.error("Email is of the wrong data type")
+            raise InvalidEmailException
+
+        pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        if pattern.match(email) == None or len(email) > 124:
+            LOGGER.error("Email is invalid format")
+            raise InvalidEmailException
+
+        if check_email_already_in_use(session, email):
+            LOGGER.error("The email given is already in use")
+            raise InvalidEmailException
+
+        guest.email = email
+
+    if phone is not None:
+        if type(phone) != str:
+            LOGGER.error("Phone number is of the wrong data type")
+            raise InvalidPhoneException
+        
+        phone = phone.replace(" ", "") # Remove any spaces added to phone number
+    
+        if not phone.isnumeric():
+            LOGGER.error("A non-numeric phone number was given")
+            raise InvalidPhoneException
+    
+        if len(phone) > 14:
+            LOGGER.error("The phone number given was too long")
+            raise InvalidPhoneException
+
+        guest.phone = phone
+
+    if password is not None:
+        if type(password) != str or password == "":
+            LOGGER.error("Invalid password was given")
+            raise InvalidPasswordException
+
+        guest.password = password
 
 @with_session
 def delete_guest(Session: Session, guest_id: int) -> None:
