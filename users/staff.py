@@ -154,7 +154,7 @@ def edit_airline_employee(session: Session, airline_employee_id: int, first_name
         password (str): The new password of the airline employee
         type (str): The new employee type of the airline employee
     """
-    LOGGER.info("Editing guest...")
+    LOGGER.info("Editing airline employee...")
     LOGGER.debug(f"{airline_employee_id = }, {first_name = }, {last_name = }, {email = }, {phone = }, {password = }, {employee_type = }")
 
     airline_employee = (
@@ -224,6 +224,27 @@ def edit_airline_employee(session: Session, airline_employee_id: int, first_name
         if employee_type not in AIRLINE_EMPLOYEE_TYPES:
             LOGGER.error("Given airline employee type is invalid")
             raise EmployeeException
+
+        if airline_employee.employee_type == "support":
+            assigned_guests = airline_employee.guests
+
+            for guest in assigned_guests:
+                new_rep = (
+                    session.query(AirlineEmployee)
+                    .outerjoin(AirlineEmployee.guests)
+                    .filter(AirlineEmployee.employee_type == "support")
+                    .filter(AirlineEmployee.airline_employee_id != airline_employee_id)
+                    .group_by(AirlineEmployee.airline_employee_id)
+                    .order_by(func.count(Guest.guest_id))
+                ).first()
+            
+                if new_rep is None:
+                    LOGGER.critical("There are no active customer support representatives, cannot assign one to guest. Failing.")
+                    raise ExistenceException
+        
+                guest.customer_support_rep = new_rep
+
+        airline_employee.employee_type = employee_type
 
 @with_session
 def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
