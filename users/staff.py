@@ -14,7 +14,7 @@ from utils import (
     EmployeeException,
     InvalidAirportException,
     StaffException,
-    ExistenceException
+    ExistenceException,
 )
 
 from datetime import datetime, UTC
@@ -349,19 +349,86 @@ def add_airport_staff(Session: Session, first_name: str, last_name: str, email: 
 
 
 @with_session
-def edit_airport_staff_member(Session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, type: str = None, assigned_airport_icao: str = None) -> None:
+def edit_airport_staff_member(session: Session, airport_staff_id: int, first_name: str = None, last_name: str = None, email: str = None, password: str = None, staff_type: str = None, assigned_airport_icao: str = None) -> None:
     """Edits the airport staff record with the given ID. Raises exception if email, or password are invalid format. Also raises exception if type is not in allowed airport staff types list. Also raises exception if email is in use in any other user table. Also raises exception if ICAO is not recognized.
     
-        Args:
-            Session (Session): The database session automatically provided by @with_session
-            airport_staff_id (int): The ID of the airport staff record to edit
-            first_name (str): The new first name of the member of airport staff
-            last_name (str): The new last name of the member of airport staff
-            email (str): The new email of the member of airport staff
-            password (str): The new password of the member of airport staff
-            type (str): The new type for the member of airport staff
-            assigned_airport_icao (str): The new assigned airport ICAO of the member of airport staff
-        """
+    Args:
+        Session (Session): The database session automatically provided by @with_session
+        airport_staff_id (int): The ID of the airport staff record to edit
+        first_name (str): The new first name of the member of airport staff
+        last_name (str): The new last name of the member of airport staff
+        email (str): The new email of the member of airport staff
+        password (str): The new password of the member of airport staff
+        type (str): The new type for the member of airport staff
+        assigned_airport_icao (str): The new assigned airport ICAO of the member of airport staff
+    """
+    LOGGER.info("Editing airport staff member...")
+    LOGGER.debug(f"{airport_staff_id = }, {first_name = }, {last_name = }, {email = }, {password = }, {staff_type = }, {assigned_airport_icao = }")
+
+    airport_staff = (
+        session.query(AirportStaff)
+        .filter(AirportStaff.airport_staff_id == airport_staff_id)
+    ).first()
+
+    if airport_staff is None:
+        LOGGER.error("Airport staff member does not exist to edit")
+        raise ExistenceException
+
+    if first_name is not None:
+        if type(first_name) != str or len(first_name) > 34 or first_name == "":
+            LOGGER.error("First name given is invalid")
+            raise InvalidNameException
+
+        airport_staff.first_name = first_name
+
+    if last_name is not None:
+        if type(last_name) != str or len(last_name) > 34:
+            LOGGER.error("Last name given is invalid")
+            raise InvalidNameException
+
+        airport_staff.last_name = last_name
+
+    if email is not None:
+        if type(email) != str:
+            LOGGER.error("Email is of the wrong data type")
+            raise InvalidEmailException
+
+        pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        if pattern.match(email) == None or len(email) > 124:
+            LOGGER.error("Email is invalid format")
+            raise InvalidEmailException
+
+        if check_email_already_in_use(session, email):
+            LOGGER.error("The email given is already in use")
+            raise InvalidEmailException
+
+        airport_staff.email = email
+
+    if password is not None:
+        if type(password) != str or password == "":
+            LOGGER.error("Invalid password was given")
+            raise InvalidPasswordException
+
+        airport_staff.password = password
+
+    if staff_type is not None:
+        if staff_type not in AIRPORT_STAFF_TYPES:
+            LOGGER.error("Given airport staff type is invalid")
+            raise StaffException
+
+        airport_staff.staff_type = staff_type
+
+    if assigned_airport_icao is not None:
+        airport = (
+            session.query(Airport)
+            .filter(Airport.icao == assigned_airport_icao)
+        ).first()
+
+        if airport is None:
+            LOGGER.error("Given assigned airport ICAO does not exist")
+            raise InvalidAirportException(assigned_airport_icao)
+
+        airport_staff.airport = airport
 
 
 @with_session
