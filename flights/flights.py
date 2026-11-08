@@ -254,7 +254,6 @@ def get_route_flights(session: Session, route_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID to search for flights for
     """
-    # TODO: Write get_route_flights - waiting on booking seats
     # ? Only pull past (with pagination) on button press
     LOGGER.info("Getting route flights...")
     LOGGER.debug(f"{route_id = }")
@@ -274,12 +273,14 @@ def get_route_flights(session: Session, route_id: int) -> dict:
         session.query(Flight)
         .filter(Flight.service_id.in_(services))
         .filter(or_(Flight.status == "departed", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc < datetime.now())))
+        .order_by(Flight.scheduled_departure_datetime_utc)
     )
 
     future_flights = (
         session.query(Flight)
         .filter(Flight.service_id.in_(services))
         .filter(or_(Flight.status == "scheduled", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc >= datetime.now())))
+        .order_by(Flight.scheduled_departure_datetime_utc)
     )
 
     return {
