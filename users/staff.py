@@ -74,6 +74,7 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
 
     return to_return
 
+
 @with_session
 def add_airline_employee(Session: Session, first_name: str, last_name: str, email: str, phone: str, password: str, employee_type: str) -> None:
     """Adds a new airline employee with the given details. Raises exception if email, phone, or password are invalid format. Also raises exception if type is not in allowed airline employee types list. Also raises exception if email is in use in any other user table.
@@ -140,7 +141,7 @@ def add_airline_employee(Session: Session, first_name: str, last_name: str, emai
 
 
 @with_session
-def edit_airline_employee(Session: Session, airline_employee_id: int, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None, type: str = None) -> None:
+def edit_airline_employee(session: Session, airline_employee_id: int, first_name: str = None, last_name: str = None, email: str = None, phone: str = None, password: str = None, employee_type: str = None) -> None:
     """Edits the given airline employee. If current type is representative and moving away, reassigns guests to other representatives. Raises exception if email, phone, or password are invalid format. Also raises exception if type is not in allowed airline employee types list. Also raises exception if email is in use in any other user table.
 
     Args:
@@ -153,6 +154,76 @@ def edit_airline_employee(Session: Session, airline_employee_id: int, first_name
         password (str): The new password of the airline employee
         type (str): The new employee type of the airline employee
     """
+    LOGGER.info("Editing guest...")
+    LOGGER.debug(f"{airline_employee_id = }, {first_name = }, {last_name = }, {email = }, {phone = }, {password = }, {employee_type = }")
+
+    airline_employee = (
+        session.query(AirlineEmployee)
+        .filter(AirlineEmployee.airline_employee_id == airline_employee_id)
+    ).first()
+
+    if airline_employee is None:
+        LOGGER.error("Airline employee does not exist or is of the wrong type")
+        raise ExistenceException
+
+    if first_name is not None:
+        if type(first_name) != str or len(first_name) > 34 or first_name == "":
+            LOGGER.error("First name given is invalid")
+            raise InvalidNameException
+
+        airline_employee.first_name = first_name
+
+    if last_name is not None:
+        if type(last_name) != str or len(last_name) > 34:
+            LOGGER.error("Last name given is invalid")
+            raise InvalidNameException
+
+        airline_employee.last_name = last_name
+
+    if email is not None:
+        if type(email) != str:
+            LOGGER.error("Email is of the wrong data type")
+            raise InvalidEmailException
+
+        pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        if pattern.match(email) == None or len(email) > 124:
+            LOGGER.error("Email is invalid format")
+            raise InvalidEmailException
+
+        if check_email_already_in_use(session, email):
+            LOGGER.error("The email given is already in use")
+            raise InvalidEmailException
+
+        airline_employee.email = email
+
+    if phone is not None:
+        if type(phone) != str:
+            LOGGER.error("Phone number is of the wrong data type")
+            raise InvalidPhoneException
+        
+        phone = phone.replace(" ", "") # Remove any spaces added to phone number
+    
+        if not phone.isnumeric():
+            LOGGER.error("A non-numeric phone number was given")
+            raise InvalidPhoneException
+    
+        if len(phone) > 14:
+            LOGGER.error("The phone number given was too long")
+            raise InvalidPhoneException
+
+        airline_employee.phone = phone
+
+    if password is not None:
+        if type(password) != str or password == "":
+            LOGGER.error("Invalid password was given")
+            raise InvalidPasswordException
+
+        airline_employee.password = password
+
+    if employee_type is not None:
+        if employee_type not in AIRLINE_EMPLOYEE_TYPES:
+            LOGGER.error("Given airline employee type is invalid")
+            raise EmployeeException
 
 @with_session
 def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
