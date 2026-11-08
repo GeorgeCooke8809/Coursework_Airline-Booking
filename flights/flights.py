@@ -1,6 +1,6 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, case, func
+from sqlalchemy import or_, and_, case, func
 
 from models import Flight, Airport, Service, Route, AirportStaff, BookingSeat
 from models import FLIGHT_STATUS_OPTIONS
@@ -18,6 +18,24 @@ LOGGER = logging.getLogger(__name__)
 
 BATCH_GENERATE_LOOK_AHEAD = 90 # The number of days ahead of datetime.today() the batch generate flights will look ahead to create
 AIRCRAFT_AVG_SPEED_MPH = 520 # ? Different planes have different speeds
+
+def _route_flights_objects_to_tuples(flights: list[Flight]):
+    to_return = []
+
+    for flight in flights:
+        seats = 0
+        for booking in flight.bookings:
+            seats += len(booking.seats)
+
+        to_return.append((
+            flight.flight_id,
+            flight.scheduled_departure_datetime_utc,
+            30,
+            seats,
+            flight.status
+        ))
+
+    return to_return
 
 @with_session
 def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, str, str, str, datetime, datetime]]:
@@ -207,7 +225,7 @@ def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) 
 
 
 @with_session
-def get_route_flights(Session: Session, route_id: int) -> dict:
+def get_route_flights(session: Session, route_id: int) -> dict:
     """Returns a list of past and future flights for the given route_id. Used in the flight operations manager portal
 
     ## Return Format:
@@ -236,9 +254,40 @@ def get_route_flights(Session: Session, route_id: int) -> dict:
         Session (Session): The database session automatically provided by @with_session
         route_id (int): The route ID to search for flights for
     """
-    # Will have to join tables?
-    # TODO: Write get_route_flights - waiting on booking seats
-    # ? Split into past and present if flight quantities get too high for quick retrieval. Only pull past (with pagination) on button press
+    # ? Only pull past (with pagination) on button press
+    LOGGER.info("Getting route flights...")
+    LOGGER.debug(f"{route_id = }")
+
+    route = (
+        session.query(Route)
+        .filter(Route.route_id == route_id)
+    ).first()
+
+    if route is None:
+        LOGGER.error("No route exists to get flights for")
+        raise ExistenceException
+
+    services = [service.service_id for service in route.services]
+
+    past_flights = (
+        session.query(Flight)
+        .filter(Flight.service_id.in_(services))
+        .filter(or_(Flight.status == "departed", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc < datetime.now())))
+        .order_by(Flight.scheduled_departure_datetime_utc)
+    )
+
+    future_flights = (
+        session.query(Flight)
+        .filter(Flight.service_id.in_(services))
+        .filter(or_(Flight.status == "scheduled", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc >= datetime.now())))
+        .order_by(Flight.scheduled_departure_datetime_utc)
+    )
+
+    return {
+        "past": _route_flights_objects_to_tuples(past_flights),
+        "future": _route_flights_objects_to_tuples(future_flights)
+    }
+
 
 @with_session
 def edit_flight_departure_time(Session: Session, flight_id: int, new_departure_datetime: datetime) -> None:
