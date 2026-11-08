@@ -414,7 +414,7 @@ def edit_airport_staff_member(session: Session, airport_staff_id: int, first_nam
     if staff_type is not None:
         if staff_type not in AIRPORT_STAFF_TYPES:
             LOGGER.error("Given airport staff type is invalid")
-            raise EmployeeException
+            raise StaffException
 
         airport_staff.staff_type = staff_type
 
@@ -426,9 +426,9 @@ def edit_airport_staff_member(session: Session, airport_staff_id: int, first_nam
 
         if airport is None:
             LOGGER.error("Given assigned airport ICAO does not exist")
-            raise InvalidAirportException
+            raise InvalidAirportException(assigned_airport_icao)
 
-        airport_staff.assigned_airport_icao == assigned_airport_icao
+        airport_staff.airport = airport
 
 
 @with_session
