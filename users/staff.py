@@ -246,6 +246,7 @@ def edit_airline_employee(session: Session, airline_employee_id: int, first_name
 
         airline_employee.employee_type = employee_type
 
+
 @with_session
 def delete_airline_employee(Session: Session, airline_employee_id: int) -> None:
     """Deletes the given airline employee. If they are a customer support rep, reassigns their guests by iteratively going through them and assigning them to the rep with the fewest assigned guests.
