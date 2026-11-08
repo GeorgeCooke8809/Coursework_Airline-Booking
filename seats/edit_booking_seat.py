@@ -1,8 +1,9 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
 
-from models import BookingSeat, Companion, Booking, VALID_SEAT_IDS
+from models import BookingSeat, Companion
 from utils import ExistenceException, SeatException
+from .get_available_seats import get_available_seats
 
 import logging
 
@@ -31,8 +32,8 @@ def edit_booking_seat(session: Session, booking_seat_id: int, new_seat: str = No
         raise ExistenceException
 
     if new_seat is not None:
-        if new_seat not in VALID_SEAT_IDS:
-            LOGGER.error("Given seat ID is invalid")
+        if new_seat not in get_available_seats(session, booking_seat.booking.flight_id):
+            LOGGER.error("Seat does not exist or is already booked")
             raise SeatException
 
         booking_seat.seat_id = new_seat
@@ -51,4 +52,4 @@ def edit_booking_seat(session: Session, booking_seat_id: int, new_seat: str = No
             LOGGER.error("Companion and booking ownership miss match")
             raise SeatException
 
-        booking_seat.companion == new_companion
+        booking_seat.companion = new_companion
