@@ -264,12 +264,16 @@ def edit_guest(session: Session, guest_id: int, airline_employee_id: int = None,
         guest.last_name = last_name
 
     if email is not None:
+        if type(email) != str:
+            LOGGER.error("Email is of the wrong data type")
+            raise InvalidEmailException
+
         pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
         if pattern.match(email) == None or len(email) > 124:
             LOGGER.error("Email is invalid format")
             raise InvalidEmailException
 
-        if check_email_already_in_use(Session, email):
+        if check_email_already_in_use(session, email):
             LOGGER.error("The email given is already in use")
             raise InvalidEmailException
 
