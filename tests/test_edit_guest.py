@@ -93,7 +93,7 @@ def test_edit_guest_last_name_invalid_type(session: Session):
     add_guest(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07802 447086", "password123*")
 
     with raises(InvalidNameException):
-        edit_guest(session, 1, first_name=True)
+        edit_guest(session, 1, last_name=True)
 
 def test_edit_guest_last_name_invalid_long(session: Session):
     LOGGER.critical("Expecting error")
@@ -102,7 +102,7 @@ def test_edit_guest_last_name_invalid_long(session: Session):
     add_guest(session, "George", "Cooke", "25cookeg899@collyers.ac.uk", "07802 447086", "password123*")
 
     with raises(InvalidNameException):
-        edit_guest(session, 1, first_name="gjkherughergheroiugheriogherogheougheiougheirugheruighergheh")
+        edit_guest(session, 1, last_name="gjkherughergheroiugheriogherogheougheiougheirugheruighergheh")
 
 
 
