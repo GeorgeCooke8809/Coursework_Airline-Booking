@@ -12,3 +12,4 @@ def generate_boarding_pass(Session: Session, booking_id: int) -> None:
         Session (Session): Database session automatically provided by @with_session
         booking_id (int): The bookings ID for the PDF boarding pass to be based on
     """
+    # TODO: Implement generate_boarding_pass

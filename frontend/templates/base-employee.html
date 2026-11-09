@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Airways - Employee Portal</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <script defer src="{{ url_for('static', filename='js/common.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</head>
+
+<body>
+    <nav>
+        <nav class="navigation-bar">
+            <ul>
+                <li>
+                    <h1>Employee Portal</h1>
+                </li>
+
+                <div>
+                    <li><a href="/logout" class="basic-button">Log Out</a></li>
+                </div>
+            </ul>
+        </nav>
+    </nav>
+
+
+    {% block content %}{% endblock %}
+    <div id="flash-container"></div>
+</body>
+
+</html>
