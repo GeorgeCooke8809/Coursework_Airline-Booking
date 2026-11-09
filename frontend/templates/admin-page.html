@@ -5,6 +5,38 @@
 
 {% block content %}
 
-<h1>Hello World</h1>
+<div id="admin-page-layout">
+    <div class="split-content-rows">
+        <div id="admin-users-type-group">
+            <label class="admin-user-view-type-radio">
+                <input type="radio" name="user-type" value="guests">
+                Guests
+            </label>
+
+            <label class="admin-user-view-type-radio">
+                <input type="radio" name="user-type" value="staff" checked>
+                Staff
+            </label>
+        </div>
+        <button class="admin-add-user-button">+ Add Staff</button>
+    </div>
+
+    <input id="admin-user-search-bar" class="search-bar" type="search" placeholder="Search">
+
+    <div id="admin-users-list-container">
+        {% for user in staff_users %}
+        <div class="admin-user-item">
+            <label>{{ user[3] }} {{ user[4] }}</label>
+            <label>{{ user[0] }}</label>
+            <label>{{ user[2] }}</label>
+
+            <div>
+                <button>Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}

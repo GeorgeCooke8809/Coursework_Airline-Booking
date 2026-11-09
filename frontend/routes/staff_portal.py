@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, session
 from datetime import datetime
 import logging
+from users import (
+    get_all_staff_users
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,5 +15,6 @@ LOGGER.info("Staff blueprint created")
 @staff_portal.route("/admin", methods = ["GET"])
 def admin_page():
     return render_template(
-        "admin-page.html"
+        "admin-page.html",
+        staff_users = [("support", "employee", 1, "George", "Cooke")]
     )
