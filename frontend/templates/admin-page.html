@@ -24,6 +24,10 @@
     <input id="admin-user-search-bar" class="search-bar" type="search" placeholder="Search">
 
     <div id="admin-users-list-container">
+        {% if staff_users == []%}
+        <label class="no-records-label">There are currently no staff users</label>
+        {% endif %}
+
         {% for user in staff_users %}
         <div class="admin-user-item">
             <label>{{ user[3] }} {{ user[4] }}</label>

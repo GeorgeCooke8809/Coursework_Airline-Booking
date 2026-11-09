@@ -16,5 +16,5 @@ LOGGER.info("Staff blueprint created")
 def admin_page():
     return render_template(
         "admin-page.html",
-        staff_users = [("support", "employee", 1, "George", "Cooke")]
+        staff_users = get_all_staff_users()
     )
