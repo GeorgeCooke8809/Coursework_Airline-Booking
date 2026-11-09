@@ -119,7 +119,7 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
     Session.add(new_companion)
 
 @with_session
-def edit_companion(Session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:
+def edit_companion(session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:
     """Edits a companion. Raises exception if companion does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. This is used in the customer support rep portal.
     
     Args:
@@ -133,8 +133,102 @@ def edit_companion(Session: Session, companion_id: int, passport_name: str = Non
         passport_sex (str): The new sex of the companion.
         passport_authority (str): The new passport authority for the companion.
     """
+    LOGGER.info("Editing companion...")
+    LOGGER.debug(f"{companion_id = }, {passport_name = }, {passport_expiry = }, {passport_number = }, {date_of_birth = }, {nationality = }, {passport_sex = }, {passport_authority = }")
 
-    # ? Make fail if the companion has already taken a flight - could be used nefariously to change passenger records if not done
+    companion = (
+        session.query(Companion)
+        .filter(Companion.companion_id == companion_id)
+    ).first()
+
+    if companion is None:
+        LOGGER.error("Companion does not exist to update")
+        raise ExistenceException
+
+    if len(companion.seats) != 0:
+        LOGGER.error("Companion has already traveled on a flight, cannot change record")
+        raise CompanionException("Companion already flown")
+
+    if passport_name is not None:
+        if type(passport_name) != str:
+            LOGGER.error("Passport name is of the wrong data type")
+            raise PassportException
+
+        if len(passport_name) > 38:
+            LOGGER.error("The passport name is too long")
+            raise PassportException
+
+        if passport_name == "":
+            LOGGER.error("The passport name is empty")
+            raise PassportException
+
+        companion.passport_name = passport_name
+
+    if passport_expiry is not None:
+        if type(passport_expiry) != date:
+            LOGGER.error("The passport expiry is not of the correct data type")
+            raise PassportException
+
+        if passport_expiry < date.today():
+            LOGGER.error("The passport has already expired")
+            raise PassportException
+
+        companion.passport_expiry = passport_expiry
+
+    if passport_number is not None:
+        if type(passport_number) != str:
+            LOGGER.error("The passport number is not of the correct data type")
+            raise PassportException
+
+        if len(passport_number) > 9:
+            LOGGER.error("The passport number is too long")
+            raise PassportException
+
+        if passport_number == "":
+            LOGGER.error("The passport number is empty")
+            raise PassportException
+
+        companion.passport_number = passport_number
+
+    if date_of_birth is not None:
+        if type(date_of_birth) != date:
+            LOGGER.error("The date of birth is of the incorrect data type")
+            raise PassportException
+
+        if date_of_birth > date.today():
+            LOGGER.error("The date of birth is in the future")
+            raise PassportException
+
+        companion.date_of_birth = date_of_birth
+
+    if nationality is not None:
+        if type(nationality) != str:
+            LOGGER.error("The nationality is not of the correct data type")
+            raise PassportException
+
+        if nationality == "":
+            LOGGER.error("The nationality is empty")
+            raise PassportException
+
+        companion.nationality = nationality
+
+    if passport_sex is not None:
+        if passport_sex not in SEX_OPTIONS:
+            LOGGER.error("The passport sex given is invalid")
+            raise PassportException
+
+        companion.sex = passport_sex
+
+    if passport_authority is not None:
+        if type(passport_authority) != str:
+            LOGGER.error("The passport authority is not of the correct data type")
+            raise PassportException
+
+        if passport_authority == "":
+            LOGGER.error("The passport authority is empty")
+            raise PassportException
+
+        companion.passport_authority = passport_authority
 
 @with_session
 def disable_companion(Session: Session, companion_id: int) -> None:
