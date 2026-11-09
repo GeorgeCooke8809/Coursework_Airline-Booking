@@ -228,7 +228,7 @@ def edit_companion(session: Session, companion_id: int, passport_name: str = Non
             LOGGER.error("The passport authority is empty")
             raise PassportException
 
-        companion.passport_authority = passport_authority
+        companion.passport_issue_authority = passport_authority
 
 @with_session
 def disable_companion(Session: Session, companion_id: int) -> None:
