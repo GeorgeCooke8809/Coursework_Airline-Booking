@@ -2,8 +2,75 @@ from flask import Blueprint, jsonify, request, session
 from datetime import datetime
 import logging
 
+from utils import check_email_already_in_use
+from users import add_airline_employee
+
+
 LOGGER = logging.getLogger(__name__)
 
 api = Blueprint("api", __name__)
 
 LOGGER.info("API blueprint created")
+
+@api.route("add-airline-employee", methods = ["POST"])
+def api_add_airline_employee():
+    request_dict = request.get_json()
+
+    # * Validation
+    if (
+        len(request_dict["first_name"]) > 34
+        or request_dict["first_name"] == ""
+    ):
+        return jsonify({
+            "code": 400,
+            "message": "Invalid first name has been given"
+        })
+
+    if (len(request_dict["last_name"]) > 34):
+            return jsonify({
+                "code": 400,
+                "message": "Invalid last name has been given"
+            })
+
+    phone = request_dict["phone"].replace(" ", "") # Remove any spaces added to phone number
+    
+    if not phone.isnumeric():
+        return jsonify({
+            "code": 400,
+            "message": "Phone number must only be numbers"
+        })
+
+    if len(phone) > 14:
+        return jsonify({
+            "code": 400,
+            "message": "Phone number is too long"
+        })
+
+    if check_email_already_in_use(request_dict["email"]):
+        return jsonify({
+            "code": 400,
+            "message": "That email is already in use"
+        })
+
+    
+    # * Processing
+
+    try:
+        add_airline_employee(
+            request_dict["first_name"],
+            request_dict["last_name"],
+            request_dict["email"],
+            request_dict["phone"],
+            request_dict["password"],
+            request_dict["staff_type"]
+        )
+
+        return jsonify({
+            "code": 200,
+            "message": ""
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong. Please try again later or contact support."
+        })

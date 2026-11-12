@@ -161,6 +161,32 @@ button {
     flex-direction: column;
 }
 
+#flash-container {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+.flash-message {
+    display: flex;
+    align-items: center;
+
+    border-left-style: solid;
+    border-left-color: #872c2c;
+    border-left-width: 7.5px;
+
+    width: 500px;
+    min-height: 50px;
+
+    padding: 5px;
+    margin-bottom: 5px;
+
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    background-color: #ce5555;
+    color: white;
+}
+
 
 /* ! Specific Styling */
 
