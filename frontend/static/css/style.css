@@ -1,6 +1,7 @@
 /* ! Global Styling */
 :root {
     --cta-colour: #D7B142;
+    --cta-colour-secondary: #c7a336;
 
     --light-bg: #FFFDF7;
     --dark-bg: #2B2B2E;
@@ -23,12 +24,43 @@ body {
     background-color: var(--light-bg);
 
     padding: 0px 10px;
+    margin: 0px;
+
+    min-height: 100vh;
+}
+
+.dark-bg-body {
+    background-color: var(--dark-bg);
 }
 
 button {
     border-radius: var(--standard-border-radius);
     border-style: solid;
     border-width: 1px;
+
+    height: fit-content;
+    width: fit-content;
+
+    padding: 5px 10px;
+
+    font-family: var(--primary-font-family);
+
+    cursor: pointer;
+}
+
+.link-button-dark {
+    border-radius: var(--standard-border-radius);
+    border-style: solid;
+    border-width: 1px;
+
+    background-color: var(--dark-lvl-2);
+    border-color: var(--dark-lvl-3);
+
+    color: var(--dark-lvl-3);
+
+    text-decoration: none;
+
+    font-family: var(--secondary-font-family);
 
     height: fit-content;
     width: fit-content;
@@ -96,7 +128,7 @@ button {
 }
 
 .nav-bar-spacer {
-    height: 75px;
+    height: 85px;
 }
 
 .search-bar {
@@ -187,8 +219,26 @@ button {
     color: white;
 }
 
+.centre-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-align {
+    margin-right: auto;
+}
+
+.subtle-link-dark-bg {
+    color: var(--dark-lvl-3);
+    padding: 5px;
+}
+
 
 /* ! Specific Styling */
+
+/* Admin page */
 
 #admin-page-layout {
     display: flex;
@@ -279,6 +329,7 @@ button {
 }
 
 #admin-users-list-container {
+    /* TODO: This can be adapted to be used globally */
     border-style: solid;
     border-width: 2px;
     border-radius: var(--standard-border-radius);
@@ -316,4 +367,80 @@ button {
 
 #add-staff-airport-label {
     display: none;
+}
+
+/* Login Page */
+#login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 30rem;
+    height: 40rem;
+
+    margin: auto;
+    margin-top: 10vh;
+
+    background-color: var(--dark-lvl-2);
+
+    border-style: solid;
+    border-radius: var(--standard-border-radius);
+    border-color: var(--cta-colour);
+    border-width: 1px;
+}
+
+#login-container label {
+    display: flex;
+    flex-direction: column;
+
+    color: var(--light-bg);
+    margin: 10px;
+
+    font-size: 30px;
+}
+
+#login-container label input {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    margin: 0px;
+    box-sizing: border-box;
+
+    font-size: 30px;
+}
+
+#login-container h1 {
+    color: var(--light-bg);
+
+    justify-content: left;
+
+    font-family: var(--primary-font-family);
+    width: 393px;
+    font-size: 75px;
+    margin: 10px;
+}
+
+#sign-in-button {
+    all: unset;
+    cursor: pointer;
+
+    text-align: center;
+
+    width: 373px;
+    padding: 5px;
+    box-sizing: border-box;
+
+    font-family: var(--primary-font-family);
+    font-size: 20px;
+    font-weight: bold;
+
+    background-color: var(--cta-colour);
+
+    color: var(--dark-bg);
+
+    border-radius: var(--standard-border-radius);
+    border-color: var(--cta-colour-secondary);
 }

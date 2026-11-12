@@ -1,3 +1,5 @@
+// ! Global functions
+
 const airline_types = ["support", "admin", "operations"]
 const airport_types = ["gate", "check-in"]
 
@@ -31,6 +33,11 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
     }
 
 }
+
+
+// ! Page specific functions
+
+// Admin Portal
 
 async function adminAddStaffTypeChange() { // Toggles if the phone or airport ICAO entry is visible
     event.preventDefault()
@@ -103,6 +110,46 @@ async function addStaffUser() {
     else {
         console.log("Information incorrect, flashing error.")
 
+        flashMessage(response_json.message)
+    }
+}
+
+// Login
+async function login() {
+    event.preventDefault()
+
+    let email = document.querySelector("#email").value
+    let password = document.querySelector("#password").value
+
+    let response = await fetch("/api/check-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "email": email,
+            "password": password
+        })
+    })
+
+    let response_json = await response.json()
+
+    if (response_json.code == 200) {
+        if (response_json.page == "guest") {
+            console.log("Redirecting to guest page") // TODO: Make login redirect to guest page
+        } else if (response_json.page == "support") {
+            console.log("Redirecting to customer support page") // TODO: Make login redirect to customer support page
+        } else if (response_json.page == "operations") {
+            console.log("Redirecting to flight operations manager portal") // TODO: Make login redirect to flight operations page
+        } else if (response_json.page == "admin") {
+            console.log("Redirecting to admin portal")
+            window.location.replace("/employee/admin")
+        } else if (response_json.page == "gate") {
+            console.log("Redirecting to gate agent portal") // TODO: Make login redirect to gate agent page
+        } else if (response_json.page == "check-in") {
+            console.log("Redirecting to check-in agent portal") // TODO: Make login redirect to check-in agent page
+        }
+    }
+    else {
+        console.log("Information incorrect, flashing error.")
         flashMessage(response_json.message)
     }
 }

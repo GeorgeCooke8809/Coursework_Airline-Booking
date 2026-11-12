@@ -142,7 +142,11 @@ def api_add_airport_staff():
 def api_check_login_details():
     request_dict = request.get_json()
 
+    LOGGER.info(f"Hi")
+
     details_status = check_login_details(request_dict["email"], request_dict["password"])
+
+    LOGGER.info(f"{details_status}")
 
     if details_status is None:
         return jsonify({
@@ -152,6 +156,8 @@ def api_check_login_details():
 
     session["user_id"] = details_status["id"]
     session["user_type"] = details_status["user_type"]
+
+    LOGGER.info("Hiiguogheruigheruigheruohgerh")
 
     return jsonify({
         "code": 200,
