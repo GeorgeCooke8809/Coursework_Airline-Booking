@@ -18,7 +18,7 @@
                 Staff
             </label>
         </div>
-        <button class="admin-add-user-button">+ Add Staff</button>
+        <button class="admin-add-user-button" onclick="toggleModal('#admin-add-staff-modal')">+ Add Staff</button>
     </div>
 
     <input id="admin-user-search-bar" class="search-bar" type="search" placeholder="Search">
@@ -41,6 +41,70 @@
         </div>
         {% endfor %}
     </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+
+<div class="modal-centred" id="admin-add-staff-modal">
+    <button onclick="toggleModal('#admin-add-staff-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form>
+        <div class="columns">
+            <div class="column">
+                <label>
+                    First Name <br>
+                    <input type="text" id="add-staff-first-name">
+                </label>
+
+                <label>
+                    Email <br>
+                    <input type="email" id="add-staff-email">
+                </label>
+
+                <label>
+                    Type <br>
+                    <select id="add-staff-type" onchange="adminAddStaffTypeChange()">
+                        <option value="admin">Admin</option>
+                        <option value="support" selected>Customer Support</option>
+                        <option value="operations">Flight Operations</option>
+                        <option value="gate">Gate Agent</option>
+                        <option value="check-in">Check-In Agent</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="column">
+                <label>
+                    Last Name <br>
+                    <input type="text" id="add-staff-last-name">
+                </label>
+
+                <label>
+                    Password <br>
+                    <input type="text" id="add-staff-password">
+                </label>
+
+                <label id="add-staff-phone-label"> <!-- Starts as phone, changed to airport if type is in staff -->
+                    Phone <br>
+                    <input type="text" id="add-staff-phone">
+                </label>
+
+                <label id="add-staff-airport-label">
+                    Assigned ICAO <br>
+                    <input type="text" id="add-staff-airport">
+                </label>
+            </div>
+        </div>
+
+        <input type="submit" value="Add User">
+    </form>
 </div>
 
 {% endblock %}

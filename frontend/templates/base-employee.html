@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-    <script defer src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 </head>
@@ -32,6 +32,10 @@
 
 
     {% block content %}{% endblock %}
+
+    <div class="modal-cover"></div>
+    {% block modals %}{% endblock %}
+
     <div id="flash-container"></div>
 </body>
 

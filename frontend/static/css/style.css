@@ -9,6 +9,9 @@
     --dark-lvl-3: #C4C7CF;
     --dark-lvl-4: #d8dae0;
 
+    --modal-cover-opacity: 0.5;
+    --modal-cover-colour: #303030;
+
     --standard-border-radius: 0.4rem;
 
     --primary-font-family: Arial, Helvetica, sans-serif;
@@ -106,6 +109,57 @@ button {
     padding: 5px 10px;
 }
 
+.modal-cover {
+    display: none;
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+
+    opacity: var(--modal-cover-opacity);
+    background-color: var(--modal-cover-colour);
+}
+
+.modal-centred {
+    display: none;
+    flex-direction: column;
+    justify-content: right;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    border-style: solid;
+    border-radius: var(--standard-border-radius);
+    border-width: 2px;
+    padding: 10px;
+    background-color: var(--light-bg);
+
+    transform: translate(-50%, -50%);
+}
+
+.modal-close-button {
+    all: unset;
+    cursor: pointer;
+
+    width: 20px;
+    height: 20px;
+
+    margin-left: auto;
+    margin-right: 0px;
+}
+
+.columns {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
 
 
 /* ! Specific Styling */
@@ -232,4 +286,8 @@ button {
 
 .admin-user-item:hover {
     background-color: var(--dark-lvl-3);
+}
+
+#add-staff-airport-label {
+    display: none;
 }
