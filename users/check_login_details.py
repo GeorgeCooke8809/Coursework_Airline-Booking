@@ -1,5 +1,6 @@
 from models.base import with_session
 from sqlalchemy.orm import Session
+from sqlalchemy import literal
 
 from models import Guest, AirlineEmployee, AirportStaff
 
@@ -29,7 +30,7 @@ def check_login_details(Session: Session, email: str, password: str) -> dict | N
     LOGGER.debug(f"{email = }")
 
     models = (
-        (Guest, Guest.guest_id, Guest.guest_id, "guest"), # TODO: Find a significantly better way of getting the user type when logging in
+        (Guest, Guest.guest_id, literal("guest"), "guest"),
         (AirlineEmployee, AirlineEmployee.airline_employee_id, AirlineEmployee.employee_type,"airline"),
         (AirportStaff, AirportStaff.airport_staff_id, AirportStaff.staff_type, "airport")
     )
@@ -42,7 +43,6 @@ def check_login_details(Session: Session, email: str, password: str) -> dict | N
         ).first()
 
         if user is not None:
-            if user[0] == user[1]: user[1] = "guest"
             return {
                 "id": user[0],
                 "table": table_name,
