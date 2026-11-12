@@ -1,0 +1,111 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div id="admin-page-layout">
+    <div class="split-content-rows">
+        <div id="admin-users-type-group"> <!-- TODO: Add view all guests in admin portal -->
+            <label class="admin-user-view-type-radio">
+                <input type="radio" name="user-type" value="guests">
+                Guests
+            </label>
+
+            <label class="admin-user-view-type-radio">
+                <input type="radio" name="user-type" value="staff" checked>
+                Staff
+            </label>
+        </div>
+        <button class="admin-add-user-button" onclick="toggleModal('#admin-add-staff-modal')">+ Add Staff</button>
+    </div>
+
+    <input id="admin-user-search-bar" class="search-bar" type="search" placeholder="Search">
+
+    <div id="admin-users-list-container">
+        {% if staff_users == []%}
+        <label class="no-records-label">There are currently no staff users</label>
+        {% endif %}
+
+        {% for user in staff_users %}
+        <div class="admin-user-item">
+            <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
+            <label>{{ user[3] }} {{ user[4] }}</label>
+            <label>{{ user[0] }}</label>
+            <label>{{ user[2] }}</label>
+
+            <div>
+                <button>Edit</button> <!-- TODO: Make edit staff user work -->
+                <button>Delete</button> <!-- TODO: Make delete staff user work -->
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+
+<div class="modal-centred" id="admin-add-staff-modal">
+    <button onclick="toggleModal('#admin-add-staff-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form onsubmit="addStaffUser()">
+        <div class="columns">
+            <div class="column">
+                <label>
+                    First Name <br>
+                    <input type="text" id="add-staff-first-name">
+                </label>
+
+                <label>
+                    Email <br>
+                    <input type="email" id="add-staff-email">
+                </label>
+
+                <label>
+                    Type <br>
+                    <select id="add-staff-type" onchange="adminAddStaffTypeChange()">
+                        <option value="admin">Admin</option>
+                        <option value="support" selected>Customer Support</option>
+                        <option value="operations">Flight Operations</option>
+                        <option value="gate">Gate Agent</option>
+                        <option value="check-in">Check-In Agent</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="column">
+                <label>
+                    Last Name <br>
+                    <input type="text" id="add-staff-last-name">
+                </label>
+
+                <label>
+                    Password <br>
+                    <input type="text" id="add-staff-password">
+                </label>
+
+                <label id="add-staff-phone-label"> <!-- Starts as phone, changed to airport if type is in staff -->
+                    Phone <br>
+                    <input type="text" id="add-staff-phone">
+                </label>
+
+                <label id="add-staff-airport-label">
+                    Assigned ICAO <br>
+                    <input type="text" id="add-staff-airport">
+                </label>
+            </div>
+        </div>
+
+        <input type="submit" value="Add User">
+    </form>
+</div>
+
+{% endblock %}

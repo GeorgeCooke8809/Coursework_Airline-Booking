@@ -6,7 +6,7 @@ Run from the repository root:
 Use --help to see all available options.
 """
 
-# TODO: Make add airports to test_data.db too (different option)
+# TODO: Make add airports add to test_data.db too (different option)
 
 import argparse
 import json

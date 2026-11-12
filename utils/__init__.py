@@ -18,5 +18,6 @@ from .exceptions import (
 )
 
 from .validation import (
-    check_email_already_in_use
+    check_email_already_in_use,
+    check_airport_exists
 )

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Airways - Login</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</head>
+
+<body class="dark-bg-body centre-content">
+    <br>
+    <a class="link-button-dark left-align" href="/">Back</a>
+
+    <form id="login-container" onsubmit="login()">
+        <h1>Sign In</h1>
+        <label>
+            Email
+            <input type="email" id="email">
+        </label>
+
+        <label>
+            Password
+            <input type="password" id="password">
+        </label>
+
+        <input type="submit" value="Sign In" id="sign-in-button">
+
+        <a href="/create-new-account" class="subtle-link-dark-bg">Create Account</a>
+    </form>
+
+    <div id="flash-container"></div>
+</body>
+
+</html>
