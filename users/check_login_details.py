@@ -14,7 +14,8 @@ def check_login_details(Session: Session, email: str, password: str) -> dict | N
     ## Return Format:
         {
             "id": <user_id>: int,
-            "type": <user_table> str = "guest" | "airline" | "airport"
+            "table": <user_table> str = "guest" | "airline" | "airport"
+            "user_type": <user_type> str = "guest" | "support" | "operations" | "admin" | "gate" | "check-in"
         }
 
     Args:
@@ -28,22 +29,24 @@ def check_login_details(Session: Session, email: str, password: str) -> dict | N
     LOGGER.debug(f"{email = }")
 
     models = (
-        (Guest, Guest.guest_id, "guest"),
-        (AirlineEmployee, AirlineEmployee.airline_employee_id,"airline"),
-        (AirportStaff, AirportStaff.airport_staff_id,"airport")
+        (Guest, Guest.guest_id, Guest.guest_id, "guest"), # TODO: Find a significantly better way of getting the user type when logging in
+        (AirlineEmployee, AirlineEmployee.airline_employee_id, AirlineEmployee.employee_type,"airline"),
+        (AirportStaff, AirportStaff.airport_staff_id, AirportStaff.staff_type, "airport")
     )
 
-    for table, primary, table_name in models:
+    for table, primary, secondary, table_name in models:
         user = (
-            Session.query(primary)
+            Session.query(primary, secondary)
             .filter(table.email == email)
             .filter(table.password == password)
         ).first()
 
         if user is not None:
+            if user[0] == user[1]: user[1] = "guest"
             return {
                 "id": user[0],
-                "type": table_name
+                "table": table_name,
+                "user_type": user[1]
             }
 
     LOGGER.info("User does not exist.")

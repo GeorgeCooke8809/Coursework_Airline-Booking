@@ -2,8 +2,15 @@ from flask import Blueprint, jsonify, request, session
 from datetime import datetime
 import logging
 
-from utils import check_email_already_in_use, check_airport_exists
-from users import add_airline_employee, add_airport_staff
+from utils import (
+    check_email_already_in_use,
+    check_airport_exists
+)
+from users import (
+    add_airline_employee,
+    add_airport_staff,
+    check_login_details
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -130,3 +137,24 @@ def api_add_airport_staff():
             "code": 500,
             "message": "Something went wrong. Please try again later or contact support."
         })
+
+@api.route("check-login", methods = ["POST"])
+def api_check_login_details():
+    request_dict = request.get_json()
+
+    details_status = check_login_details(request_dict["email"], request_dict["password"])
+
+    if details_status is None:
+        return jsonify({
+            "code": 400,
+            "message": "Those login details are not correct"
+        })
+
+    session["user_id"] = details_status["id"]
+    session["user_type"] = details_status["user_type"]
+
+    return jsonify({
+        "code": 200,
+        "message": "",
+        "page": details_status["user_type"] # "guest" | "support" | "operations" | "admin" | "gate" | "check-in"
+    })
