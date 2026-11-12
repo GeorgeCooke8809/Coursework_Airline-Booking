@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request, session
 from datetime import datetime
 import logging
 
-from utils import check_email_already_in_use
-from users import add_airline_employee
+from utils import check_email_already_in_use, check_airport_exists
+from users import add_airline_employee, add_airport_staff
 
 
 LOGGER = logging.getLogger(__name__)
@@ -32,6 +32,12 @@ def api_add_airline_employee():
                 "message": "Invalid last name has been given"
             })
 
+    if check_email_already_in_use(request_dict["email"]):
+        return jsonify({
+            "code": 400,
+            "message": "That email is already in use"
+        })
+
     phone = request_dict["phone"].replace(" ", "") # Remove any spaces added to phone number
     
     if not phone.isnumeric():
@@ -46,12 +52,6 @@ def api_add_airline_employee():
             "message": "Phone number is too long"
         })
 
-    if check_email_already_in_use(request_dict["email"]):
-        return jsonify({
-            "code": 400,
-            "message": "That email is already in use"
-        })
-
     
     # * Processing
 
@@ -63,6 +63,62 @@ def api_add_airline_employee():
             request_dict["phone"],
             request_dict["password"],
             request_dict["staff_type"]
+        )
+
+        return jsonify({
+            "code": 200,
+            "message": ""
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong. Please try again later or contact support."
+        })
+
+@api.route("add-airport-staff", methods = ["POST"])
+def api_add_airport_staff():
+    request_dict = request.get_json()
+    LOGGER.info("made it to start")
+
+    # * Validation
+    if (
+        len(request_dict["first_name"]) > 34
+        or request_dict["first_name"] == ""
+    ):
+        return jsonify({
+            "code": 400,
+            "message": "Invalid first name has been given"
+        })
+
+    if (len(request_dict["last_name"]) > 34):
+            return jsonify({
+                "code": 400,
+                "message": "Invalid last name has been given"
+            })
+
+    if check_email_already_in_use(request_dict["email"]):
+        return jsonify({
+            "code": 400,
+            "message": "That email is already in use"
+        })
+
+    if not check_airport_exists(request_dict["airport_icao"].upper()):
+        return jsonify({
+                    "code": 400,
+                    "message": "That airport does not exist"
+                })
+
+    
+    # * Processing
+
+    try:
+        add_airport_staff(
+            request_dict["first_name"],
+            request_dict["last_name"],
+            request_dict["email"],
+            request_dict["password"],
+            request_dict["staff_type"],
+            request_dict["airport_icao"].upper(),
         )
 
         return jsonify({

@@ -76,7 +76,7 @@ async function addStaffUser() {
             })
         })
     } else if (airport_types.includes(staff_type)) { // Send request to add airport staff endpoint
-        response = await fetch("/api/add-airline-employee", {
+        response = await fetch("/api/add-airport-staff", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

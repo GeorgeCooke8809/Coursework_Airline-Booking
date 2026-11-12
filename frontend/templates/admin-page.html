@@ -7,7 +7,7 @@
 
 <div id="admin-page-layout">
     <div class="split-content-rows">
-        <div id="admin-users-type-group">
+        <div id="admin-users-type-group"> <!-- TODO: Add view all guests in admin portal -->
             <label class="admin-user-view-type-radio">
                 <input type="radio" name="user-type" value="guests">
                 Guests
@@ -30,13 +30,14 @@
 
         {% for user in staff_users %}
         <div class="admin-user-item">
+            <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
             <label>{{ user[3] }} {{ user[4] }}</label>
             <label>{{ user[0] }}</label>
             <label>{{ user[2] }}</label>
 
             <div>
-                <button>Edit</button>
-                <button>Delete</button>
+                <button>Edit</button> <!-- TODO: Make edit staff user work -->
+                <button>Delete</button> <!-- TODO: Make delete staff user work -->
             </div>
         </div>
         {% endfor %}
