@@ -40,11 +40,23 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
 // Admin Portal
 
 async function showStaffTable() {
+    response = await fetch("/api/get-staff-users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    })
 
+    response_json = await response.json()
+    console.log(response_json)
 }
 
 async function showGuestTable() {
+    response = await fetch("/api/get-guest-users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    })
 
+    response_json = await response.json()
+    console.log(response_json)
 }
 
 async function adminAddStaffTypeChange() { // Toggles if the phone or airport ICAO entry is visible

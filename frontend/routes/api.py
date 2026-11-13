@@ -23,6 +23,7 @@ api = Blueprint("api", __name__)
 LOGGER.info("API blueprint created")
 
 # Admin Portal
+
 @api.route("get-staff-users", methods=["POST"])
 def api_get_all_staff_users():
     try:
