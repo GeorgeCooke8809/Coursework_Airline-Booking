@@ -9,7 +9,13 @@ LOGGER.info("Website blueprint created")
 
 # !=============== Login ===============
 @guest_portal.route("/login", methods = ["GET"])
-def admin_page():
+def login_page():
     return render_template(
         "login.html",
+    )
+
+@guest_portal.route("/create-new-account", methods = ["GET"])
+def create_account_page():
+    return render_template(
+        "create-account.html",
     )

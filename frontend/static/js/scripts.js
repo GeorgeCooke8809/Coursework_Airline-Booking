@@ -135,6 +135,7 @@ async function login() {
     if (response_json.code == 200) {
         if (response_json.page == "guest") {
             console.log("Redirecting to guest page") // TODO: Make login redirect to guest page
+            window.location.replace("/")
         } else if (response_json.page == "support") {
             console.log("Redirecting to customer support page") // TODO: Make login redirect to customer support page
         } else if (response_json.page == "operations") {
@@ -151,5 +152,47 @@ async function login() {
     else {
         console.log("Information incorrect, flashing error.")
         flashMessage(response_json.message)
+    }
+}
+
+// Create account
+async function createGuestAccount() { // Create a guest account can be used in the create account page or admin add guest
+    // TODO: Use this function to add guests from admin portal
+    event.preventDefault()
+
+    var first_name = document.querySelector("#first-name").value
+    var last_name = document.querySelector("#last-name").value
+    var email = document.querySelector("#email").value
+    var phone = document.querySelector("#phone").value
+    var password = document.querySelector("#password").value
+    var repeat_password = document.querySelector("#repeat-password").value
+
+    if (password !== repeat_password) {
+        flashMessage("Your password do not match")
+    } else {
+        response = await fetch("/api/add-guest", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "phone": phone,
+                "password": password
+            })
+        })
+
+        response_json = await response.json()
+        console.log(response)
+
+        if (response_json.code == 200) {
+            console.log("Information correct, redirecting.")
+            window.location.replace("/login")
+        }
+        else {
+            console.log("Information incorrect, flashing error.")
+
+            flashMessage(response_json.message)
+        }
     }
 }
