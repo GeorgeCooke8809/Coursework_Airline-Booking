@@ -135,6 +135,7 @@ async function login() {
     if (response_json.code == 200) {
         if (response_json.page == "guest") {
             console.log("Redirecting to guest page") // TODO: Make login redirect to guest page
+            window.location.replace("/")
         } else if (response_json.page == "support") {
             console.log("Redirecting to customer support page") // TODO: Make login redirect to customer support page
         } else if (response_json.page == "operations") {
@@ -159,12 +160,12 @@ async function createGuestAccount() { // Create a guest account can be used in t
     // TODO: Use this function to add guests from admin portal
     event.preventDefault()
 
-    var first_name = document.querySelector("#add-staff-first-name").value
-    var last_name = document.querySelector("#add-staff-email").value
-    var email = document.querySelector("#add-staff-type").value
-    var phone = document.querySelector("#add-staff-last-name").value
-    var password = document.querySelector("#add-staff-password").value
-    var repeat_password = document.querySelector("#add-staff-phone").value
+    var first_name = document.querySelector("#first-name").value
+    var last_name = document.querySelector("#last-name").value
+    var email = document.querySelector("#email").value
+    var phone = document.querySelector("#phone").value
+    var password = document.querySelector("#password").value
+    var repeat_password = document.querySelector("#repeat-password").value
 
     if (password !== repeat_password) {
         flashMessage("Your password do not match")

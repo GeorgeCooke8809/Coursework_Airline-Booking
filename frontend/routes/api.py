@@ -9,6 +9,7 @@ from utils import (
 from users import (
     add_airline_employee,
     add_airport_staff,
+    add_guest,
     check_login_details
 )
 
@@ -142,11 +143,7 @@ def api_add_airport_staff():
 def api_check_login_details():
     request_dict = request.get_json()
 
-    LOGGER.info(f"Hi")
-
     details_status = check_login_details(request_dict["email"], request_dict["password"])
-
-    LOGGER.info(f"{details_status}")
 
     if details_status is None:
         return jsonify({
@@ -157,10 +154,66 @@ def api_check_login_details():
     session["user_id"] = details_status["id"]
     session["user_type"] = details_status["user_type"]
 
-    LOGGER.info("Hiiguogheruigheruigheruohgerh")
-
     return jsonify({
         "code": 200,
         "message": "",
         "page": details_status["user_type"] # "guest" | "support" | "operations" | "admin" | "gate" | "check-in"
     })
+
+@api.route("add-guest", methods = ["POST"])
+def api_add_guest():
+    request_dict = request.get_json()
+
+    # * Validation
+    if len(request_dict["first_name"]) > 34 or request_dict["first_name"] == "":
+        return ({
+            "code": 400,
+            "message": "The first name given is invalid"
+        })
+
+    if len(request_dict["last_name"]) > 34:
+            return ({
+                "code": 400,
+                "message": "The last name given is invalid"
+            })
+
+    phone = request_dict["phone"].replace(" ", "") # Remove any spaces added to phone number
+    
+    if not phone.isnumeric():
+        return ({
+            "code": 400,
+            "message": "Phone numbers must be numeric"
+        })
+
+    if len(phone) > 14:
+        return ({
+            "code": 400,
+            "message": "Phone number is too long"
+        })
+
+    if check_email_already_in_use(request_dict["email"]):
+        return ({
+            "code": 400,
+            "message": "That email is already in use"
+        })
+
+    if request_dict["password"] == "":
+        return ({
+            "code": 400,
+            "message": "Please enter a phone number"
+        })
+    # * Processing
+    try:
+        add_guest(request_dict["first_name"], request_dict["last_name"], request_dict["email"], request_dict["phone"], request_dict["password"])
+
+
+        return jsonify({
+            "code": 200,
+            "message": "",
+        })
+    
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
