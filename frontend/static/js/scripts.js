@@ -39,6 +39,14 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
 
 // Admin Portal
 
+async function showStaffTable() {
+
+}
+
+async function showGuestTable() {
+
+}
+
 async function adminAddStaffTypeChange() { // Toggles if the phone or airport ICAO entry is visible
     event.preventDefault()
 

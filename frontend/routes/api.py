@@ -10,6 +10,8 @@ from users import (
     add_airline_employee,
     add_airport_staff,
     add_guest,
+    get_all_guest_users,
+    get_all_staff_users,
     check_login_details
 )
 
@@ -19,6 +21,39 @@ LOGGER = logging.getLogger(__name__)
 api = Blueprint("api", __name__)
 
 LOGGER.info("API blueprint created")
+
+# Admin Portal
+@api.route("get-staff-users", methods=["POST"])
+def api_get_all_staff_users():
+    try:
+        staff_users = get_all_staff_users()
+
+        return jsonify({
+            "code": 200,
+            "message": "",
+            "content": staff_users
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+@api.route("get-guest-users", methods=["POST"])
+def api_get_all_guest_users():
+    try:
+        guest_users = get_all_guest_users()
+
+        return jsonify({
+            "code": 200,
+            "message": "",
+            "content": guest_users
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
 
 @api.route("add-airline-employee", methods = ["POST"])
 def api_add_airline_employee():
@@ -138,6 +173,8 @@ def api_add_airport_staff():
             "code": 500,
             "message": "Something went wrong. Please try again later or contact support."
         })
+
+# Guest Portal
 
 @api.route("check-login", methods = ["POST"])
 def api_check_login_details():
