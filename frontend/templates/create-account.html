@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity Airways - Create Account</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <script defer src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</head>
+
+<body class="dark-bg-body centre-content">
+    <br>
+    <a class="link-button-dark left-align" href="/login">Back</a>
+
+    <form id="create-account-container" onsubmit="createAccount()">
+        <h1>Create Account</h1>
+        <div class="columns">
+            <div class="column">
+                <label>
+                    First Name
+                    <input type="text" id="first-name" autocomplete="name">
+                </label>
+
+                <label>
+                    Email
+                    <input type="email" id="email">
+                </label>
+
+                <label>
+                    Password
+                    <input type="password" id="password">
+                </label>
+            </div>
+
+            <div class="column">
+                <label>
+                    Surname
+                    <input type="text" id="last-name" autocomplete="family-name">
+                </label>
+
+                <label>
+                    Phone Number
+                    <input type="tel" id="phone" autocomplete="tel">
+                </label>
+
+                <label>
+                    Repeat Password
+                    <input type="password" id="repeat-password">
+                </label>
+            </div>
+        </div>
+
+        <input type="submit" value="Create Account" id="create-account-button">
+    </form>
+
+    <div id="flash-container"></div>
+</body>
+
+</html>
