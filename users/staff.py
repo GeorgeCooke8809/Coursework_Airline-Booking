@@ -34,7 +34,8 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
                 <staff_table>: str : "employee" | "staff",
                 <staff_id>: int,
                 <staff_first_name>: str,
-                <staff_last_name>: str
+                <staff_last_name>: str,
+                <staff_email>: str
             )
         ]
 
@@ -55,7 +56,8 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
                 "employee",
                 employee.airline_employee_id,
                 employee.first_name,
-                employee.last_name
+                employee.last_name,
+                employee.email
             )
         )
 
@@ -66,7 +68,8 @@ def get_all_staff_users(Session: Session) -> list[tuple[str, str, int, str, str]
                 "staff",
                 staff.airport_staff_id,
                 staff.first_name,
-                staff.last_name
+                staff.last_name,
+                staff.email
             )
         )
 

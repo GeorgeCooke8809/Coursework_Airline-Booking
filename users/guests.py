@@ -27,7 +27,8 @@ def get_all_guest_users(Session: Session) -> list[tuple[int, str, str]]:
             (
                 <guest_id>: int,
                 <guest_first_name>: str,
-                <guest_last_name>: str
+                <guest_last_name>: str,
+                <guest_email>: str
             )
         ]
     
@@ -44,7 +45,8 @@ def get_all_guest_users(Session: Session) -> list[tuple[int, str, str]]:
         to_return.append((
             guest.guest_id,
             guest.first_name,
-            guest.last_name
+            guest.last_name,
+            guest.email
         ))
 
     return to_return

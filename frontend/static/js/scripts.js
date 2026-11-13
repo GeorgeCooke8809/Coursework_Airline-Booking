@@ -47,6 +47,43 @@ async function showStaffTable() {
 
     response_json = await response.json()
     console.log(response_json)
+
+    let table_container = document.querySelector("#admin-users-list-container")
+    table_container.innerHTML = ""
+
+    for (let i = 0; i < response_json.content.length; i++) {
+        user = response_json.content[i]
+
+        new_user_card = document.createElement("div")
+        new_user_card.className = "admin-user-item"
+
+        name_label = document.createElement("label")
+        name_label.textContent = `${user[3]} ${user[4]}`
+        new_user_card.appendChild(name_label)
+
+        email_label = document.createElement("label")
+        email_label.textContent = `${user[5]}`
+        new_user_card.appendChild(email_label)
+
+        type_label = document.createElement("label")
+        type_label.textContent = `${user[0]}`
+        new_user_card.appendChild(type_label)
+
+        id_label = document.createElement("label")
+        id_label.textContent = `${user[2]}`
+        new_user_card.appendChild(id_label)
+
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        edit_button = document.createElement("button")
+        edit_button.textContent = "Edit"
+        button_div.appendChild(edit_button)
+        delete_button = document.createElement("button")
+        delete_button.textContent = "Delete"
+        button_div.appendChild(delete_button)
+        new_user_card.appendChild(button_div)
+
+        table_container.appendChild(new_user_card)
+    }
 }
 
 async function showGuestTable() {
@@ -57,6 +94,39 @@ async function showGuestTable() {
 
     response_json = await response.json()
     console.log(response_json)
+
+    let table_container = document.querySelector("#admin-users-list-container")
+    table_container.innerHTML = ""
+
+    for (let i = 0; i < response_json.content.length; i++) {
+        user = response_json.content[i]
+
+        new_user_card = document.createElement("div")
+        new_user_card.className = "admin-user-item"
+
+        id_label = document.createElement("label")
+        id_label.textContent = `${user[0]}`
+        new_user_card.appendChild(id_label)
+
+        name_label = document.createElement("label")
+        name_label.textContent = `${user[1]} ${user[2]}`
+        new_user_card.appendChild(name_label)
+
+        email = document.createElement("label")
+        email.textContent = `${user[3]}`
+        new_user_card.appendChild(email)
+
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        edit_button = document.createElement("button")
+        edit_button.textContent = "Edit"
+        button_div.appendChild(edit_button)
+        delete_button = document.createElement("button")
+        delete_button.textContent = "Delete"
+        button_div.appendChild(delete_button)
+        new_user_card.appendChild(button_div)
+
+        table_container.appendChild(new_user_card)
+    }
 }
 
 async function adminAddStaffTypeChange() { // Toggles if the phone or airport ICAO entry is visible
