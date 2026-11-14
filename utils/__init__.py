@@ -14,7 +14,8 @@ from .exceptions import (
     PassportException,
     CompanionException,
     SeatException,
-    AuthorisationException
+    AuthorisationException,
+    RouteExistsException
 )
 
 from .validation import (

@@ -1,0 +1,76 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div id="admin-page-layout">
+    <div class="split-content-rows">
+
+    </div>
+
+    <div class="columns">
+        <label>
+            Origin
+            <input id="origin-search-bar" class="search-bar" type="search" placeholder="Search">
+        </label>
+
+        <label>
+            Destination
+            <input id="destination-search-bar" class="search-bar" type="search" placeholder="Search">
+        </label>
+    </div>
+
+    <button class="add-route-button" onclick="toggleModal('#add-route-modal')">+ Add Route</button>
+
+    <div id="admin-users-list-container">
+        {% if staff_users == []%}
+        <label class="no-records-label">There are currently no staff users</label>
+        {% endif %}
+
+        {% for route in routes %}
+        <div class="admin-user-item">
+            <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
+            <label>{{ route[1] }}</label>
+            <label>{{ route[2] }}</label>
+
+            <button>Select</button> <!-- TODO: Make select route work -->
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+
+<div class="modal-centred" id="add-route-modal">
+    <button onclick="toggleModal('#add-route-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form onsubmit="addRoute()">
+        <label>
+            Origin Airport ICAO <br>
+            <input type="text" id="add-route-origin">
+        </label><br>
+
+        <label>
+            Origin Airport ICAO <br>
+            <input type="text" id="add-route-destination">
+        </label><br>
+
+        <label>
+            Price <br>
+            <input type="number" id="add-route-price" min="0" step=".01" placeholder="£">
+        </label><br>
+
+        <input type="submit" value="Add Route">
+    </form>
+</div>
+
+{% endblock %}

@@ -2,7 +2,7 @@ from models.base import with_session
 from sqlalchemy.orm import Session
 
 from models import Route, Flight, Airport
-from utils import InvalidAirportException
+from utils import InvalidAirportException, RouteExistsException
 
 from datetime import datetime, timedelta
 import logging
@@ -56,6 +56,16 @@ def create_route(Session: Session, departure_airport_icao: str, arrival_airport_
     if price < 0:
         LOGGER.exception("Invalid price data type given.")
         raise Exception("Invalid price data type entered when creating route")
+
+    route = (
+        Session.query(Route)
+        .filter(Route.origin_icao == departure_airport_icao)
+        .filter(Route.destination_icao == arrival_airport_icao)
+    ).first()
+
+    if route is not None:
+        LOGGER.error("Route already exists")
+        raise RouteExistsException
 
 
     # * Adding Record To Database:

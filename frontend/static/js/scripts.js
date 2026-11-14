@@ -40,6 +40,7 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
 // Admin Portal
 
 async function showStaffTable() {
+    // TODO: make switch the add use modal
     response = await fetch("/api/get-staff-users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,6 +88,7 @@ async function showStaffTable() {
 }
 
 async function showGuestTable() {
+    // TODO: make switch the add use modal
     response = await fetch("/api/get-guest-users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -284,5 +286,36 @@ async function createGuestAccount() { // Create a guest account can be used in t
 
             flashMessage(response_json.message)
         }
+    }
+}
+
+
+// Flight Operations Routes
+async function addRoute() {
+    event.preventDefault()
+
+    var origin = document.querySelector("#add-route-origin").value
+    var destination = document.querySelector("#add-route-destination").value
+    var price = document.querySelector("#add-route-price").value
+
+    response = await fetch("/api/add-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "origin": origin,
+            "destination": destination,
+            "price": price
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace("/employee/operations")
+    } else {
+        console.log("Information incorrect, flashing error.")
+
+        flashMessage(response_json.message)
     }
 }
