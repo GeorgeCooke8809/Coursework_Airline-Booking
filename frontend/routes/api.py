@@ -11,9 +11,10 @@ from users import (
     add_airline_employee,
     add_airport_staff,
     add_guest,
+    delete_guest,
     get_all_guest_users,
     get_all_staff_users,
-    check_login_details
+    check_login_details,
 )
 from flights import (
     create_route
@@ -178,6 +179,23 @@ def api_add_airport_staff():
             "code": 500,
             "message": "Something went wrong. Please try again later or contact support."
         })
+
+@api.route("delete-guest", methods = ["POST"])
+def api_delete_guest():
+    request_dict = request.get_json()
+
+    try:
+        delete_guest(request_dict["id"])
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support"
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
 
 # Guest Portal
 

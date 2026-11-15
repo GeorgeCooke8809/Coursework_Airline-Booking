@@ -1,5 +1,4 @@
 // ! Global functions
-
 const airline_types = ["support", "admin", "operations"]
 const airport_types = ["gate", "check-in"]
 
@@ -122,8 +121,11 @@ async function showGuestTable() {
         edit_button = document.createElement("button")
         edit_button.textContent = "Edit"
         button_div.appendChild(edit_button)
+
         delete_button = document.createElement("button")
         delete_button.textContent = "Delete"
+        delete_button.addEventListener("click", function () { deleteGuest(user[0]); })
+
         button_div.appendChild(delete_button)
         new_user_card.appendChild(button_div)
 
@@ -202,6 +204,49 @@ async function addStaffUser() {
     else {
         console.log("Information incorrect, flashing error.")
 
+        flashMessage(response_json.message)
+    }
+}
+
+async function deleteGuest(guest_id) {
+    console.log(`Deleting guest ${guest_id}`)
+
+    response = await fetch("/api/delete-guest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "id": guest_id
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        showGuestTable() // Clear and redraw table with user deleted
+    } else {
+        console.log("Delete failed, flashing error.")
+        flashMessage(response_json.message)
+    }
+}
+
+async function deleteStaff(table, id) {
+    console.log(`Deleting guest ${guest_id}`)
+
+    response = await fetch("/api/delete-staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "table": table,
+            "id": id
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        showStaffTable() // Clear and redraw table with user deleted
+    } else {
+        console.log("Delete failed, flashing error.")
         flashMessage(response_json.message)
     }
 }
