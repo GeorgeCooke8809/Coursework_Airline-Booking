@@ -7,14 +7,14 @@
 
 <div id="admin-page-layout">
     <div class="split-content-rows">
-        <div id="admin-users-type-group"> <!-- TODO: Add view all guests in admin portal -->
+        <div id="admin-users-type-group">
             <label class="admin-user-view-type-radio">
-                <input type="radio" name="user-type" value="guests">
+                <input type="radio" name="user-type" value="guests" onclick="showGuestTable()">
                 Guests
             </label>
 
             <label class="admin-user-view-type-radio">
-                <input type="radio" name="user-type" value="staff" checked>
+                <input type="radio" name="user-type" value="staff" checked onclick="showStaffTable()">
                 Staff
             </label>
         </div>
@@ -22,6 +22,7 @@
     </div>
 
     <input id="admin-user-search-bar" class="search-bar" type="search" placeholder="Search">
+    <!-- TODO: Add functionality to search for user in admin portal-->
 
     <div id="admin-users-list-container">
         {% if staff_users == []%}
@@ -32,6 +33,7 @@
         <div class="admin-user-item">
             <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
             <label>{{ user[3] }} {{ user[4] }}</label>
+            <label>{{ user[5] }}</label>
             <label>{{ user[0] }}</label>
             <label>{{ user[2] }}</label>
 

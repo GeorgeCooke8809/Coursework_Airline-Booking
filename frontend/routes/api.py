@@ -4,13 +4,19 @@ import logging
 
 from utils import (
     check_email_already_in_use,
-    check_airport_exists
+    check_airport_exists,
+    RouteExistsException
 )
 from users import (
     add_airline_employee,
     add_airport_staff,
     add_guest,
+    get_all_guest_users,
+    get_all_staff_users,
     check_login_details
+)
+from flights import (
+    create_route
 )
 
 
@@ -19,6 +25,40 @@ LOGGER = logging.getLogger(__name__)
 api = Blueprint("api", __name__)
 
 LOGGER.info("API blueprint created")
+
+# Admin Portal
+
+@api.route("get-staff-users", methods=["POST"])
+def api_get_all_staff_users():
+    try:
+        staff_users = get_all_staff_users()
+
+        return jsonify({
+            "code": 200,
+            "message": "",
+            "content": staff_users
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+@api.route("get-guest-users", methods=["POST"])
+def api_get_all_guest_users():
+    try:
+        guest_users = get_all_guest_users()
+
+        return jsonify({
+            "code": 200,
+            "message": "",
+            "content": guest_users
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
 
 @api.route("add-airline-employee", methods = ["POST"])
 def api_add_airline_employee():
@@ -139,6 +179,8 @@ def api_add_airport_staff():
             "message": "Something went wrong. Please try again later or contact support."
         })
 
+# Guest Portal
+
 @api.route("check-login", methods = ["POST"])
 def api_check_login_details():
     request_dict = request.get_json()
@@ -217,3 +259,48 @@ def api_add_guest():
             "code": 500,
             "message": "Something went wrong, please try again later or contact support."
         })
+
+
+# Operations Portal
+
+@api.route("add-route", methods = ["POST"])
+def api_add_route():
+    request_dict = request.get_json()
+
+    LOGGER.debug(f"{request_dict = }")
+
+    if check_airport_exists(request_dict["origin"]) != True:
+        return jsonify({
+            "code": 400, 
+            "message": "Invalid origin airport given"
+        })
+
+    if check_airport_exists(request_dict["destination"]) != True:
+            return jsonify({
+                "code": 400, 
+                "message": "Invalid destination airport given"
+            })
+
+    if float(request_dict["price"]) < 0:
+        return jsonify({
+            "code": 400,
+            "message": "Invalid price given"
+        })
+
+    try:
+        create_route(request_dict["origin"], request_dict["destination"], float(request_dict["price"]))
+    except RouteExistsException:
+        return jsonify({
+            "code": 400,
+            "message": "Route already exists"
+        })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })

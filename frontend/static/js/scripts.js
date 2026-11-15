@@ -39,6 +39,98 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
 
 // Admin Portal
 
+async function showStaffTable() {
+    // TODO: make switch the add use modal
+    response = await fetch("/api/get-staff-users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    })
+
+    response_json = await response.json()
+    console.log(response_json)
+
+    let table_container = document.querySelector("#admin-users-list-container")
+    table_container.innerHTML = ""
+
+    for (let i = 0; i < response_json.content.length; i++) {
+        user = response_json.content[i]
+
+        new_user_card = document.createElement("div")
+        new_user_card.className = "admin-user-item"
+
+        name_label = document.createElement("label")
+        name_label.textContent = `${user[3]} ${user[4]}`
+        new_user_card.appendChild(name_label)
+
+        email_label = document.createElement("label")
+        email_label.textContent = `${user[5]}`
+        new_user_card.appendChild(email_label)
+
+        type_label = document.createElement("label")
+        type_label.textContent = `${user[0]}`
+        new_user_card.appendChild(type_label)
+
+        id_label = document.createElement("label")
+        id_label.textContent = `${user[2]}`
+        new_user_card.appendChild(id_label)
+
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        edit_button = document.createElement("button")
+        edit_button.textContent = "Edit"
+        button_div.appendChild(edit_button)
+        delete_button = document.createElement("button")
+        delete_button.textContent = "Delete"
+        button_div.appendChild(delete_button)
+        new_user_card.appendChild(button_div)
+
+        table_container.appendChild(new_user_card)
+    }
+}
+
+async function showGuestTable() {
+    // TODO: make switch the add use modal
+    response = await fetch("/api/get-guest-users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    })
+
+    response_json = await response.json()
+    console.log(response_json)
+
+    let table_container = document.querySelector("#admin-users-list-container")
+    table_container.innerHTML = ""
+
+    for (let i = 0; i < response_json.content.length; i++) {
+        user = response_json.content[i]
+
+        new_user_card = document.createElement("div")
+        new_user_card.className = "admin-user-item"
+
+        id_label = document.createElement("label")
+        id_label.textContent = `${user[0]}`
+        new_user_card.appendChild(id_label)
+
+        name_label = document.createElement("label")
+        name_label.textContent = `${user[1]} ${user[2]}`
+        new_user_card.appendChild(name_label)
+
+        email = document.createElement("label")
+        email.textContent = `${user[3]}`
+        new_user_card.appendChild(email)
+
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        edit_button = document.createElement("button")
+        edit_button.textContent = "Edit"
+        button_div.appendChild(edit_button)
+        delete_button = document.createElement("button")
+        delete_button.textContent = "Delete"
+        button_div.appendChild(delete_button)
+        new_user_card.appendChild(button_div)
+
+        table_container.appendChild(new_user_card)
+    }
+}
+
 async function adminAddStaffTypeChange() { // Toggles if the phone or airport ICAO entry is visible
     event.preventDefault()
 
@@ -194,5 +286,36 @@ async function createGuestAccount() { // Create a guest account can be used in t
 
             flashMessage(response_json.message)
         }
+    }
+}
+
+
+// Flight Operations Routes
+async function addRoute() {
+    event.preventDefault()
+
+    var origin = document.querySelector("#add-route-origin").value
+    var destination = document.querySelector("#add-route-destination").value
+    var price = document.querySelector("#add-route-price").value
+
+    response = await fetch("/api/add-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "origin": origin,
+            "destination": destination,
+            "price": price
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace("/employee/operations")
+    } else {
+        console.log("Information incorrect, flashing error.")
+
+        flashMessage(response_json.message)
     }
 }
