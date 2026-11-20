@@ -60,6 +60,7 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         Session.query(Service)
         .filter(Service.route_id == route_id)
         .filter(Service.end_date < date.today())
+        .filter(Service.shown_in_list == True)
         .order_by(Service.end_date)
     ).all()
 
@@ -71,6 +72,7 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         Session.query(Service)
         .filter(Service.route_id == route_id)
         .filter(Service.end_date >= date.today())
+        .filter(Service.shown_in_list == True)
         .order_by(Service.start_date)
     ).all()
 

@@ -42,5 +42,6 @@ def operations_routes_details(route_id):
         "flight-ops-route-details.html",
         route_name = get_route_name(route_id),
         route_flights = get_route_flights(route_id),
-        route_schedules = get_route_schedules(route_id)
+        route_schedules = get_route_schedules(route_id),
+        route_id = route_id
     )

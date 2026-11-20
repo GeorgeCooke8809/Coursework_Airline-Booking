@@ -341,8 +341,13 @@ def api_add_route():
 def api_add_one_off_flight():
     request_dict = request.get_json()
 
+    LOGGER.info("add-one-off-flight API request received")
+    LOGGER.debug(f"{request_dict = }")
+
+    departure_time = datetime.strptime(request_dict["departureDatetime"], "%Y-%m-%dT%H:%M").replace(tzinfo=UTC) # String Format: '2026-11-20T12:08'
+
     # * Validation
-    if request_dict["departureDatetime"] < datetime.now(tz=UTC):
+    if departure_time < datetime.now(tz=UTC):
         return jsonify({
             "code": 400,
             "message": "Flight departure datetime must be in the future"
@@ -353,7 +358,7 @@ def api_add_one_off_flight():
     try:
         add_one_off_flight(
             request_dict["routeID"],
-            request_dict["departureDatetime"]
+            departure_time
         )
     except:
         return jsonify({

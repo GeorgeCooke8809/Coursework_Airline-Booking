@@ -364,3 +364,34 @@ async function addRoute() {
         flashMessage(response_json.message)
     }
 }
+
+// Flight operations details
+async function addOneOffFLight(routeID) {
+    event.preventDefault()
+
+    console.log("Trying to add one off flight...")
+    var date_time = document.querySelector("#add-flight-datetime").value
+
+    response = await fetch("/api/add-one-off-flight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "routeID": routeID,
+            "departureDatetime": date_time
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        //window.location.replace(`/employee/operations/route-details/${routeID}`)
+    } else {
+        console.log("Information incorrect, flashing error.")
+        flashMessage(response_json.message)
+    }
+}
+
+async function addSchedule(routeID) {
+
+}
