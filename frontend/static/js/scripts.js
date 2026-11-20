@@ -392,7 +392,7 @@ async function addOneOffFLight(routeID) {
 }
 
 async function operationsChangeScheduleRepeatType() {
-    var repeat_type = document.querySelector("#schedule-repeat-type").value
+    var repeat_type = document.querySelector("#add-schedule-repeat-type").value
     let weekly_repeat_on = document.querySelector("#add-schedule-repeat-on-week")
     let monthly_repeat_on = document.querySelector("#add-schedule-repeat-on-month")
 
@@ -416,14 +416,31 @@ async function operationsChangeScheduleRepeatType() {
 async function addSchedule(routeID) {
     event.preventDefault()
 
-    var date_time = document.querySelector("#add-flight-datetime").value
+    var start_date = document.querySelector("#add-schedule-start").value
+    var end_date = document.querySelector("#add-schedule-end").value
+    var schedule_time = document.querySelector("#add-schedule-time").value
+    var repeat_type = document.querySelector("#add-schedule-repeat-type").value
+    var repeat_frequency = document.querySelector("#add-schedule-frequency").value
 
-    response = await fetch("/api/add-one-off-flight", {
+    if (repeat_type == "weekly") {
+        var repeat_on = document.querySelector("#add-schedule-repeat-on-week").value
+    } else if (repeat_type == "monthly") {
+        var repeat_on = document.querySelector("#add-schedule-repeat-on-month").value
+    } else {
+        repeat_on = null
+    }
+
+    response = await fetch("/api/add-schedule", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             "routeID": routeID,
-            "departureDatetime": date_time
+            "startDate": start_date,
+            "endDate": end_date,
+            "repeatType": repeat_type,
+            "frequency": repeat_frequency,
+            "repeatTime": schedule_time,
+            "repeatsOn": repeat_on
         })
     })
 
@@ -431,7 +448,7 @@ async function addSchedule(routeID) {
 
     if (response_json.code == 200) {
         console.log("Information correct, redirecting.")
-        //window.location.replace(`/employee/operations/route-details/${routeID}`)
+        window.location.replace(`/employee/operations/route-details/${routeID}`)
     } else {
         console.log("Information incorrect, flashing error.")
         flashMessage(response_json.message)

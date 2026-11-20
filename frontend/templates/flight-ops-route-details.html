@@ -17,16 +17,17 @@
                 {% endif %}
                 <!-- TODO: Add a way of displaying past flights -->
 
-                {% for flight in route_flights["future"] %}
+                {% for flight in route_flights["future"] %} <!-- TODO: Add column names -->
                 <div class="admin-user-item"> <!-- TODO: Change naming -->
                     <label>{{ flight[2] }}</label>
                     <label>{{ flight[4] }}/{{ flight[3] }}</label>
                     <label>{{ flight[5] }}</label> <!-- TODO: Show as red if delayed or cancelled -->
-                    <button class="edit-operations-details-button" onclick="">Edit</button>
-                    <!-- TODO: Add functionality to edit flight button -->
-                    <button class="delete-operations-details-button" onclick="">Delete</button>
-                    <!-- TODO: Add functionality to delete flight button -->
-
+                    <div>
+                        <button class="edit-operations-details-button" onclick="">Edit</button>
+                        <!-- TODO: Add functionality to edit flight button -->
+                        <button class="delete-operations-details-button" onclick="">Delete</button>
+                        <!-- TODO: Add functionality to delete flight button -->
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -42,16 +43,18 @@
                 {% endif %}
                 <!-- TODO: Add a way of displaying inactive schedules -->
 
-                {% for schedule in route_schedules["present"] %}
+                {% for schedule in route_schedules["present"] %} <!-- TODO: Add column names -->
                 <div class="admin-user-item"> <!-- TODO: Change naming -->
                     <label>{{ schedule[1] }}</label>
                     <label>{{ schedule[2] }}</label>
                     <label>{{ schedule[3] }}</label>
                     <label>{{ schedule[4] }}</label> <!-- TODO: Show - if flight repeats in is None -->
-                    <button class="edit-operations-details-button" onclick="">Edit</button>
-                    <!-- TODO: Add functionality to edit schedule button -->
-                    <button class="delete-operations-details-button" onclick="">Delete</button>
-                    <!-- TODO: Add functionality to delete schedule button -->
+                    <div>
+                        <button class="edit-operations-details-button" onclick="">Edit</button>
+                        <!-- TODO: Add functionality to edit schedule button -->
+                        <button class="delete-operations-details-button" onclick="">Delete</button>
+                        <!-- TODO: Add functionality to delete schedule button -->
+                    </div>
 
                 </div>
                 {% endfor %}
@@ -107,7 +110,7 @@
 
                 <label>
                     Repeat Type<br>
-                    <select id="schedule-repeat-type" onchange="operationsChangeScheduleRepeatType()">
+                    <select id="add-schedule-repeat-type" onchange="operationsChangeScheduleRepeatType()">
                         <option value="daily">Daily</option>
                         <option value="weekly" selected>Weekly</option>
                         <option value="monthly">Monthly</option>

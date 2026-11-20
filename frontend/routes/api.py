@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from datetime import datetime, date, UTC
+from datetime import datetime, date, time, UTC
 import logging
 
 from utils import (
@@ -375,15 +375,21 @@ def api_add_one_off_flight():
 def api_add_schedule():
     request_dict = request.get_json()
 
+    LOGGER.debug(f"{request_dict = }")
+
+    start_date = date.strptime(request_dict["startDate"], "%Y-%m-%d")
+    end_date = date.strptime(request_dict["endDate"], "%Y-%m-%d")
+    schedule_time = time.strptime(request_dict["repeatTime"], "%H:%M")
+
     # * Validation
 
-    if request_dict["startDate"] < date.today():
+    if start_date < date.today():
         return jsonify({
             "code": 400,
             "message": "Start date must be in the future"
         })
 
-    if request_dict["startDate"] < request_dict["endDate"]:
+    if start_date > end_date:
         return jsonify({
             "code": 400,
             "message": "End date cannot be before start date"
@@ -394,11 +400,11 @@ def api_add_schedule():
     try:
         add_schedule(
             request_dict["routeID"],
-            request_dict["startDate"],
-            request_dict["endDate"],
+            start_date,
+            end_date,
             request_dict["repeatType"],
             request_dict["frequency"],
-            request_dict["repeatTime"],
+            schedule_time,
             request_dict["repeatsOn"]
         )
     except:

@@ -10,6 +10,28 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+DAYS = {"0": "Monday", "1": "Tuesday", "2": "Wednesday", "3": "Thursday", "4": "Friday", "5": "Saturday", "6": "Sunday"}
+
+def _make_schedules_tuple(schedules: list[Service]):
+    schedules_array = []
+    for schedule in schedules:
+        if schedule.repeat_type == "daily":
+            repeats_on = "-"
+        elif schedule.repeat_type == "weekly":
+            repeats_on = DAYS[f"{schedule.repeats_on}"]
+        else:
+            repeats_on = schedule.repeats_on
+
+        schedules_array.append((
+            schedule.service_id,
+            schedule.repeat_type.capitalize(),
+            schedule.repeat_frequency,
+            repeats_on,
+            schedule.repeat_time_utc
+        ))
+
+    return schedules_array
+
 @with_session
 def get_route_schedules(Session: Session, route_id: int) -> dict:
     """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now(). Past schedules are ordered by end date and present schedules are ordered by start date.
@@ -64,10 +86,6 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         .order_by(Service.end_date)
     ).all()
 
-    past_schedules_array = []
-    for schedule in past_schedules: past_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
-
-
     present_schedules = (
         Session.query(Service)
         .filter(Service.route_id == route_id)
@@ -76,12 +94,9 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         .order_by(Service.start_date)
     ).all()
 
-    present_schedules_array = []
-    for schedule in present_schedules: present_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
-
     return_dict = {
-        "past": past_schedules_array,
-        "present": present_schedules_array
+        "past": _make_schedules_tuple(past_schedules),
+        "present": _make_schedules_tuple(present_schedules)
     }
 
     LOGGER.debug(f"{return_dict = }")
