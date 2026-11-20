@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from datetime import datetime
+from datetime import datetime, date, time, UTC
 import logging
 
 from utils import (
@@ -9,15 +9,24 @@ from utils import (
 )
 from users import (
     add_airline_employee,
+    delete_airline_employee,
     add_airport_staff,
+    delete_airport_staff,
     add_guest,
+    delete_guest,
     get_all_guest_users,
     get_all_staff_users,
-    check_login_details
+    check_login_details,
 )
 from flights import (
-    create_route
+    create_route,
+    add_one_off_flight,
+    add_schedule
 )
+
+from models import SERVICE_REPEAT_TYPES
+
+# TODO: Add session checks for authorisation on relevant API calls
 
 
 LOGGER = logging.getLogger(__name__)
@@ -179,6 +188,29 @@ def api_add_airport_staff():
             "message": "Something went wrong. Please try again later or contact support."
         })
 
+@api.route("delete-guest", methods = ["POST"])
+def api_delete_guest():
+    request_dict = request.get_json()
+
+    try:
+        delete_guest(request_dict["id"])
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support"
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("delete-staff", methods = ["POST"])
+def api_delete_staff():
+    request_dict = request.get_json()
+
+    # TODO: Add delete staff endpoint
+
 # Guest Portal
 
 @api.route("check-login", methods = ["POST"])
@@ -294,6 +326,87 @@ def api_add_route():
             "code": 400,
             "message": "Route already exists"
         })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/add-one-off-flight", methods = ["POST"])
+def api_add_one_off_flight():
+    request_dict = request.get_json()
+
+    LOGGER.info("add-one-off-flight API request received")
+    LOGGER.debug(f"{request_dict = }")
+
+    departure_time = datetime.strptime(request_dict["departureDatetime"], "%Y-%m-%dT%H:%M").replace(tzinfo=UTC) # String Format: '2026-11-20T12:08'
+
+    # * Validation
+    if departure_time < datetime.now(tz=UTC):
+        return jsonify({
+            "code": 400,
+            "message": "Flight departure datetime must be in the future"
+        })
+
+    # * Processing
+    
+    try:
+        add_one_off_flight(
+            request_dict["routeID"],
+            departure_time
+        )
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/add-schedule", methods = ["POST"])
+def api_add_schedule():
+    request_dict = request.get_json()
+
+    LOGGER.debug(f"{request_dict = }")
+
+    start_date = date.strptime(request_dict["startDate"], "%Y-%m-%d")
+    end_date = date.strptime(request_dict["endDate"], "%Y-%m-%d")
+    schedule_time = time.strptime(request_dict["repeatTime"], "%H:%M")
+
+    # * Validation
+
+    if start_date < date.today():
+        return jsonify({
+            "code": 400,
+            "message": "Start date must be in the future"
+        })
+
+    if start_date > end_date:
+        return jsonify({
+            "code": 400,
+            "message": "End date cannot be before start date"
+        })
+
+    # * Processing
+
+    try:
+        add_schedule(
+            request_dict["routeID"],
+            start_date,
+            end_date,
+            request_dict["repeatType"],
+            request_dict["frequency"],
+            schedule_time,
+            request_dict["repeatsOn"]
+        )
     except:
         return jsonify({
             "code": 500,

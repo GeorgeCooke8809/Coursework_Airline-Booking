@@ -89,6 +89,7 @@ button {
     box-sizing: border-box;
 
     padding: 0px 10px;
+    padding-left: 0px;
 
     top: 0px;
     left: 0px;
@@ -98,6 +99,10 @@ button {
     border-color: var(--cta-colour);
     border-style: solid;
     border-width: 0px 0px 2px 0px;
+}
+
+.navigation-bar img {
+    height: 60px;
 }
 
 .navigation-bar ul {
@@ -233,6 +238,10 @@ button {
 .subtle-link-dark-bg {
     color: var(--dark-lvl-3);
     padding: 5px;
+}
+
+.hidden {
+    display: none;
 }
 
 
@@ -527,4 +536,28 @@ button {
 
 #create-account-button:hover {
     background-color: var(--cta-colour-secondary);
+}
+
+.operations-details-columns {
+    gap: 20px;
+}
+
+.operations-details-column {
+    width: 50%;
+}
+
+/* Operations Route Details Page */
+.operations-details-table {
+    /* TODO: This can be adapted to be used globally */
+    border-style: solid;
+    border-width: 2px;
+    border-radius: var(--standard-border-radius);
+
+    height: 45vh;
+
+    box-sizing: border-box;
+
+    margin-top: 10px;
+
+    overflow-y: scroll;
 }

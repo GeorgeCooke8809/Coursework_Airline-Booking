@@ -123,3 +123,15 @@ def generate_route_statistics(Session: Session, route_id: int, timeframe: timede
     """
     # TODO: Program generate_generate_route_statistics
     # TODO: Add more statistics to gather
+
+@with_session
+def get_route_name(session: Session, route_id: int):
+    route = (
+        session.query(Route)
+        .filter(Route.route_id == route_id)
+    ).first()
+
+    if route is None:
+        return ""
+
+    return f"{route.origin.name} to {route.destination.name}"

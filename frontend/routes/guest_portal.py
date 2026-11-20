@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, session
+from flask import Blueprint, redirect, render_template, session, url_for
 import logging
 
 LOGGER = logging.getLogger(__name__)
@@ -18,4 +18,18 @@ def login_page():
 def create_account_page():
     return render_template(
         "create-account.html",
+    )
+
+@guest_portal.route("/logout", methods = ["GET"])
+def log_out():
+    session.pop("user_id")
+    session.pop("user_type")
+
+    return redirect("/")
+
+# !=============== Main Portal ===============
+@guest_portal.route("/", methods = ["GET"])
+def home_page():
+    return render_template(
+        "index.html"
     )

@@ -7,7 +7,10 @@ from users import (
 )
 
 from flights import (
-    get_all_routes
+    get_all_routes,
+    get_route_flights,
+    get_route_schedules,
+    get_route_name
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -31,4 +34,14 @@ def operations_routes_page():
     return render_template(
         "flight-ops-routes.html",
         routes = get_all_routes()
+    )
+
+@staff_portal.route("/operations/route-details/<route_id>", methods = ["GET"])
+def operations_routes_details(route_id):
+    return render_template(
+        "flight-ops-route-details.html",
+        route_name = get_route_name(route_id),
+        route_flights = get_route_flights(route_id),
+        route_schedules = get_route_schedules(route_id),
+        route_id = route_id
     )

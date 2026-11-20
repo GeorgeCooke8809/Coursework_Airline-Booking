@@ -1,5 +1,4 @@
 // ! Global functions
-
 const airline_types = ["support", "admin", "operations"]
 const airport_types = ["gate", "check-in"]
 
@@ -122,8 +121,11 @@ async function showGuestTable() {
         edit_button = document.createElement("button")
         edit_button.textContent = "Edit"
         button_div.appendChild(edit_button)
+
         delete_button = document.createElement("button")
         delete_button.textContent = "Delete"
+        delete_button.addEventListener("click", function () { deleteGuest(user[0]); })
+
         button_div.appendChild(delete_button)
         new_user_card.appendChild(button_div)
 
@@ -202,6 +204,49 @@ async function addStaffUser() {
     else {
         console.log("Information incorrect, flashing error.")
 
+        flashMessage(response_json.message)
+    }
+}
+
+async function deleteGuest(guest_id) {
+    console.log(`Deleting guest ${guest_id}`)
+
+    response = await fetch("/api/delete-guest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "id": guest_id
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        showGuestTable() // Clear and redraw table with user deleted
+    } else {
+        console.log("Delete failed, flashing error.")
+        flashMessage(response_json.message)
+    }
+}
+
+async function deleteStaff(table, id) {
+    console.log(`Deleting guest ${guest_id}`)
+
+    response = await fetch("/api/delete-staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "table": table,
+            "id": id
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        showStaffTable() // Clear and redraw table with user deleted
+    } else {
+        console.log("Delete failed, flashing error.")
         flashMessage(response_json.message)
     }
 }
@@ -316,6 +361,96 @@ async function addRoute() {
     } else {
         console.log("Information incorrect, flashing error.")
 
+        flashMessage(response_json.message)
+    }
+}
+
+// Flight operations details
+async function addOneOffFLight(routeID) {
+    event.preventDefault()
+
+    var date_time = document.querySelector("#add-flight-datetime").value
+
+    response = await fetch("/api/add-one-off-flight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "routeID": routeID,
+            "departureDatetime": date_time
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace(`/employee/operations/route-details/${routeID}`)
+    } else {
+        console.log("Information incorrect, flashing error.")
+        flashMessage(response_json.message)
+    }
+}
+
+async function operationsChangeScheduleRepeatType() {
+    var repeat_type = document.querySelector("#add-schedule-repeat-type").value
+    let weekly_repeat_on = document.querySelector("#add-schedule-repeat-on-week")
+    let monthly_repeat_on = document.querySelector("#add-schedule-repeat-on-month")
+
+    if (repeat_type == "daily") {
+        weekly_repeat_on.disabled = true
+        monthly_repeat_on.disabled = true
+
+    } else if (repeat_type == "weekly") {
+        weekly_repeat_on.disabled = false
+        monthly_repeat_on.classList = ["hidden"]
+        weekly_repeat_on.classList = []
+
+    } else if (repeat_type == "monthly") {
+        monthly_repeat_on.disabled = false
+        weekly_repeat_on.display = "none"
+        monthly_repeat_on.classList = []
+        weekly_repeat_on.classList = ["hidden"]
+    }
+}
+
+async function addSchedule(routeID) {
+    event.preventDefault()
+
+    var start_date = document.querySelector("#add-schedule-start").value
+    var end_date = document.querySelector("#add-schedule-end").value
+    var schedule_time = document.querySelector("#add-schedule-time").value
+    var repeat_type = document.querySelector("#add-schedule-repeat-type").value
+    var repeat_frequency = document.querySelector("#add-schedule-frequency").value
+
+    if (repeat_type == "weekly") {
+        var repeat_on = document.querySelector("#add-schedule-repeat-on-week").value
+    } else if (repeat_type == "monthly") {
+        var repeat_on = document.querySelector("#add-schedule-repeat-on-month").value
+    } else {
+        repeat_on = null
+    }
+
+    response = await fetch("/api/add-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "routeID": routeID,
+            "startDate": start_date,
+            "endDate": end_date,
+            "repeatType": repeat_type,
+            "frequency": repeat_frequency,
+            "repeatTime": schedule_time,
+            "repeatsOn": repeat_on
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace(`/employee/operations/route-details/${routeID}`)
+    } else {
+        console.log("Information incorrect, flashing error.")
         flashMessage(response_json.message)
     }
 }

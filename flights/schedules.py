@@ -10,6 +10,28 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+DAYS = {"0": "Monday", "1": "Tuesday", "2": "Wednesday", "3": "Thursday", "4": "Friday", "5": "Saturday", "6": "Sunday"}
+
+def _make_schedules_tuple(schedules: list[Service]):
+    schedules_array = []
+    for schedule in schedules:
+        if schedule.repeat_type == "daily":
+            repeats_on = "-"
+        elif schedule.repeat_type == "weekly":
+            repeats_on = DAYS[f"{schedule.repeats_on}"]
+        else:
+            repeats_on = schedule.repeats_on
+
+        schedules_array.append((
+            schedule.service_id,
+            schedule.repeat_type.capitalize(),
+            schedule.repeat_frequency,
+            repeats_on,
+            schedule.repeat_time_utc
+        ))
+
+    return schedules_array
+
 @with_session
 def get_route_schedules(Session: Session, route_id: int) -> dict:
     """Gets the schedules/services for the given route where show_in_list is True. Used in flight operations manager portal. Results are split into past and present where past are schedules where the end date is before datetime.now(). Past schedules are ordered by end date and present schedules are ordered by start date.
@@ -60,26 +82,21 @@ def get_route_schedules(Session: Session, route_id: int) -> dict:
         Session.query(Service)
         .filter(Service.route_id == route_id)
         .filter(Service.end_date < date.today())
+        .filter(Service.shown_in_list == True)
         .order_by(Service.end_date)
     ).all()
-
-    past_schedules_array = []
-    for schedule in past_schedules: past_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
-
 
     present_schedules = (
         Session.query(Service)
         .filter(Service.route_id == route_id)
         .filter(Service.end_date >= date.today())
+        .filter(Service.shown_in_list == True)
         .order_by(Service.start_date)
     ).all()
 
-    present_schedules_array = []
-    for schedule in present_schedules: present_schedules_array.append((schedule.service_id, schedule.repeat_type, schedule.repeat_frequency, schedule.repeats_on, schedule.repeat_time_utc))
-
     return_dict = {
-        "past": past_schedules_array,
-        "present": present_schedules_array
+        "past": _make_schedules_tuple(past_schedules),
+        "present": _make_schedules_tuple(present_schedules)
     }
 
     LOGGER.debug(f"{return_dict = }")
@@ -103,6 +120,8 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         repeats_on (int): The day of the week/month that the service repeats on
         repeat_time (time): The time of flight departures for this service/schedule
     """
+    # TODO: Allow service end date to be null for indefinite
+    
     LOGGER.info("Adding schedule...")
     LOGGER.debug(f"{route_id = }, {start_date = }, {end_date = }, {repeat_type = }, {frequency = }, {repeat_time = }, {repeats_on = }")
 

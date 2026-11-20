@@ -11,5 +11,5 @@ from .flights import (
             calculate_seat_price,
             calculate_flight_duration
         )
-from .routes import create_route, get_all_routes, generate_route_statistics
+from .routes import create_route, get_all_routes, generate_route_statistics, get_route_name
 from .schedules import get_route_schedules, add_schedule, edit_schedule, delete_schedule
