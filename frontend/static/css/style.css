@@ -235,6 +235,10 @@ button {
     padding: 5px;
 }
 
+.hidden {
+    display: none;
+}
+
 
 /* ! Specific Styling */
 
@@ -527,4 +531,28 @@ button {
 
 #create-account-button:hover {
     background-color: var(--cta-colour-secondary);
+}
+
+.operations-details-columns {
+    gap: 20px;
+}
+
+.operations-details-column {
+    width: 50%;
+}
+
+/* Operations Route Details Page */
+.operations-details-table {
+    /* TODO: This can be adapted to be used globally */
+    border-style: solid;
+    border-width: 2px;
+    border-radius: var(--standard-border-radius);
+
+    height: 45vh;
+
+    box-sizing: border-box;
+
+    margin-top: 10px;
+
+    overflow-y: scroll;
 }

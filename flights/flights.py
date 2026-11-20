@@ -30,6 +30,7 @@ def _route_flights_objects_to_tuples(flights: list[Flight]):
         to_return.append((
             flight.flight_id,
             flight.scheduled_departure_datetime_utc,
+            flight.scheduled_departure_datetime_utc.strftime("%d/%m/%Y, %H:%M"),
             30,
             seats,
             flight.status
@@ -234,6 +235,7 @@ def get_route_flights(session: Session, route_id: int) -> dict:
                         (
                             <flight_id>: int
                             <departure_datetime>: datetime,
+                            <departure_datetime_readable>: str,
                             <capacity>: int,
                             <booking_quantity>: int,
                             <status>: str
@@ -243,6 +245,7 @@ def get_route_flights(session: Session, route_id: int) -> dict:
                         (
                             <flight_id>: int
                             <departure_datetime>: datetime,
+                            <departure_datetime_readable>: str,
                             <capacity>: int,
                             <booking_quantity>: int,
                             <status>: str

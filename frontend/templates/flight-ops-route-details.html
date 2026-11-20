@@ -1,0 +1,155 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div id="admin-page-layout">
+    <h1>{{ route_name }}</h1>
+    <div class="columns operations-details-columns">
+        <div class="column operations-details-column">
+            <h2>Flights generated & Added</h2>
+
+            <div class="operations-details-table">
+                {% if route_flights["past"] == [] and route_flights["future"] == [] %}
+                <label class="no-records-label">There are currently no flights</label>
+                {% endif %}
+                <!-- TODO: Add a way of displaying past flights -->
+
+                {% for flight in route_flights["future"] %}
+                <div class="admin-user-item"> <!-- TODO: Change naming -->
+                    <label>{{ flight[2] }}</label>
+                    <label>{{ flight[4] }}/{{ flight[3] }}</label>
+                    <label>{{ flight[5] }}</label>
+                    <button class="edit-operations-details-button" onclick="">Edit</button>
+                    <!-- TODO: Add functionality to edit flight button -->
+                    <button class="delete-operations-details-button" onclick="">Delete</button>
+                    <!-- TODO: Add functionality to delete flight button -->
+
+                </div>
+                {% endfor %}
+            </div>
+
+            <button id="add-flight-button" onclick="toggleModal('#add-flight-modal')">+ Add Flight</button>
+        </div>
+        <div class="column operations-details-column">
+            <h2>Schedules</h2>
+
+            <div class="operations-details-table">
+                {% if route_schedules["past"] == [] and route_schedules["present"] == [] %}
+                <label class="no-records-label">There are currently no schedules</label>
+                {% endif %}
+                <!-- TODO: Add a way of displaying inactive schedules -->
+
+                {% for schedule in route_schedules["present"] %}
+                <div class="admin-user-item"> <!-- TODO: Change naming -->
+                    <label>{{ flight[1] }}</label>
+                    <label>{{ flight[2] }}</label>
+                    <label>{{ flight[3] }}</label>
+                    <label>{{ flight[4] }}</label> <!-- TODO: Show - if flight repeats in is None -->
+                    <button class="edit-operations-details-button" onclick="">Edit</button>
+                    <!-- TODO: Add functionality to edit schedule button -->
+                    <button class="delete-operations-details-button" onclick="">Delete</button>
+                    <!-- TODO: Add functionality to delete schedule button -->
+
+                </div>
+                {% endfor %}
+            </div>
+
+            <button id="add-schedule-button" onclick="toggleModal('#add-schedule-modal')">+ Add Schedule</button>
+        </div>
+    </div>
+
+    <h3>TODO: ADD ROUTE STATISTICS HERE</h3> <!-- TODO: Add route statistics to route overview page -->
+</div>
+
+{% endblock %}
+
+{% block modals %}
+
+<div class="modal-centred" id="add-flight-modal">
+    <button onclick="toggleModal('#add-flight-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form onsubmit="addFlight()"> <!-- TODO: Add route ID -->
+        <label>
+            Flight Date & Time <br>
+            <input type="datetime" id="add-flight-datetime">
+        </label><br>
+
+        <input type="submit" value="Add One-Time Flight">
+    </form>
+</div>
+
+<div class="modal-centred" id="add-schedule-modal">
+    <button onclick="toggleModal('#add-schedule-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form onsubmit="addSchedule()"> <!-- TODO: Add route ID -->
+        <div class="columns">
+            <div class="column">
+                <label>
+                    Start Date (Inclusive) <br>
+                    <input type="date" id="add-schedule-end">
+                </label>
+
+                <label>
+                    Repeat Type<br>
+                    <select id="schedule-repeat-type" onchange="operationsChangeScheduleRepeatType()">
+                        <option value="daily">Daily</option>
+                        <option value="weekly" selected>Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </label>
+
+                <label> <!-- ! Defaults to shown but is hidden when repeat on is changed to monthly -->
+                    Repeat On<br>
+                    <select id="add-schedule-repeat-on-week">
+                        <option value="0">Monday</option>
+                        <option value="1">Tuesday</option>
+                        <option value="2">Wednesday</option>
+                        <option value="3">Thursday</option>
+                        <option value="4">Friday</option>
+                        <option value="5">Saturday</option>
+                        <option value="6">Sunday</option>
+                    </select>
+                </label>
+
+                <label class="hidden"> <!-- ! Defaults to hidden but is hidden when repeat on is changed to weekly -->
+                    Repeat On<br>
+                    <input type="number" max="31" min="1" step="1" id="add-schedule-repeat-on-month">
+                </label>
+            </div>
+
+            <div class="column">
+                <label>
+                    End Date (Inclusive) <br>
+                    <input type="date" id="add-schedule-end">
+                </label>
+
+                <label>
+                    Repeat Frequency <br>
+                    <input type="number" id="add-schedule-frequency">
+                </label>
+
+                <label>
+                    Flight Departure Time (UTC) <br>
+                    <input type="time" id="add-schedule-time">
+                </label>
+            </div>
+        </div>
+
+        <input type="submit" value="Add Route">
+    </form>
+</div>
+
+{% endblock %}

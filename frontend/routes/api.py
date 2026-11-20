@@ -9,7 +9,9 @@ from utils import (
 )
 from users import (
     add_airline_employee,
+    delete_airline_employee,
     add_airport_staff,
+    delete_airport_staff,
     add_guest,
     delete_guest,
     get_all_guest_users,
@@ -196,6 +198,10 @@ def api_delete_guest():
         "code": 200,
         "message": ""
     })
+
+@api.route("delete-staff", methods = ["POST"])
+def api_delete_staff():
+    request_dict = request.get_json()
 
 # Guest Portal
 
