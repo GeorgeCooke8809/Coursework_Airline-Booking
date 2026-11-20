@@ -89,6 +89,7 @@ button {
     box-sizing: border-box;
 
     padding: 0px 10px;
+    padding-left: 0px;
 
     top: 0px;
     left: 0px;
@@ -98,6 +99,10 @@ button {
     border-color: var(--cta-colour);
     border-style: solid;
     border-width: 0px 0px 2px 0px;
+}
+
+.navigation-bar img {
+    height: 60px;
 }
 
 .navigation-bar ul {
