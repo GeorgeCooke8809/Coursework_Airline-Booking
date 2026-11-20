@@ -103,6 +103,8 @@ def add_schedule(Session: Session, route_id: int, start_date: date, end_date: da
         repeats_on (int): The day of the week/month that the service repeats on
         repeat_time (time): The time of flight departures for this service/schedule
     """
+    # TODO: Allow service end date to be null for indefinite
+    
     LOGGER.info("Adding schedule...")
     LOGGER.debug(f"{route_id = }, {start_date = }, {end_date = }, {repeat_type = }, {frequency = }, {repeat_time = }, {repeats_on = }")
 

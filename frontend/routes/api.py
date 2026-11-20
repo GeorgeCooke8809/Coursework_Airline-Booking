@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from datetime import datetime
+from datetime import datetime, date
 import logging
 
 from utils import (
@@ -19,8 +19,14 @@ from users import (
     check_login_details,
 )
 from flights import (
-    create_route
+    create_route,
+    add_one_off_flight,
+    add_schedule
 )
+
+from models import SERVICE_REPEAT_TYPES
+
+# TODO: Add session checks for authorisation on relevant API calls
 
 
 LOGGER = logging.getLogger(__name__)
@@ -203,6 +209,8 @@ def api_delete_guest():
 def api_delete_staff():
     request_dict = request.get_json()
 
+    # TODO: Add delete staff endpoint
+
 # Guest Portal
 
 @api.route("check-login", methods = ["POST"])
@@ -318,6 +326,51 @@ def api_add_route():
             "code": 400,
             "message": "Route already exists"
         })
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/add-one-off-flight", methods = ["POST"])
+def api_add_one_off_flight():
+    request_dict = request.get_json()
+
+@api.route("/add-schedule", methods = ["POST"])
+def api_add_schedule():
+    request_dict = request.get_json()
+
+    # * Validation
+
+    if request_dict["startDate"] < date.today():
+        return jsonify({
+            "code": 400,
+            "message": "Start date must be in the future"
+        })
+
+    if request_dict["startDate"] < request_dict["endDate"]:
+        return jsonify({
+            "code": 400,
+            "message": "End date cannot be before start date"
+        })
+
+    # * Processing
+
+    try:
+        add_schedule(
+            request_dict["routeID"],
+            request_dict["startDate"],
+            request_dict["endDate"],
+            request_dict["repeatType"],
+            request_dict["frequency"],
+            request_dict["repeatTime"],
+            request_dict["repeatsOn"]
+        )
     except:
         return jsonify({
             "code": 500,
