@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from datetime import datetime, date
+from datetime import datetime, date, UTC
 import logging
 
 from utils import (
@@ -340,6 +340,31 @@ def api_add_route():
 @api.route("/add-one-off-flight", methods = ["POST"])
 def api_add_one_off_flight():
     request_dict = request.get_json()
+
+    # * Validation
+    if request_dict["departureDatetime"] < datetime.now(tz=UTC):
+        return jsonify({
+            "code": 400,
+            "message": "Flight departure datetime must be in the future"
+        })
+
+    # * Processing
+    
+    try:
+        add_one_off_flight(
+            request_dict["routeID"],
+            request_dict["departureDatetime"]
+        )
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
 
 @api.route("/add-schedule", methods = ["POST"])
 def api_add_schedule():
