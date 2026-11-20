@@ -27,13 +27,22 @@ def _route_flights_objects_to_tuples(flights: list[Flight]):
         for booking in flight.bookings:
             seats += len(booking.seats)
 
+        if flight.status == "scheduled" and flight.scheduled_departure_datetime_utc < datetime.now(tz=UTC).replace(tzinfo=None):
+            status = "DELAYED"
+        elif flight.status == "scheduled":
+            status = "Scheduled"
+        elif flight.status == "cancelled":
+            status = "CANCELLED"
+        else:
+            LOGGER.error("Unrecognized flight status")
+
         to_return.append((
             flight.flight_id,
             flight.scheduled_departure_datetime_utc,
             flight.scheduled_departure_datetime_utc.strftime("%d/%m/%Y, %H:%M"),
             30,
             seats,
-            flight.status
+            status
         ))
 
     return to_return
@@ -275,14 +284,14 @@ def get_route_flights(session: Session, route_id: int) -> dict:
     past_flights = (
         session.query(Flight)
         .filter(Flight.service_id.in_(services))
-        .filter(or_(Flight.status == "departed", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc < datetime.now())))
+        .filter(or_(Flight.status == "departed", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc < datetime.now()))) # Any departed flight combined with cancelled flights that were scheduled for the past
         .order_by(Flight.scheduled_departure_datetime_utc)
     )
 
     future_flights = (
         session.query(Flight)
         .filter(Flight.service_id.in_(services))
-        .filter(or_(Flight.status == "scheduled", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc >= datetime.now())))
+        .filter(or_(Flight.status == "scheduled", and_(Flight.status == "cancelled", Flight.scheduled_departure_datetime_utc >= datetime.now()))) # Any scheduled flights combined with cancelled flights that were scheduled for the future
         .order_by(Flight.scheduled_departure_datetime_utc)
     )
 
