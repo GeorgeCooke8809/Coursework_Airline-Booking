@@ -369,7 +369,53 @@ async function addRoute() {
 async function addOneOffFLight(routeID) {
     event.preventDefault()
 
-    console.log("Trying to add one off flight...")
+    var date_time = document.querySelector("#add-flight-datetime").value
+
+    response = await fetch("/api/add-one-off-flight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "routeID": routeID,
+            "departureDatetime": date_time
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace(`/employee/operations/route-details/${routeID}`)
+    } else {
+        console.log("Information incorrect, flashing error.")
+        flashMessage(response_json.message)
+    }
+}
+
+async function operationsChangeScheduleRepeatType() {
+    var repeat_type = document.querySelector("#schedule-repeat-type").value
+    let weekly_repeat_on = document.querySelector("#add-schedule-repeat-on-week")
+    let monthly_repeat_on = document.querySelector("#add-schedule-repeat-on-month")
+
+    if (repeat_type == "daily") {
+        weekly_repeat_on.disabled = true
+        monthly_repeat_on.disabled = true
+
+    } else if (repeat_type == "weekly") {
+        weekly_repeat_on.disabled = false
+        monthly_repeat_on.classList = ["hidden"]
+        weekly_repeat_on.classList = []
+
+    } else if (repeat_type == "monthly") {
+        monthly_repeat_on.disabled = false
+        weekly_repeat_on.display = "none"
+        monthly_repeat_on.classList = []
+        weekly_repeat_on.classList = ["hidden"]
+    }
+}
+
+async function addSchedule(routeID) {
+    event.preventDefault()
+
     var date_time = document.querySelector("#add-flight-datetime").value
 
     response = await fetch("/api/add-one-off-flight", {
@@ -390,8 +436,4 @@ async function addOneOffFLight(routeID) {
         console.log("Information incorrect, flashing error.")
         flashMessage(response_json.message)
     }
-}
-
-async function addSchedule(routeID) {
-
 }

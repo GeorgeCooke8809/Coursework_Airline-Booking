@@ -114,7 +114,7 @@
                     </select>
                 </label>
 
-                <label> <!-- ! Defaults to shown but is hidden when repeat on is changed to monthly -->
+                <label> <!-- Defaults to shown but is hidden when repeat on is changed to monthly -->
                     Repeat On<br>
                     <select id="add-schedule-repeat-on-week">
                         <option value="0">Monday</option>
@@ -125,11 +125,8 @@
                         <option value="5">Saturday</option>
                         <option value="6">Sunday</option>
                     </select>
-                </label>
-
-                <label class="hidden"> <!-- ! Defaults to hidden but is shown when repeat on is changed to monthly -->
-                    Repeat On<br>
-                    <input type="number" max="31" min="1" step="1" id="add-schedule-repeat-on-month">
+                    <input class="hidden" type="number" max="31" min="1" step="1" id="add-schedule-repeat-on-month">
+                    <!-- Defaults to hidden but is shown on updating repeat type -->
                 </label>
             </div>
 
