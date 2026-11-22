@@ -5,7 +5,8 @@ import logging
 from utils import (
     check_email_already_in_use,
     check_airport_exists,
-    RouteExistsException
+    RouteExistsException,
+    search_airport
 )
 from users import (
     add_airline_employee,
@@ -416,4 +417,22 @@ def api_add_schedule():
     return jsonify({
         "code": 200,
         "message": ""
+    })
+
+@api.route("search-airport", methods = ["POST"])
+def api_search_airport():
+    request_dict = request.get_json()
+
+    try:
+        airports = search_airport(request_dict["airportSearch"])
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support"
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": "",
+        "content": airports
     })

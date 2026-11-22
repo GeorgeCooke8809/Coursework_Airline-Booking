@@ -561,3 +561,52 @@ button {
 
     overflow-y: scroll;
 }
+
+/* Guest Portal */
+.guest-body {
+    margin: 0px;
+    padding: 0px;
+}
+
+/* Guest Home Page */
+
+#home-page-top-image-search {
+    position: relative;
+}
+
+#home-page-top-image-search img {
+    width: 100%;
+    object-fit: cover;
+    height: 75vh;
+}
+
+#home-page-flight-search-box {
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px;
+    box-sizing: border-box;
+
+    background-color: var(--dark-bg);
+    width: 30vw;
+    min-width: 300px;
+    height: 60vh;
+
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--cta-colour);
+    border-radius: var(--standard-border-radius);
+
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translate(+50%, +12.5%);
+}
+
+#home-page-flight-search-box label {
+    color: var(--light-bg);
+    margin: 0px 0px 20px 0px;
+    font-family: var(--secondary-font-family);
+    font-size: 35px;
+    gap: 0px;
+}
