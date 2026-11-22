@@ -4,4 +4,27 @@
 {% endblock %}
 
 {% block content %}
+<div id="guest-home-page-layout">
+    <section id="home-page-top-image-search">
+        <img src="{{ url_for('static', filename='img/home-bg.jpeg') }}">
+        <form id="home-page-flight-search-box">
+            <label>
+                From <br>
+                <input type="text" id="flight-search-from">
+            </label>
+
+            <label>
+                To <br>
+                <input type="text" id="flight-search-to">
+            </label>
+
+            <label>
+                Date <br>
+                <input type="date" id="flight-search-date">
+            </label>
+
+            <input type="submit" value="Search">
+        </form>
+    </section>
+</div>
 {% endblock %}
