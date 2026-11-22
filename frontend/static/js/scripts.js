@@ -454,3 +454,36 @@ async function addSchedule(routeID) {
         flashMessage(response_json.message)
     }
 }
+
+// Guest Home Page
+async function updateAirportSearch(search, datalist) {
+    let search_html = document.querySelector(search)
+    let datalist_html = document.querySelector(datalist)
+
+    response = await fetch("/api/search-airport", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "airportSearch": search_html.value
+        })
+    })
+
+    response_json = await response.json()
+
+    if (response_json.code == 200) {
+        console.log("Information correct, updating airport list.")
+        datalist_html.innerHTML = ""
+
+        for (let i = 0; i < response_json.content.length && i < 5; i++) {
+            airport = response_json.content[i]
+
+            new_option = document.createElement("option")
+            new_option.value = airport[0]
+            new_option.textContent = airport[1]
+            datalist_html.appendChild(new_option)
+        }
+    } else {
+        console.log("Information incorrect, flashing error.")
+        flashMessage("Something went wrong searching for airports")
+    }
+}

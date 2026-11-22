@@ -22,3 +22,5 @@ from .validation import (
     check_email_already_in_use,
     check_airport_exists
 )
+
+from .search_airport import search_airport

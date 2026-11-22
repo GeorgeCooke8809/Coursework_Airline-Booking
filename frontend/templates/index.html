@@ -6,16 +6,20 @@
 {% block content %}
 <div id="guest-home-page-layout">
     <section id="home-page-top-image-search">
-        <img src="{{ url_for('static', filename='img/home-bg.jpeg') }}">
+        <img src="{{ url_for('static', filename='img/home-bg.jpg') }}">
         <form id="home-page-flight-search-box">
             <label>
                 From <br>
-                <input type="text" id="flight-search-from">
+                <input type="search" list="departures" id="flight-search-from"
+                    oninput="updateAirportSearch('#flight-search-from', '#departures')">
+                <datalist class="airports-search-list" id="departures"></datalist>
             </label>
 
             <label>
                 To <br>
-                <input type="text" id="flight-search-to">
+                <input type="search" list="arrivals" id="flight-search-to"
+                    oninput="updateAirportSearch('#flight-search-to', '#arrivals')">
+                <datalist id="arrivals"></datalist>
             </label>
 
             <label>

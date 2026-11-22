@@ -610,3 +610,8 @@ button {
     font-size: 35px;
     gap: 0px;
 }
+
+.airports-search-list {
+    height: 20px;
+    overflow-y: auto;
+}
