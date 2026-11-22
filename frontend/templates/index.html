@@ -7,24 +7,26 @@
 <div id="guest-home-page-layout">
     <section id="home-page-top-image-search">
         <img src="{{ url_for('static', filename='img/home-bg.jpg') }}">
-        <form id="home-page-flight-search-box">
+        <form id="home-page-flight-search-box" onsubmit="flightSearch()">
             <label>
                 From <br>
                 <input type="search" list="departures" id="flight-search-from"
-                    oninput="updateAirportSearch('#flight-search-from', '#departures')">
+                    oninput="updateAirportSearch('#flight-search-from', '#departures')" required>
                 <datalist id="departures"></datalist>
+                <!-- A datalist that is updated by the js fucntionabove when someone types in the search bar, shows the airports that match the search for autofill -->
+                <!-- TODO: This could be styles better-->
             </label>
 
             <label>
                 To <br>
                 <input type="search" list="arrivals" id="flight-search-to"
-                    oninput="updateAirportSearch('#flight-search-to', '#arrivals')">
+                    oninput="updateAirportSearch('#flight-search-to', '#arrivals')" required>
                 <datalist id="arrivals"></datalist>
             </label>
 
             <label>
                 Date <br>
-                <input type="date" id="flight-search-date">
+                <input type="date" id="flight-search-date" required>
             </label>
 
             <input type="submit" value="Search">

@@ -456,7 +456,7 @@ async function addSchedule(routeID) {
 }
 
 // Guest Home Page
-async function updateAirportSearch(search, datalist) {
+async function updateAirportSearch(search, datalist) { // Updates the given datalist of airports based on the search term, used for autofill options
     let search_html = document.querySelector(search)
     let datalist_html = document.querySelector(datalist)
 
@@ -486,4 +486,16 @@ async function updateAirportSearch(search, datalist) {
         console.log("Information incorrect, flashing error.")
         flashMessage("Something went wrong searching for airports")
     }
+}
+
+async function flightSearch() {
+    event.preventDefault()
+
+    let departure_iata = document.querySelector("#flight-search-from").value
+    let arrival_iata = document.querySelector("#flight-search-to").value
+    let flight_date = document.querySelector("#flight-search-date").value
+
+    flight_date = flight_date.replace(/-/g, '') // Remove hyphens from string, date is now %Y%m%d
+
+    window.location.replace(`/flight-search?orig=${departure_iata}&dest=${arrival_iata}&date=${flight_date}`) // TODO: IATAs currently have no validation in JS to search page
 }
