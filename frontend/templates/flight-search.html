@@ -28,7 +28,10 @@
             </div>
         </div>
 
-        <button id="flight-search-book-button">Book<br>£{{ flight[8] }}</button>
+        <button id="flight-search-book-button" onclick="selectFlightToBook('{{ flight[0] }}')">
+            Book <br>
+            £{{flight[8]}}
+        </button>
         <!-- TODO: Add functionality to book button -->
     </div>
     {% endfor %}
