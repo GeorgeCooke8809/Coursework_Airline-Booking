@@ -10,7 +10,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 @with_session
-def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> None:
+def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> int:
     """Creates a new booking for the given user and flight. Should be called when going from flight selection page to seat selection. Is not shown as a booking for the user in their profile page until paid for. Adds a new database record to 'bookings' table with autoincrement ID, given user ID, given flight ID, datetime.now() for booking datetime, False for paid
     Results could potentially be used to prompt a user to continue process if never completed (abandoned basket).
 
@@ -50,3 +50,6 @@ def create_unpaid_booking(Session: Session, guest_id: int, flight_id: int) -> No
     new_booking = Booking(guest_id = guest_id, flight_id=flight_id, datetime_booked=datetime.now(tz=UTC), payment_cleared=False)
 
     Session.add(new_booking)
+    Session.flush()
+
+    return new_booking.booking_id

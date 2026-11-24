@@ -25,6 +25,10 @@ from flights import (
     add_schedule
 )
 
+from bookings import (
+    create_unpaid_booking
+)
+
 from models import SERVICE_REPEAT_TYPES
 
 # TODO: Add session checks for authorisation on relevant API calls
@@ -435,4 +439,30 @@ def api_search_airport():
         "code": 200,
         "message": "",
         "content": airports
+    })
+
+# Guest Booking Flow
+@api.route("/add-unpaid-booking", methods=["POST"])
+def api_add_unpaid_booking():
+    request_dict = request.get_json()
+    guest_id = session["user_id"]
+
+    if session["user_type"] != "guest":
+        return jsonify({
+            "code": 401,
+            "message": "Can only make bookings as a guest"
+        })
+
+    try:
+        booking_id = create_unpaid_booking(guest_id, request_dict["flightID"])
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": "",
+        "content": booking_id
     })

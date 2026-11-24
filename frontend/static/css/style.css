@@ -610,3 +610,64 @@ button {
     font-size: 35px;
     gap: 0px;
 }
+
+/* Guest Flight Search Page */
+
+#guest-flight-search {
+    margin: 0px 10px;
+}
+
+#guest-flight-search h2 {
+    margin: 10px 0px;
+    font-size: 40px;
+}
+
+.flight-search-card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    padding: 5px 10px;
+    box-sizing: border-box;
+
+    background-color: var(--dark-lvl-3);
+    border-style: solid;
+    border-color: var(--dark-bg);
+    border-width: 2px;
+    border-radius: var(--standard-border-radius);
+}
+
+.flight-search-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-right: 10px;
+}
+
+.flight-search-card-content h3 {
+    margin: 0px;
+    font-size: 30px;
+}
+
+.flight-search-card-content label {
+    margin: 0px;
+    font-size: 20px;
+}
+
+#flight-search-book-button {
+    cursor: pointer;
+    background-color: var(--cta-colour);
+    border-style: solid;
+    border-color: var(--cta-colour-secondary);
+    border-radius: var(--standard-border-radius);
+    border-width: 2px;
+
+    font-size: 25px;
+}
+
+#flight-search-book-button:hover {
+    background-color: var(--cta-colour-secondary);
+}
