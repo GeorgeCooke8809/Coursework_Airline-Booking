@@ -1,0 +1,36 @@
+{% extends 'base-guest.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div id="guest-flight-search">
+    <h2>Flight Selection</h2> <!-- TODO: Add date skipping buttons -->
+    {% for flight in flights %}
+    <div class="flight-search-card">
+        <div class="columns flight-search-card-content">
+            <div class="column">
+                <h3>{{ flight[1] }}</h3>
+                <label>{{ flight[2] }} - {{ flight[3].strftime("%H:%M") }}</label>
+            </div>
+
+            <div class="column">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px" fill="#000000">
+                    <path
+                        d="M19.95,39.38l-3.88-7.45L8.55,27.98l1.63-1.6L17,27.58l6.7-6.7L8.83,14.52l2.13-2.08l18.1,3.08l6.43-6.45q0.65-0.65 1.69-0.65T38.9,9.07q0.67,0.73 0.67,1.76t-0.65,1.69l-6.4,6.4l3.03,18.13L33.43,39.2L27.1,24.3L20.4,31l1.1,6.8l-1.55,1.58Z" />
+                </svg>
+                <label>{{ flight[4].seconds // 3600 }}:{{ (flight[4].seconds % 3600) // 60 }}</label>
+            </div>
+
+            <div class="column">
+                <h3>{{ flight[5] }}</h3>
+                <label>{{ flight[6] }} - {{ flight[7].strftime("%H:%M") }}</label>
+            </div>
+        </div>
+
+        <button id="flight-search-book-button">Book<br>£{{ flight[8] }}</button>
+        <!-- TODO: Add functionality to book button -->
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
