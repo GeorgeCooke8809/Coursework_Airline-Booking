@@ -477,6 +477,7 @@ def api_add_unpaid_booking():
 
 @api.route("/create-companion", methods=["POST"])
 def api_create_companion():
+    # TODO: Will need to take in companion ID as an argument for when support does it for them
     request_dict = request.get_json()
 
     # * Validation
@@ -525,7 +526,7 @@ def api_create_companion():
     # * Processing
 
     try:
-        add_companion(
+        new_companion_id = add_companion(
             session["user_id"],
             request_dict["passport_name"],
             request_dict["passport_expiry"],
@@ -543,5 +544,6 @@ def api_create_companion():
 
     return jsonify({
         "code": 200,
-        "message": ""
+        "message": "",
+        "content": new_companion_id
     })

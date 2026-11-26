@@ -59,8 +59,8 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
     return to_return
 
 @with_session
-def add_companion(Session: Session, guest_id: int, passport_name: str, passport_expiry: date, passport_number: str, date_of_birth: date, nationality: str, passport_sex: str, passport_authority: str) -> None:
-    """Adds a companion for the given guest with the given details. Raises error if guest does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. Status defaults to active.
+def add_companion(Session: Session, guest_id: int, passport_name: str, passport_expiry: date, passport_number: str, date_of_birth: date, nationality: str, passport_sex: str, passport_authority: str) -> int:
+    """Adds a companion for the given guest with the given details. Raises error if guest does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. Status defaults to active. Returns the ID of the new companion
 
     Args:
         Session (Session): The database session automatically provided by @with_session
@@ -117,6 +117,10 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
     new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=companion_favourite) # TODO: Fix favourite UK spelling
 
     Session.add(new_companion)
+
+    Session.flush()
+
+    return new_companion.companion_id
 
 @with_session
 def edit_companion(session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:
