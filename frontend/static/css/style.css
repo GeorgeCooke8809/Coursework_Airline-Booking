@@ -731,6 +731,8 @@ button {
 
 
 #companions-box {
+    display: flex;
+    flex-direction: column;
     border-style: solid;
     border-width: 2px;
     border-color: black;
@@ -749,9 +751,11 @@ button {
 }
 
 #companions-list-container {
-    width: 100%;
-    height: calc(100vh - 245px);
+    /*width: 100%;*/
+    flex: 1;
+    min-height: 0;
     /* ! Change height here is you want to make the price text and next button bigger */
+    overflow-y: auto;
     box-sizing: border-box;
 }
 
@@ -789,4 +793,32 @@ button {
     height: 65px;
     border-radius: var(--standard-border-radius);
     font-weight: bold;
+}
+
+#add-companion-select-outer {
+    margin: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--dark-lvl-4);
+    border-radius: var(--standard-border-radius);
+}
+
+#add-companion-select {
+    flex-direction: column;
+}
+
+.existing-companions-list-button {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    width: calc(100% - 10px);
+    margin: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: var(--light-bg);
+    border-style: none;
+}
+
+.existing-companions-list-button:hover {
+    background-color: var(--dark-lvl-4);
 }

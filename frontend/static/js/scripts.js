@@ -522,3 +522,31 @@ async function selectFlightToBook(flight_id) {
         flashMessage(response_json.message)
     }
 }
+
+// Guest seat select page
+async function toggleAddCompanionSelect() { // Toggles the visibility of the select companion menu
+    let modal = document.querySelector("#add-companion-select")
+    if (modal.style.display != "flex") {
+        modal.style.display = "flex"
+    } else {
+        modal.style.display = "none"
+    }
+}
+
+async function addCompanion(companion_id) { // adds the given companion to the booking through API request and refreshes the page, better fix is to do all through API request and not refresh the page
+    console.log(`INOP Add companion ${companion_id}`)
+}
+
+async function newCompanion() {
+    event.preventDefault()
+
+    let name = document.querySelector("#add-companion-passport-name").value
+    let pass_no = document.querySelector("#add-companion-passport-number").value
+    let nationality = document.querySelector("#add-companion-passport-nationality").value
+    let authority = document.querySelector("#add-companion-passport-authority").value
+    let pass_exp = document.querySelector("#add-companion-passport-expiry").value
+    let dob = document.querySelector("#add-companion-passport-dob").value
+    let pass_sex = document.querySelector("#add-companion-passport-sex").value
+
+    console.log(`INOP new companion ${name} ${pass_no} ${nationality} ${authority} ${pass_exp} ${dob} ${pass_sex}`)
+}

@@ -16,7 +16,8 @@ from bookings import (
 )
 
 from users import (
-    get_guest_favourite_companion
+    get_guest_favourite_companion,
+    get_all_guest_companions
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -69,5 +70,6 @@ def seat_selection_page(booking_id: int):
     return render_template("seat-selection.html",
                            all_seats=VALID_SEAT_IDS,
                            available_seats=get_available_seats(flight_id),
-                           favourite_companion=get_guest_favourite_companion(session["user_id"])
+                           favourite_companion=get_guest_favourite_companion(session["user_id"]),
+                           all_companions=get_all_guest_companions(session["user_id"])
                         )
