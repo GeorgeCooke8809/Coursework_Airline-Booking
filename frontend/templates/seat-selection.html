@@ -21,7 +21,35 @@
         </div>
 
         <div class="column">
-
+            <div id="companions-box">
+                <h3>Companions:</h3>
+                <div id="companions-list-container">
+                    {% if favourite_companion != [] %}
+                    <div class="seat-select-companion-card">
+                        <div>
+                            <h4>{{ favourite_companion[0] }}</h4>
+                            <label>{{ favourite_companion[2] }}</label>
+                        </div>
+                        <div class="seat-select-companion-card-right-details">
+                            <label>SEAT ID</label> <!-- TODO: Show companion seat ID here -->
+                            <button class="remove-companion-seat-select-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px"
+                                    fill="#FFFFFF">
+                                    <path
+                                        d="M12.45,37.65l-2.1-2.1L21.9,24L10.35,12.45l2.1-2.1L24,21.9L35.55,10.35l2.1,2.1L26.1,24L37.65,35.55l-2.1,2.1L24,26.1L12.45,37.65Z" />
+                                </svg>
+                            </button> <!-- TODO: Add functionality to remove companion button -->
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <button>+ Add Companion</button> <!-- TODO: Add add companion functionality to seat selection -->
+            </div>
+            <div class="inline right-align">
+                <label>£0.00</label> <!-- TODO: Make price update with the number of seats selected -->
+                <button>Next</button>
+                <!-- TODO: Make JS function to add companions to booking and redirect to next page -->
+            </div>
         </div>
     </div>
 </div>

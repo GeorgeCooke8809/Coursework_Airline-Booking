@@ -15,6 +15,10 @@ from bookings import (
     get_booking_flight
 )
 
+from users import (
+    get_guest_favourite_companion
+)
+
 LOGGER = logging.getLogger(__name__)
 
 guest_portal = Blueprint("pages", __name__)
@@ -64,5 +68,6 @@ def seat_selection_page(booking_id: int):
 
     return render_template("seat-selection.html",
                            all_seats=VALID_SEAT_IDS,
-                           available_seats=get_available_seats(flight_id)
+                           available_seats=get_available_seats(flight_id),
+                           favourite_companion=get_guest_favourite_companion(session["user_id"])
                         )

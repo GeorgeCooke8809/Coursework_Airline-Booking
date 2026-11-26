@@ -292,3 +292,23 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
         current_favourite.favorite = False
 
     companion.favorite = True
+
+@with_session
+def get_guest_favourite_companion(session: Session, guest_id: int):
+    """Gets and returns the guests favourite companion in the format (<passport_name>, <date_of_birth>, <date_of_birth_readable>)
+
+    Args:
+        session (Session): The SQLalchemy database session automatically provided by with_session wrapper
+        guest_id (int): The ID of the guest to get the favourite companion of
+    """
+
+    favourite_companion = (
+        session.query(Companion)
+        .filter(Companion.guest_id == guest_id)
+        .filter(Companion.favorite == True)
+    ).first()
+    
+    if favourite_companion is not None:
+        return (favourite_companion.passport_name, favourite_companion.date_of_birth, favourite_companion.date_of_birth.strftime("%d/%m/%Y"))
+    else:
+        return []
