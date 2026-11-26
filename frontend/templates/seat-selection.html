@@ -1,6 +1,7 @@
 {% extends 'base-guest.html' %}
 
 {% block scripts %}
+<script defer src="{{ url_for('static', filename='js/seat_select.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -27,11 +28,16 @@
                     {% if favourite_companion != [] %}
                     <div class="seat-select-companion-card">
                         <div>
-                            <h4>{{ favourite_companion[0] }}</h4>
-                            <label>{{ favourite_companion[2] }}</label>
+                            <h4>{{ favourite_companion[1] }}</h4>
+                            <label>{{ favourite_companion[3] }}</label>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    addCompanion('{{ favourite_companion[0] }}', true)
+                                })
+                            </script>
                         </div>
                         <div class="seat-select-companion-card-right-details">
-                            <label>SEAT ID</label> <!-- TODO: Show companion seat ID here -->
+                            <label>-</label> <!-- TODO: Show companion seat ID here -->
                             <button class="remove-companion-seat-select-button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px"
                                     fill="#FFFFFF">

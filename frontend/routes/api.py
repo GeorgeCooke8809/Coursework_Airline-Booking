@@ -18,7 +18,8 @@ from users import (
     get_all_guest_users,
     get_all_staff_users,
     check_login_details,
-    add_companion
+    add_companion,
+    get_companion_details
 )
 from flights import (
     create_route,
@@ -480,6 +481,8 @@ def api_create_companion():
     # TODO: Will need to take in companion ID as an argument for when support does it for them
     request_dict = request.get_json()
 
+    LOGGER.debug(f"{request_dict = }")
+
     # * Validation
     if len(request_dict["passport_name"]) > 38 or request_dict["passport_name"] == "":
         return jsonify({
@@ -487,7 +490,9 @@ def api_create_companion():
             "message": "Passport name must be given and under 38 characters"
         })
 
-    if request_dict["passport_expiry"] < date.today():
+    passport_expiry = date.strptime(request_dict["passport_expiry"], "%Y-%m-%d")
+
+    if passport_expiry < date.today():
         return jsonify({
             "code": 400,
             "message": "Passport expiry must be after today."
@@ -499,7 +504,9 @@ def api_create_companion():
             "message": "Passport number must be given and fewer than 9 characters."
         })
 
-    if request_dict["dob"] > date.today():
+    dob = date.strptime(request_dict["dob"], "%Y-%m-%d")
+
+    if dob > date.today():
         return jsonify({
             "code": 400,
             "message": "Date of birth cannot be after today."
@@ -529,9 +536,9 @@ def api_create_companion():
         new_companion_id = add_companion(
             session["user_id"],
             request_dict["passport_name"],
-            request_dict["passport_expiry"],
+            passport_expiry,
             request_dict["passport_number"],
-            request_dict["dob"],
+            dob,
             request_dict["nationality"],
             request_dict["passport_sex"],
             request_dict["passport_authority"]
@@ -546,4 +553,14 @@ def api_create_companion():
         "code": 200,
         "message": "",
         "content": new_companion_id
+    })
+
+@api.route("/get-companion-details", methods=["POST"])
+def api_get_companion_details():
+    companion_id = int(request.get_json()["companionID"])
+
+    return jsonify({
+        "code": 200,
+        "message": "",
+        "content": get_companion_details(companion_id)
     })

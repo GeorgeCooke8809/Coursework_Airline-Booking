@@ -787,6 +787,9 @@ button {
 }
 
 .seat-select-companion-card-right-details label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--light-bg);
     font-size: 30px;
     width: 65px;
@@ -812,13 +815,18 @@ button {
     justify-content: space-between;
     overflow: hidden;
     width: calc(100% - 10px);
-    margin: 5px;
+    margin: 2px 5px;
     box-sizing: border-box;
     cursor: pointer;
     background-color: var(--light-bg);
     border-style: none;
+    padding: 3px 0px;
 }
 
 .existing-companions-list-button:hover {
     background-color: var(--dark-lvl-4);
+}
+
+.existing-companions-list-button label {
+    width: 33%;
 }

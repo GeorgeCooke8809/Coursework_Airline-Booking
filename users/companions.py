@@ -298,8 +298,8 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
     companion.favorite = True
 
 @with_session
-def get_guest_favourite_companion(session: Session, guest_id: int):
-    """Gets and returns the guests favourite companion in the format (<passport_name>, <date_of_birth>, <date_of_birth_readable>)
+def get_guest_favourite_companion(session: Session, guest_id: int) -> tuple[int, str, date, str]:
+    """Gets and returns the guests favourite companion in the format (<companion_id>, <passport_name>, <date_of_birth>, <date_of_birth_readable>)
 
     Args:
         session (Session): The SQLalchemy database session automatically provided by with_session wrapper
@@ -313,6 +313,20 @@ def get_guest_favourite_companion(session: Session, guest_id: int):
     ).first()
     
     if favourite_companion is not None:
-        return (favourite_companion.passport_name, favourite_companion.date_of_birth, favourite_companion.date_of_birth.strftime("%d/%m/%Y"))
+        return (favourite_companion.companion_id, favourite_companion.passport_name, favourite_companion.date_of_birth, favourite_companion.date_of_birth.strftime("%d/%m/%Y"))
+    else:
+        return []
+
+@with_session
+def get_companion_details(session: Session, companion_id: int) -> tuple:
+    """Gets and returns all of the details about the given companion"""
+
+    companion = (
+        session.query(Companion)
+        .filter(Companion.companion_id == companion_id)
+    ).first()
+
+    if companion is not None:
+        return [companion.companion_id, companion.guest_id, companion.passport_name, companion.passport_number, companion.passport_expiry.strftime("%d/%m/%Y"), companion.nationality, companion.passport_issue_authority, companion.date_of_birth.strftime("%d/%m/%Y"), companion.sex, companion.status, companion.favorite]
     else:
         return []
