@@ -1,0 +1,28 @@
+{% extends 'base-guest.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div id="guest-flight-seat-select">
+    <div class="columns">
+        <div class="column" id="plane-seat-container">
+            {% for seat in all_seats %}
+            {% if seat in available_seats %}
+            <button class="seat-button-available" onclick="selectSeat('{{ seat }}')">
+                {{ seat }}
+            </button>
+            {% else %}
+            <button class="seat-button-unavailable" disabled>
+                {{ seat }}
+            </button>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="column">
+
+        </div>
+    </div>
+</div>
+{% endblock %}

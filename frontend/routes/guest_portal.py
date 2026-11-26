@@ -1,8 +1,19 @@
 from flask import Blueprint, redirect, render_template, session, url_for, request
 import logging
 from datetime import date
+from models import VALID_SEAT_IDS
 
-from flights import search_for_flight
+from flights import (
+    search_for_flight
+)
+
+from seats import (
+    get_available_seats
+)
+
+from bookings import (
+    get_booking_flight
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,4 +56,13 @@ def flight_search_page():
 
     return render_template("flight-search.html",
                            flights = search_for_flight(origin, destination, flight_date)
+                        )
+
+@guest_portal.route("/seat-select/<booking_id>", methods=["GET"])
+def seat_selection_page(booking_id: int):
+    flight_id = get_booking_flight(booking_id)
+
+    return render_template("seat-selection.html",
+                           all_seats=VALID_SEAT_IDS,
+                           available_seats=get_available_seats(flight_id)
                         )

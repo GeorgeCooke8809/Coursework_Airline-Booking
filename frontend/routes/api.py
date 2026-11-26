@@ -445,6 +445,13 @@ def api_search_airport():
 @api.route("/add-unpaid-booking", methods=["POST"])
 def api_add_unpaid_booking():
     request_dict = request.get_json()
+
+    if "user_id" not in session:
+        return jsonify({
+            "code": 401,
+            "message": "You must be logged in to make a booking"
+        })
+
     guest_id = session["user_id"]
 
     if session["user_type"] != "guest":
