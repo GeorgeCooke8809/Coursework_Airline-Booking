@@ -18,6 +18,7 @@ from users import (
     get_all_guest_users,
     get_all_staff_users,
     check_login_details,
+    add_companion
 )
 from flights import (
     create_route,
@@ -29,7 +30,7 @@ from bookings import (
     create_unpaid_booking
 )
 
-from models import SERVICE_REPEAT_TYPES
+from models import SERVICE_REPEAT_TYPES, SEX_OPTIONS
 
 # TODO: Add session checks for authorisation on relevant API calls
 
@@ -472,4 +473,75 @@ def api_add_unpaid_booking():
         "code": 200,
         "message": "",
         "content": booking_id
+    })
+
+@api.route("/create-companion", methods=["POST"])
+def api_create_companion():
+    request_dict = request.get_json()
+
+    # * Validation
+    if len(request_dict["passport_name"]) > 38 or request_dict["passport_name"] == "":
+        return jsonify({
+            "code": 400,
+            "message": "Passport name must be given and under 38 characters"
+        })
+
+    if request_dict["passport_expiry"] < date.today():
+        return jsonify({
+            "code": 400,
+            "message": "Passport expiry must be after today."
+        })
+
+    if len(request_dict["passport_number"]) > 9 or request_dict["passport_number"] == "":
+        return jsonify({
+            "code": 400,
+            "message": "Passport number must be given and fewer than 9 characters."
+        })
+
+    if request_dict["dob"] > date.today():
+        return jsonify({
+            "code": 400,
+            "message": "Date of birth cannot be after today."
+        })
+
+    if request_dict["nationality"] == "":
+        return jsonify({
+            "code": 400,
+            "message": "Nationality must be provided."
+        })
+
+    if request_dict["passport_authority"] == "":
+        return jsonify({
+            "code": 400,
+            "message": "Passport authority must be provided."
+        })
+
+    if request_dict["passport_sex"] not in SEX_OPTIONS:
+            return jsonify({
+                "code": 400,
+                "message": "Passport sex must be 'X', 'F', or 'M'."
+            })
+
+    # * Processing
+
+    try:
+        add_companion(
+            session["user_id"],
+            request_dict["passport_name"],
+            request_dict["passport_expiry"],
+            request_dict["passport_number"],
+            request_dict["dob"],
+            request_dict["nationality"],
+            request_dict["passport_sex"],
+            request_dict["passport_authority"]
+        )
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
     })
