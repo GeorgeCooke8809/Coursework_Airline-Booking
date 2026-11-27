@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, redirect
 from datetime import datetime
 import logging
 
@@ -10,7 +10,12 @@ from flights import (
     get_all_routes,
     get_route_flights,
     get_route_schedules,
-    get_route_name
+    get_route_name,
+    get_airport_flights
+)
+
+from utils import (
+    get_staff_airport
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -44,4 +49,16 @@ def operations_routes_details(route_id):
         route_flights = get_route_flights(route_id),
         route_schedules = get_route_schedules(route_id),
         route_id = route_id
+    )
+
+
+# ! =============== GATE/CHECK PORTAL ===============
+@staff_portal.route("/gate-check-flights", methods=["GET"])
+def gate_and_check_flights_page():
+    if "user_type" not in session or session["user_type"] not in ["check-in", "gate"]:
+        return redirect("/")
+
+    airport = get_staff_airport(session["user_id"])
+    return render_template("get-check-flights-list.html",
+                           flights=get_airport_flights(airport)
     )

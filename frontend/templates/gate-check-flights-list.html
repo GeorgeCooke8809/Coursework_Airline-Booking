@@ -1,0 +1,34 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div id="gate-check-flights-page-layout">
+    <div id="admin-users-list-container">
+        {% if staff_users == []%}
+        <label class="no-records-label">There are currently no staff users</label>
+        {% endif %}
+
+        {% for user in staff_users %}
+        <div class="admin-user-item">
+            <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
+            <label>{{ user[3] }} {{ user[4] }}</label>
+            <label>{{ user[5] }}</label>
+            <label>{{ user[0] }}</label>
+            <label>{{ user[2] }}</label>
+
+            <div>
+                <button>Edit</button> <!-- TODO: Make edit staff user work -->
+                <button>Delete</button> <!-- TODO: Make delete staff user work -->
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
