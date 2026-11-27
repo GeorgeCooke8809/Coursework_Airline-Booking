@@ -28,7 +28,8 @@ from flights import (
 )
 
 from bookings import (
-    create_unpaid_booking
+    create_unpaid_booking,
+    pay_booking
 )
 
 from seats import (
@@ -581,6 +582,23 @@ def api_add_initial_companions():
         return jsonify({
             "code": 500,
             "message": "Something went wrong, please try again later or contact support"
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/pay-booking", methods=["POST"])
+def api_pay_booking():
+    booking_id = request.get_json()["bookingID"]
+
+    try:
+        pay_booking(booking_id)
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong. Please try again later or contact support."
         })
 
     return jsonify({
