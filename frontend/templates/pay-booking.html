@@ -1,35 +1,36 @@
 {% extends 'base-guest.html' %}
 
 {% block scripts %}
+<script defer src="{{ url_for('static', filename='js/booking_payment.js') }}"></script>
 {% endblock %}
 
 {% block content %}
 <div id="guest-pay-booking-content">
-    <form id="payment-details-form" onsubmit="payBooking(bookingID)">
+    <form id="payment-details-form" onsubmit="payBooking('{{ bookingID }}')">
         <!-- TODO: Add billing address to payment details -->
         <div id="payment-details-spacer">
             <div id="payment-details-container">
                 <label>
                     Card Number<br>
-                    <input type="text" autocomplete="cc-number">
+                    <input type="text" autocomplete="cc-number" required>
                 </label>
 
                 <label>
                     Cardholder Name<br>
-                    <input type="text" autocomplete="cc-name">
+                    <input type="text" autocomplete="cc-name" required>
                 </label>
 
                 <div class="columns">
                     <div class="column">
                         <label>
                             Expiry<br>
-                            <input type="month" autocomplete="cc-exp">
+                            <input type="month" autocomplete="cc-exp" required>
                         </label>
                     </div>
                     <div class="column">
                         <label>
                             CVV<br>
-                            <input type="text" autocomplete="cc-csc">
+                            <input type="text" autocomplete="cc-csc" required>
                         </label>
                     </div>
                 </div>
