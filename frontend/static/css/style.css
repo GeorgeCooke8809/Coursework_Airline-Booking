@@ -874,3 +874,34 @@ button {
 #payment-bottom-right {
     width: fit-content;
 }
+
+/* Gate / Check-In FLight Details */
+#flight-gate-check-details-panel {
+    display: flex;
+    flex-direction: column;
+
+    border-style: solid;
+    border-width: 3px;
+    border-radius: var(--standard-border-radius);
+    border-color: black;
+    width: calc(30vw - 20px);
+    box-sizing: border-box;
+    padding: 10px;
+
+    margin: 10px 0px;
+    height: calc(100vh - 110px);
+    margin-right: 10px;
+}
+
+#flight-gate-check-details-panel h2 {
+    width: 100%;
+    text-align: center;
+    font-size: 45px;
+}
+
+#passenger-list {
+    width: calc(70vw - 20px);
+    height: calc(100vh - 110px);
+    margin: 10px 0px;
+    box-sizing: border-box;
+}

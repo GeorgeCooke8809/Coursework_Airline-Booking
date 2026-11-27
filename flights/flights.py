@@ -169,6 +169,7 @@ def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) 
     ## Return Format:
         {
             "flightNo": <flight_number>: str,
+            "arrivalAirportName": <arrival_airport_name>: str,
             "totalPassengers": <total_passengers>: int,
             "checked": <check_passengers_total>: int,
             "boarded" <boarded_passengers_total>: int,
@@ -226,7 +227,9 @@ def get_flight_details(session: Session, flight_id: int, airport_staff_id: int) 
 
     return {
         "flightNo": flight.flight_number,
-        "totalPassengers": 30,
+        "arrivalAirportName": flight.service.route.destination.name,
+        "capacity": 30,
+        "totalPassengers": len(flight.bookings),
         "checked": checked,
         "boarded": boarded,
         "status": flight.status,
