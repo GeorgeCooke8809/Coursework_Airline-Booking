@@ -35,11 +35,12 @@ async function toggleModal(modal_id) { // Toggles the visibility of the given mo
 
 
 // ! Page specific functions
+// TODO: Split main script.js functions off into relevant files
 
 // Admin Portal
 
 async function showStaffTable() {
-    // TODO: make switch the add use modal
+    // TODO: Make switch to the add user modal button from add guest
     response = await fetch("/api/get-staff-users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,7 +74,7 @@ async function showStaffTable() {
         id_label.textContent = `${user[2]}`
         new_user_card.appendChild(id_label)
 
-        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML - edit & delete
         edit_button = document.createElement("button")
         edit_button.textContent = "Edit"
         button_div.appendChild(edit_button)
@@ -87,7 +88,7 @@ async function showStaffTable() {
 }
 
 async function showGuestTable() {
-    // TODO: make switch the add use modal
+    // TODO: Make switch from the add user modal button to add guest
     response = await fetch("/api/get-guest-users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +118,7 @@ async function showGuestTable() {
         email.textContent = `${user[3]}`
         new_user_card.appendChild(email)
 
-        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML
+        button_div = document.createElement("div") // TODO: Add functionality to admin table buttons in JS as well as HTML - edit & delete
         edit_button = document.createElement("button")
         edit_button.textContent = "Edit"
         button_div.appendChild(edit_button)

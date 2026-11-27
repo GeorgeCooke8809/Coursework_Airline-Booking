@@ -162,4 +162,12 @@ async function goToPayment(bookingID) { // Triggered on pressing the next button
     response_json = await response.json()
 
     console.log(response_json)
+
+    if (response_json.code == 200) {
+        console.log("Information correct, redirecting.")
+        window.location.replace(`/pay-booking/${bookingID}`)
+    } else {
+        console.log("Information incorrect, flashing error.")
+        flashMessage(response_json.message)
+    }
 }
