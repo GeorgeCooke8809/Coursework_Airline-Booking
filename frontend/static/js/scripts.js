@@ -18,7 +18,7 @@ async function flashMessage(message) { // Displays a flash message
 }
 
 async function toggleModal(modal_id) { // Toggles the visibility of the given modal
-    event.preventDefault()
+    //event.preventDefault()
 
     let opacity_cover = document.querySelector(".modal-cover")
     let modal = document.querySelector(modal_id)
@@ -124,7 +124,7 @@ async function showGuestTable() {
 
         delete_button = document.createElement("button")
         delete_button.textContent = "Delete"
-        delete_button.addEventListener("click", function () { deleteGuest(user[0]); })
+        delete_button.addEventListener("click", function () { deleteGuest(user[0]); }) // ! Same as binding onclick in HTML
 
         button_div.appendChild(delete_button)
         new_user_card.appendChild(button_div)

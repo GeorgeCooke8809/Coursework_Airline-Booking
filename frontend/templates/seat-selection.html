@@ -1,0 +1,148 @@
+{% extends 'base-guest.html' %}
+
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/seat_select.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="guest-flight-seat-select">
+    <div class="columns">
+        <div class="column" id="plane-seat-container">
+            {% for seat in all_seats %}
+            {% if seat in available_seats %}
+            <button class="seat-button-available" id="seat-{{ seat }}" onclick="assignSeat('{{ seat }}')">
+                {{ seat }}
+            </button>
+            {% else %}
+            <button class="seat-button-unavailable" disabled>
+                {{ seat }}
+            </button>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="column">
+            <div id="companions-box">
+                <h3>Companions:</h3>
+                <div id="companions-list-container">
+                    {% if favourite_companion != [] %}
+                    <div class="seat-select-companion-card">
+                        <div>
+                            <h4>{{ favourite_companion[1] }}</h4>
+                            <label>{{ favourite_companion[3] }}</label>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    addCompanion('{{ favourite_companion[0] }}', true)
+                                })
+                            </script>
+                        </div>
+                        <div class="seat-select-companion-card-right-details">
+                            <div class="inline">
+                                <svg id="companion-seat-indicator-0" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" height="24px" width="24px" fill="#000000">
+                                    <path d="M10,17V7l5,5l-5,5Z" />
+                                </svg>
+                                <label id="companion-seat-0">-</label>
+                            </div>
+                            <button class="remove-companion-seat-select-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px"
+                                    fill="#FFFFFF">
+                                    <path
+                                        d="M12.45,37.65l-2.1-2.1L21.9,24L10.35,12.45l2.1-2.1L24,21.9L35.55,10.35l2.1,2.1L26.1,24L37.65,35.55l-2.1,2.1L24,26.1L12.45,37.65Z" />
+                                </svg>
+                            </button> <!-- TODO: Add functionality to remove companion button -->
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div id="add-companion-select-outer">
+                    <div class="hidden" id="add-companion-select">
+                        <button onclick="toggleModal('#new-companion-modal')">New Companion</button>
+                        {% for companion in all_companions %}
+                        {% if companion[4] == "active" %}
+                        <button class="columns existing-companions-list-button"
+                            onclick="addCompanion('{{ companion[0] }}')">
+                            <label>{{ companion[1] }}</label>
+                            <label>DOB: {{ companion[2] }}</label>
+                            <label>Expiry: {{ companion[3] }}</label> <!-- TODO: Make red if expired -->
+                        </button>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button onclick="toggleAddCompanionSelect()">+ Add Companion</button>
+                    <!-- TODO: Add add companion functionality to seat selection -->
+                </div>
+                <!-- TODO: Add styling to add companion button -->
+            </div>
+            <div class="inline right-align">
+                <label>£0.00</label> <!-- TODO: Make price update with the number of seats selected -->
+                <button>Next</button>
+                <!-- TODO: Make JS function to add companions to booking and redirect to next page -->
+                <!-- TODO: Add styling to next button in seat selection page-->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+
+<div class="modal-centred" id="new-companion-modal">
+    <button onclick="toggleModal('#new-companion-modal')" class="modal-close-button">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000">
+            <path
+                d="m256-168-88-88 224-224-224-224 88-88 224 224 224-224 88 88-224 224 224 224-88 88-224-224-224 224Z" />
+        </svg>
+    </button>
+
+    <form onsubmit="newCompanion()">
+        <div class="columns">
+            <div class="column">
+                <label>
+                    Passport Name<br>
+                    <input type="text" id="add-companion-passport-name" required>
+                </label>
+
+                <label>
+                    Passport Number<br>
+                    <input type="text" id="add-companion-passport-number" required>
+                </label>
+
+                <label>
+                    Nationality Code (On Passport)<br>
+                    <input type="text" id="add-companion-passport-nationality" required>
+                </label>
+
+                <label>
+                    Passport Authority<br>
+                    <input type="text" id="add-companion-passport-authority" required>
+                </label>
+            </div>
+
+            <div class="column">
+                <label>
+                    Passport Expiry<br>
+                    <input type="date" id="add-companion-passport-expiry" required>
+                </label>
+
+                <label>
+                    Date of Birth<br>
+                    <input type="date" id="add-companion-passport-dob" required>
+                </label>
+
+                <label>
+                    Passport Sex<br>
+                    <select id="add-companion-passport-sex" required>
+                        <option value="X">X</option>
+                        <option value="M" selected>M</option>
+                        <option value="F">F</option>
+                    </select>
+                </label>
+
+                <input type="submit" value="Add Companion" required>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

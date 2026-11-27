@@ -17,7 +17,7 @@ def get_available_seats(Session: Session, flight_id: int) -> list:
         Session (Session): The database session automatically provided by @with_session
         flight_id (int): The flight to check the seat availability of.
     """
-    flight  =(
+    flight = (
         Session.query(Flight)
         .filter(Flight.scheduled_departure_datetime_utc > datetime.now())
         .filter(Flight.flight_id == flight_id)

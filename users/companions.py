@@ -59,8 +59,8 @@ def get_all_guest_companions(Session: Session, guest_id: int) -> list[tuple[int,
     return to_return
 
 @with_session
-def add_companion(Session: Session, guest_id: int, passport_name: str, passport_expiry: date, passport_number: str, date_of_birth: date, nationality: str, passport_sex: str, passport_authority: str) -> None:
-    """Adds a companion for the given guest with the given details. Raises error if guest does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. Status defaults to active.
+def add_companion(Session: Session, guest_id: int, passport_name: str, passport_expiry: date, passport_number: str, date_of_birth: date, nationality: str, passport_sex: str, passport_authority: str) -> int:
+    """Adds a companion for the given guest with the given details. Raises error if guest does not exist, expiry is before current date, date of birth is after current date, or sex is invalid. Status defaults to active. Returns the ID of the new companion
 
     Args:
         Session (Session): The database session automatically provided by @with_session
@@ -117,6 +117,10 @@ def add_companion(Session: Session, guest_id: int, passport_name: str, passport_
     new_companion = Companion(guest_id=guest_id, passport_name=passport_name, passport_number=passport_number, passport_expiry=passport_expiry, nationality=nationality, passport_issue_authority=passport_authority, date_of_birth=date_of_birth, sex=passport_sex, status="active", favorite=companion_favourite) # TODO: Fix favourite UK spelling
 
     Session.add(new_companion)
+
+    Session.flush()
+
+    return new_companion.companion_id
 
 @with_session
 def edit_companion(session: Session, companion_id: int, passport_name: str = None, passport_expiry: date = None, passport_number: str = None, date_of_birth: date = None, nationality: str = None, passport_sex: str = None, passport_authority: str = None) -> None:
@@ -292,3 +296,37 @@ def favourite_companion(Session: Session, companion_id: int) -> None:
         current_favourite.favorite = False
 
     companion.favorite = True
+
+@with_session
+def get_guest_favourite_companion(session: Session, guest_id: int) -> tuple[int, str, date, str]:
+    """Gets and returns the guests favourite companion in the format (<companion_id>, <passport_name>, <date_of_birth>, <date_of_birth_readable>)
+
+    Args:
+        session (Session): The SQLalchemy database session automatically provided by with_session wrapper
+        guest_id (int): The ID of the guest to get the favourite companion of
+    """
+
+    favourite_companion = (
+        session.query(Companion)
+        .filter(Companion.guest_id == guest_id)
+        .filter(Companion.favorite == True)
+    ).first()
+    
+    if favourite_companion is not None:
+        return (favourite_companion.companion_id, favourite_companion.passport_name, favourite_companion.date_of_birth, favourite_companion.date_of_birth.strftime("%d/%m/%Y"))
+    else:
+        return []
+
+@with_session
+def get_companion_details(session: Session, companion_id: int) -> tuple:
+    """Gets and returns all of the details about the given companion"""
+
+    companion = (
+        session.query(Companion)
+        .filter(Companion.companion_id == companion_id)
+    ).first()
+
+    if companion is not None:
+        return [companion.companion_id, companion.guest_id, companion.passport_name, companion.passport_number, companion.passport_expiry.strftime("%d/%m/%Y"), companion.nationality, companion.passport_issue_authority, companion.date_of_birth.strftime("%d/%m/%Y"), companion.sex, companion.status, companion.favorite]
+    else:
+        return []

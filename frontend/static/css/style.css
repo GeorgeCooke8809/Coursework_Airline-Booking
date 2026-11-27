@@ -235,6 +235,10 @@ button {
     margin-right: auto;
 }
 
+.right-align {
+    margin-left: auto;
+}
+
 .subtle-link-dark-bg {
     color: var(--dark-lvl-3);
     padding: 5px;
@@ -242,6 +246,12 @@ button {
 
 .hidden {
     display: none;
+}
+
+.inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 
@@ -670,4 +680,165 @@ button {
 
 #flight-search-book-button:hover {
     background-color: var(--cta-colour-secondary);
+}
+
+/* Guest Seat Select Page */
+#guest-flight-seat-select {
+    margin: 0px 10px;
+}
+
+#plane-seat-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    height: calc(100vh - 85px);
+    width: calc(30vw - 15px);
+    margin-left: 10px;
+}
+
+#plane-seat-container button {
+    width: calc(100% * (1/3) - 10px);
+    margin: 5px;
+    font-size: 30px;
+    padding: 50px 10px;
+    border-radius: 1rem;
+    color: var(--light-bg);
+    border-color: black;
+    border-style: solid;
+    border-width: 2px;
+}
+
+.seat-button-available {
+    background-color: #3b7936;
+}
+
+.seat-button-unavailable {
+    background-color: var(--dark-lvl-2);
+}
+
+.seat-button-available:hover {
+    background-color: #31692d;
+}
+
+.seat-button-selected {
+    background-color: #196e8b;
+}
+
+.remove-companion-seat-select-button {
+    background-color: #872c2c;
+    border-radius: var(--standard-border-radius);
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-companion-seat-select-button:hover {
+    background-color: #9f3737;
+}
+
+
+#companions-box {
+    display: flex;
+    flex-direction: column;
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 1rem;
+    width: calc(70vw - 15px);
+    height: calc(100vh - 140px);
+    /* ! Change height here is you want to make the price text and next button bigger */
+    box-sizing: border-box;
+    margin: 10px 0px;
+    margin-left: 10px;
+}
+
+#companions-box h3 {
+    margin: 10px;
+    font-size: 40px;
+}
+
+#companions-list-container {
+    /*width: 100%;*/
+    flex: 1;
+    min-height: 0;
+    /* ! Change height here is you want to make the price text and next button bigger */
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.seat-select-companion-card {
+    display: flex;
+    width: calc(100% - 20px);
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 10px;
+    padding: 5px;
+    box-sizing: border-box;
+    background-color: var(--dark-lvl-4);
+    border-radius: var(--standard-border-radius);
+    border-style: solid;
+    border-width: 2px;
+    border-color: black;
+}
+
+.seat-select-companion-card h4 {
+    margin: 0px;
+    font-size: 20px;
+}
+
+.seat-select-companion-card-right-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.seat-select-companion-card-right-details svg {}
+
+.seat-select-companion-card-right-details label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--light-bg);
+    font-size: 30px;
+    width: 65px;
+    height: 65px;
+    border-radius: var(--standard-border-radius);
+    font-weight: bold;
+}
+
+#add-companion-select-outer {
+    margin: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--dark-lvl-4);
+    border-radius: var(--standard-border-radius);
+}
+
+#add-companion-select {
+    flex-direction: column;
+}
+
+.existing-companions-list-button {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    width: calc(100% - 10px);
+    margin: 2px 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: var(--light-bg);
+    border-style: none;
+    padding: 3px 0px;
+}
+
+.existing-companions-list-button:hover {
+    background-color: var(--dark-lvl-4);
+}
+
+.existing-companions-list-button label {
+    width: 33%;
 }
