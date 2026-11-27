@@ -48,12 +48,13 @@ def _route_flights_objects_to_tuples(flights: list[Flight]):
     return to_return
 
 @with_session
-def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, str, str, str, datetime, datetime]]:
+def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[int, str, str, str, str, datetime, datetime]]:
     """Gets a list of all of the flights departing from the provided airport in the next 24 hours. Typically used in the gate agent and check in agent portals.
 
     ## Return Format:
     [
         (
+            <flight_id>: int
             <flight_number>: str,
             <destination_icao>: str,
             <destination_name>: str,
@@ -119,6 +120,7 @@ def get_airport_flights(Session: Session, airport_icao: str) -> list[tuple[str, 
         gate_close_time = flight.scheduled_departure_datetime_utc - timedelta(minutes=90) # ? Different gate close time for different flights
 
         return_array.append((
+            flight.flight_id,
             flight.flight_number,
             destination.icao,
             destination.name,

@@ -6,23 +6,20 @@
 {% block content %}
 
 <div id="gate-check-flights-page-layout">
-    <div id="admin-users-list-container">
-        {% if staff_users == []%}
-        <label class="no-records-label">There are currently no staff users</label>
+    <div id="admin-users-list-container"> <!-- TODO: standardise admin users list to global styling -->
+        {% if flights == [] %}
+        <label class="no-records-label">There are no flights scheduled for today</label>
         {% endif %}
 
-        {% for user in staff_users %}
+        {% for flight in flights %}
         <div class="admin-user-item">
-            <!-- TODO: Styling makes resize boxes based on how long first name is in list all staff users in admin portal -->
-            <label>{{ user[3] }} {{ user[4] }}</label>
-            <label>{{ user[5] }}</label>
-            <label>{{ user[0] }}</label>
-            <label>{{ user[2] }}</label>
+            <!-- TODO: Styling makes resize boxes based on how long airports name is in list all staff users in admin portal -->
+            <label>{{ flight[1] }}</label>
+            <label>{{ flight[3] }}</label>
+            <label>{{ flight[4] }}</label>
 
-            <div>
-                <button>Edit</button> <!-- TODO: Make edit staff user work -->
-                <button>Delete</button> <!-- TODO: Make delete staff user work -->
-            </div>
+            <a class="link-button-dark" href="/employee/gate-check-flight-details/{{ flight[0] }}">Select</a>
+            <!-- TODO: Fix styling on select flight for gate/check-in -->
         </div>
         {% endfor %}
     </div>

@@ -59,6 +59,6 @@ def gate_and_check_flights_page():
         return redirect("/")
 
     airport = get_staff_airport(session["user_id"])
-    return render_template("get-check-flights-list.html",
+    return render_template("gate-check-flights-list.html",
                            flights=get_airport_flights(airport)
     )
