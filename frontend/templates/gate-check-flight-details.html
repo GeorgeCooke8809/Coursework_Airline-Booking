@@ -1,0 +1,68 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/gate_check_flight_details.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div id="gate-check-flight-details-page-layout">
+    <div class="columns">
+        <div class="column">
+            <div id="flight-gate-check-details-panel">
+                <h2>{{ flight_details["flightNo"] }}</h2>
+                <h3>{{ flight_details["arrivalAirportName"] }}</h3>
+                <label>Departure Time: {{ flight_details["departureTime"].strftime("%H:%M") }}</label>
+
+                {% if user_type == "gate" %}
+                <label>Gate Close: {{ flight_details["gateCloseTime"].strftime("%H:%M") }}</label>
+                <!-- TODO: Do if based on user_type -->
+                <label>Passengers Boarded: {{ flight_details["boarded"] }}/{{
+                    flight_details["totalPassengers"]
+                    }}
+                </label> <!-- TODO: Do if based on user type -->
+
+                <button onclick="departAircraft('{{ flight_id }}')">Depart Aircraft</button>
+                {% elif user_type == "check-in" %}
+                <label>Check-In Close: {{ flight_details["checkInCloseTime"].strftime("%H:%M") }}</label>
+                <!-- TODO: Do if based on user_type -->
+                <label>Passengers Checked: {{ flight_details["checked"] }}/{{
+                    flight_details["totalPassengers"]
+                    }}</label> <!-- TODO: Do if based on user type -->
+                {% endif %}
+            </div>
+        </div>
+        <div class="column" id="passenger-list">
+            <!-- TODO: Add passenger search and functionality in check-in/gate flight details -->
+            <div id="admin-users-list-container"> <!-- TODO: standardise admin users list to global styling -->
+                {% if passengers == [] %}
+                <label class="no-records-label">There are no passengers booked for this flight </label>
+                {% endif %}
+
+                {% for passenger in passengers %}
+                <div class="admin-user-item">
+                    <!-- TODO: Styling makes resize boxes based on how long airports name is in list all staff users in admin portal -->
+                    <label>{{ passenger[0] }}</label>
+                    <label>{{ passenger[2] }}</label>
+                    <label>{{ passenger[1] }}</label>
+                    <label>{{ passenger[3] }}</label>
+
+                    {% if user_type == "gate" and passenger[3] == "checked" %}
+                    <button onclick="markBoarded('{{ passenger[0] }}')">Mark Boarded</button>
+                    {% elif user_type == "check-in" and passenger[3] == "not-arrived"%}
+                    <button onclick="markArrived('{{ passenger[0] }}')">Mark Arrived</button>
+                    {% else %}
+                    <button disabled>Out of Jurisdiction</button>
+                    <!-- Used to say that this passenger has either already been updated by the given staff type or for gate agents who cannot marks as boarded before they have arrived -->
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+{% endblock %}

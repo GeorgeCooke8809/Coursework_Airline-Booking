@@ -24,7 +24,8 @@ from users import (
 from flights import (
     create_route,
     add_one_off_flight,
-    add_schedule
+    add_schedule,
+    change_flight_status
 )
 
 from bookings import (
@@ -33,7 +34,8 @@ from bookings import (
 )
 
 from seats import (
-    add_booking_seat
+    add_booking_seat,
+    change_booking_seat_status
 )
 
 from models import SERVICE_REPEAT_TYPES, SEX_OPTIONS
@@ -599,6 +601,58 @@ def api_pay_booking():
         return jsonify({
             "code": 500,
             "message": "Something went wrong. Please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+# Check-In / Gate Portal
+@api.route("/depart-aircraft", methods=["POST"])
+def api_depart_aircraft():
+    flight_id = request.get_json()["flightID"]
+
+    try:
+        change_flight_status(flight_id, "departed")
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/board-seat", methods=["POST"])
+def api_mark_boarded():
+    flight_id = request.get_json()["bookingSeatID"]
+
+    try:
+        change_booking_seat_status(flight_id, "boarded")
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
+    })
+
+@api.route("/arrive-seat", methods=["POST"])
+def api_mark_arrived():
+    flight_id = request.get_json()["bookingSeatID"]
+
+    try:
+        change_booking_seat_status(flight_id, "checked")
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support."
         })
 
     return jsonify({

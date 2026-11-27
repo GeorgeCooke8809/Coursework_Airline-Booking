@@ -11,11 +11,16 @@ from flights import (
     get_route_flights,
     get_route_schedules,
     get_route_name,
-    get_airport_flights
+    get_airport_flights,
+    get_flight_details
 )
 
 from utils import (
     get_staff_airport
+)
+
+from seats import (
+    get_flight_passengers
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -60,5 +65,17 @@ def gate_and_check_flights_page():
 
     airport = get_staff_airport(session["user_id"])
     return render_template("gate-check-flights-list.html",
-                           flights=get_airport_flights(airport)
+                           flights=get_airport_flights(airport) # TODO: Make this show delayed flights as well even if from the past
+    )
+
+@staff_portal.route("/gate-check-flight-details/<flight_id>", methods=["GET"])
+def gate_and_check_flight_details_page(flight_id: int):
+    if "user_type" not in session or session["user_type"] not in ["check-in", "gate"]:
+        return redirect("/")
+
+    return render_template("gate-check-flight-details.html",
+                           flight_id=flight_id,
+                           passengers=get_flight_passengers(flight_id, session["user_id"]),
+                           user_type=session["user_type"],
+                           flight_details=get_flight_details(flight_id, session["user_id"])
     )
