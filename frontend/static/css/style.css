@@ -796,8 +796,6 @@ button {
     gap: 10px;
 }
 
-.seat-select-companion-card-right-details svg {}
-
 .seat-select-companion-card-right-details label {
     display: flex;
     align-items: center;
@@ -841,4 +839,38 @@ button {
 
 .existing-companions-list-button label {
     width: 33%;
+}
+
+/* Payment Page */
+#payment-details-form {
+    width: 100%;
+    height: calc(100vh - 85px);
+    display: flex;
+    flex-direction: column;
+}
+
+#payment-details-spacer {
+    display: flex;
+    width: 100%;
+    flex: 1;
+}
+
+#payment-details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin: auto auto;
+    width: 500px;
+    height: 250px;
+
+    border-radius: var(--standard-border-radius);
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+#payment-bottom-right {
+    width: fit-content;
 }

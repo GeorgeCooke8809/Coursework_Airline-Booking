@@ -31,6 +31,10 @@ from bookings import (
     create_unpaid_booking
 )
 
+from seats import (
+    add_booking_seat
+)
+
 from models import SERVICE_REPEAT_TYPES, SEX_OPTIONS
 
 # TODO: Add session checks for authorisation on relevant API calls
@@ -478,7 +482,7 @@ def api_add_unpaid_booking():
 
 @api.route("/create-companion", methods=["POST"])
 def api_create_companion():
-    # TODO: Will need to take in companion ID as an argument for when support does it for them
+    # TODO: Will need to take in guest ID instead of taking from session as an argument for when support does it for them
     request_dict = request.get_json()
 
     LOGGER.debug(f"{request_dict = }")
@@ -563,4 +567,23 @@ def api_get_companion_details():
         "code": 200,
         "message": "",
         "content": get_companion_details(companion_id)
+    })
+
+@api.route("/add-initial-companions", methods=["POST"])
+def api_add_initial_companions():
+    request_dict = request.get_json()
+    # TODO: Will need validation of session user_id and booking ownership
+
+    try:
+        for companion in request_dict["companions_list"]:
+            add_booking_seat(request_dict["bookingID"], companion[1], companion[2]) # Ignores companion[0] as that is just used for styling in the web page
+    except:
+        return jsonify({
+            "code": 500,
+            "message": "Something went wrong, please try again later or contact support"
+        })
+
+    return jsonify({
+        "code": 200,
+        "message": ""
     })

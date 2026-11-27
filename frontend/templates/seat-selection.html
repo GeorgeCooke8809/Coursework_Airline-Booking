@@ -64,19 +64,19 @@
                             onclick="addCompanion('{{ companion[0] }}')">
                             <label>{{ companion[1] }}</label>
                             <label>DOB: {{ companion[2] }}</label>
-                            <label>Expiry: {{ companion[3] }}</label> <!-- TODO: Make red if expired -->
+                            <label>Expiry: {{ companion[3] }}</label>
+                            <!-- TODO: Make companion passport expiry date red if expired -->
                         </button>
                         {% endif %}
                         {% endfor %}
                     </div>
                     <button onclick="toggleAddCompanionSelect()">+ Add Companion</button>
-                    <!-- TODO: Add add companion functionality to seat selection -->
                 </div>
                 <!-- TODO: Add styling to add companion button -->
             </div>
             <div class="inline right-align">
                 <label>£0.00</label> <!-- TODO: Make price update with the number of seats selected -->
-                <button>Next</button>
+                <button onclick="goToPayment('{{ bookingID }}')">Next</button>
                 <!-- TODO: Make JS function to add companions to booking and redirect to next page -->
                 <!-- TODO: Add styling to next button in seat selection page-->
             </div>

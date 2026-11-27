@@ -4,7 +4,8 @@ from datetime import date
 from models import VALID_SEAT_IDS
 
 from flights import (
-    search_for_flight
+    search_for_flight,
+    calculate_seat_price
 )
 
 from seats import (
@@ -12,7 +13,8 @@ from seats import (
 )
 
 from bookings import (
-    get_booking_flight
+    get_booking_flight,
+    get_booking_details,
 )
 
 from users import (
@@ -68,8 +70,19 @@ def seat_selection_page(booking_id: int):
     flight_id = get_booking_flight(booking_id)
 
     return render_template("seat-selection.html",
+                           bookingID=booking_id,
                            all_seats=VALID_SEAT_IDS,
                            available_seats=get_available_seats(flight_id),
                            favourite_companion=get_guest_favourite_companion(session["user_id"]),
                            all_companions=get_all_guest_companions(session["user_id"])
+                        )
+
+@guest_portal.route("/pay-booking/<booking_id>", methods=["GET"])
+def pay_for_booking(booking_id: int):
+    flight_id = get_booking_flight(booking_id)
+    price = f"£{calculate_seat_price(flight_id, len(get_booking_details(booking_id)["companions"])):,.2f}"
+
+    return render_template("pay-booking.html",
+                            bookingID=booking_id,
+                            price=price
                         )
