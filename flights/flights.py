@@ -33,6 +33,8 @@ def _route_flights_objects_to_tuples(flights: list[Flight]):
             status = "Scheduled"
         elif flight.status == "cancelled":
             status = "CANCELLED"
+        elif flight.status == "departed":
+            status = "Departed"
         else:
             LOGGER.error("Unrecognized flight status")
 

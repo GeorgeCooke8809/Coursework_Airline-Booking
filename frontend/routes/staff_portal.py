@@ -65,7 +65,7 @@ def gate_and_check_flights_page():
 
     airport = get_staff_airport(session["user_id"])
     return render_template("gate-check-flights-list.html",
-                           flights=get_airport_flights(airport)
+                           flights=get_airport_flights(airport) # TODO: Make this show delayed flights as well even if from the past
     )
 
 @staff_portal.route("/gate-check-flight-details/<flight_id>", methods=["GET"])

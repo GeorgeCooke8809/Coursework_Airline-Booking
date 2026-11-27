@@ -1,7 +1,7 @@
 {% extends 'base-employee.html' %}
 
 {% block scripts %}
-<script defer src="{{ url_for('static', filename='js/gate_checl_flight_details.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/gate_check_flight_details.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -47,7 +47,7 @@
                     <label>{{ passenger[1] }}</label>
                     <label>{{ passenger[3] }}</label>
 
-                    {% if user_type == "gate" and passenger[3] == "arrived" %}
+                    {% if user_type == "gate" and passenger[3] == "checked" %}
                     <button onclick="markBoarded('{{ passenger[0] }}')">Mark Boarded</button>
                     {% elif user_type == "check-in" and passenger[3] == "not-arrived"%}
                     <button onclick="markArrived('{{ passenger[0] }}')">Mark Arrived</button>
