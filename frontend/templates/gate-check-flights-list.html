@@ -1,0 +1,31 @@
+{% extends 'base-employee.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div id="gate-check-flights-page-layout">
+    <div id="admin-users-list-container"> <!-- TODO: standardise admin users list to global styling -->
+        {% if flights == [] %}
+        <label class="no-records-label">There are no flights scheduled for today</label>
+        {% endif %}
+
+        {% for flight in flights %}
+        <div class="admin-user-item">
+            <!-- TODO: Styling makes resize boxes based on how long airports name is in list all staff users in admin portal -->
+            <label>{{ flight[1] }}</label>
+            <label>{{ flight[3] }}</label>
+            <label>{{ flight[4] }}</label>
+
+            <a class="link-button-dark" href="/employee/gate-check-flight-details/{{ flight[0] }}">Select</a>
+            <!-- TODO: Fix styling on select flight for gate/check-in -->
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+{% endblock %}

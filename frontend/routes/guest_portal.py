@@ -63,7 +63,7 @@ def flight_search_page():
 
     return render_template("flight-search.html",
                            flights = search_for_flight(origin, destination, flight_date)
-                        )
+    )
 
 @guest_portal.route("/seat-select/<booking_id>", methods=["GET"])
 def seat_selection_page(booking_id: int):
@@ -75,7 +75,7 @@ def seat_selection_page(booking_id: int):
                            available_seats=get_available_seats(flight_id),
                            favourite_companion=get_guest_favourite_companion(session["user_id"]),
                            all_companions=get_all_guest_companions(session["user_id"])
-                        )
+    )
 
 @guest_portal.route("/pay-booking/<booking_id>", methods=["GET"])
 def pay_for_booking(booking_id: int):
@@ -85,4 +85,4 @@ def pay_for_booking(booking_id: int):
     return render_template("pay-booking.html",
                             bookingID=booking_id,
                             price=price
-                        )
+    )

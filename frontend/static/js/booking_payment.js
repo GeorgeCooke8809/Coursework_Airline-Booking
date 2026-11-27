@@ -1,4 +1,6 @@
 async function payBooking(booking_id) {
+    event.preventDefault()
+
     response = await fetch("/api/pay-booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
