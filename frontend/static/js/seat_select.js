@@ -150,5 +150,16 @@ async function newCompanion() { // Sends a create companion call to the API then
 }
 
 async function goToPayment(bookingID) { // Triggered on pressing the next button - sends an API request to add all of the companions to the booking then redirects window location
+    response = await fetch("/api/add-initial-companions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "bookingID": Number(bookingID),
+            "companions_list": companions
+        })
+    })
 
+    response_json = await response.json()
+
+    console.log(response_json)
 }

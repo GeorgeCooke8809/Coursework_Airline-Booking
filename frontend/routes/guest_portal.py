@@ -68,6 +68,7 @@ def seat_selection_page(booking_id: int):
     flight_id = get_booking_flight(booking_id)
 
     return render_template("seat-selection.html",
+                           bookingID=booking_id,
                            all_seats=VALID_SEAT_IDS,
                            available_seats=get_available_seats(flight_id),
                            favourite_companion=get_guest_favourite_companion(session["user_id"]),
