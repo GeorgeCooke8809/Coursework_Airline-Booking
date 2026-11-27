@@ -248,6 +248,12 @@ button {
     display: none;
 }
 
+.inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 
 /* ! Specific Styling */
 
@@ -715,6 +721,10 @@ button {
     background-color: #31692d;
 }
 
+.seat-button-selected {
+    background-color: #196e8b;
+}
+
 .remove-companion-seat-select-button {
     background-color: #872c2c;
     border-radius: var(--standard-border-radius);
@@ -785,6 +795,8 @@ button {
     align-items: center;
     gap: 10px;
 }
+
+.seat-select-companion-card-right-details svg {}
 
 .seat-select-companion-card-right-details label {
     display: flex;

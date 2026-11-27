@@ -10,7 +10,7 @@
         <div class="column" id="plane-seat-container">
             {% for seat in all_seats %}
             {% if seat in available_seats %}
-            <button class="seat-button-available" onclick="selectSeat('{{ seat }}')">
+            <button class="seat-button-available" id="seat-{{ seat }}" onclick="assignSeat('{{ seat }}')">
                 {{ seat }}
             </button>
             {% else %}
@@ -37,7 +37,13 @@
                             </script>
                         </div>
                         <div class="seat-select-companion-card-right-details">
-                            <label>-</label> <!-- TODO: Show companion seat ID here -->
+                            <div class="inline">
+                                <svg id="companion-seat-indicator-0" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24" height="24px" width="24px" fill="#000000">
+                                    <path d="M10,17V7l5,5l-5,5Z" />
+                                </svg>
+                                <label id="companion-seat-0">-</label>
+                            </div>
                             <button class="remove-companion-seat-select-button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px"
                                     fill="#FFFFFF">

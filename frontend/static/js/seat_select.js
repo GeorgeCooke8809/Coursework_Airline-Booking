@@ -1,5 +1,6 @@
 let companions = [] // used to store all the companions and associated seats that are to be added on move to next page
 let current_assigning_companion = 0 // used to dictate which index in the companions list is being updated next
+let companion_index = 0 // The ID identifier for companions added to the flight, does not decrement when companion removed. Used to solve the issue of a companion being allowed to hold multiple seats, sort of like a temporary PK for booking seat.
 
 async function toggleAddCompanionSelect() { // Toggles the visibility of the select companion menu
     let modal = document.querySelector("#add-companion-select")
@@ -10,8 +11,9 @@ async function toggleAddCompanionSelect() { // Toggles the visibility of the sel
     }
 }
 
-async function addCompanion(companion_id, already_in_list = false) { // adds the given companion to the companions list with no assigned seat
-    companions.push([Number(companion_id), null])
+async function addCompanion(companion_id, already_in_list = false,) { // adds the given companion to the companions list with no assigned seat
+    companions.push([companion_index, Number(companion_id), null])
+    companion_index += 1
     console.log(companions)
 
     if (already_in_list == false) { // Show in GUI with DOM
@@ -38,7 +40,14 @@ async function addCompanion(companion_id, already_in_list = false) { // adds the
             <label>${response_json.content[4]}</label>
         </div>
         <div class="seat-select-companion-card-right-details">
-            <label>-</label>
+            <div class="inline">
+                <svg class="hidden" id="companion-seat-indicator-${companion_index - 1}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                height="24px" width="24px"
+                    fill="#000000">
+                    <path d="M10,17V7l5,5l-5,5Z" />
+                </svg>
+                <label id="companion-seat-${companion_index - 1}">-</label>
+            </div>
             <button class="remove-companion-seat-select-button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" height="48px" width="48px"
                     fill="#FFFFFF">
@@ -51,15 +60,43 @@ async function addCompanion(companion_id, already_in_list = false) { // adds the
 
         companion_list_container.appendChild(new_companion_card)
     }
+
+    // TODO: Update price on adding a companion
 }
 
 async function assignSeat(seatID) { // Assigns the clicked seat to the index of the companions list currently being edited
-    companions[current_assigning_companion][1] = seatID
-    current_assigning_companion = current_assigning_companion + 1
+    if (companions[current_assigning_companion][2] !== null) {
+        let old_seat = document.querySelector(`#seat-${companions[current_assigning_companion][2]}`)
+        old_seat.classList = "seat-button-available"
+        old_seat.disabled = false
+    }
+
+    let companion_card_seat_label = document.querySelector(`#companion-seat-${companions[current_assigning_companion][0]}`)
+    companion_card_seat_label.textContent = seatID
+
+    console.log(`Seat identifier to turn off: ${companions[current_assigning_companion][0]}`)
+    let companion_card_seat_arrow = document.querySelector(`#companion-seat-indicator-${companions[current_assigning_companion][0]}`)
+    companion_card_seat_arrow.classList = "hidden"
+
+
+    companions[current_assigning_companion][2] = seatID
+    current_assigning_companion += 1
 
     if (current_assigning_companion > companions.length - 1) {
         current_assigning_companion = 0
     }
+
+    console.log(`Seat identifier to turn on: ${companions[current_assigning_companion][0]}`)
+    companion_card_seat_arrow = document.querySelector(`#companion-seat-indicator-${companions[current_assigning_companion][0]}`)
+    companion_card_seat_arrow.classList = ""
+
+    console.log(companions)
+    console.log(`Current Assigning Companion (New): ${current_assigning_companion}`)
+
+    let new_seat = document.querySelector(`#seat-${seatID}`)
+
+    new_seat.classList = "seat-button-selected"
+    new_seat.disabled = true
 
     // TODO: Update the items in the display DOM
 }
@@ -101,7 +138,7 @@ async function newCompanion() { // Sends a create companion call to the API then
         let new_companion_avail = document.createElement("button")
         new_companion_avail.classList = "columns existing-companions-list-button"
         new_companion_avail.addEventListener("click", function () { addCompanion(`${response_json.content}`); })
-        new_companion_avail.innerHTML = `<label>${name}</label><label>DOB: ${dob}</label><label>Expiry: ${pass_exp}</label>`
+        new_companion_avail.innerHTML = `< label > ${name}</label ><label>DOB: ${dob}</label><label>Expiry: ${pass_exp}</label>`
 
         companion_selection.appendChild(new_companion_avail)
 
@@ -110,4 +147,8 @@ async function newCompanion() { // Sends a create companion call to the API then
         console.log("Information incorrect, flashing error")
         flashMessage(response_json.message)
     }
+}
+
+async function goToPayment(bookingID) { // Triggered on pressing the next button - sends an API request to add all of the companions to the booking then redirects window location
+
 }
