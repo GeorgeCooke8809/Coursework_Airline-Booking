@@ -1,0 +1,45 @@
+{% extends 'base-guest.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div id="guest-pay-booking-content">
+    <form id="payment-details-form" onsubmit="payBooking(bookingID)">
+        <!-- TODO: Add billing address to payment details -->
+        <div id="payment-details-spacer">
+            <div id="payment-details-container">
+                <label>
+                    Card Number<br>
+                    <input type="text" autocomplete="cc-number">
+                </label>
+
+                <label>
+                    Cardholder Name<br>
+                    <input type="text" autocomplete="cc-name">
+                </label>
+
+                <div class="columns">
+                    <div class="column">
+                        <label>
+                            Expiry<br>
+                            <input type="month" autocomplete="cc-exp">
+                        </label>
+                    </div>
+                    <div class="column">
+                        <label>
+                            CVV<br>
+                            <input type="text" autocomplete="cc-csc">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-align" id="payment-bottom-right">
+            <label>{{ price }}</label>
+            <input type="submit" value="Pay Now">
+        </div>
+    </form>
+</div>
+
+{% endblock %}
